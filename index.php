@@ -178,10 +178,10 @@
             <div class="container mx-auto px-4">
                 <div class="max-w-3xl mx-auto text-center">
                     <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-                        School Registration for Academic Year 2023-2024
+                        <?php echo $schoolName; ?> Tahun Ajar 2026 - 2027
                     </h2>
                     <p class="text-lg text-gray-600 mb-8">
-                        Welcome to <?php echo $schoolName; ?>'s registration portal. We're excited to have you join our learning community for the upcoming school year.
+                        Selamat Datang Portal <?php echo $schoolName; ?> Infromasi Pendaftaran. Bergabung dengan kami belajar bersama di MTs Sunan Kalijaga.
                     </p>
                     <a 
                         href="https://docs.google.com/forms" 
