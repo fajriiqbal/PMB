@@ -124,7 +124,8 @@
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
                         <div class="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center">
-                            <?php echo renderIcon('assets/LOGOMADA.png'); ?>
+                           <?php echo '<img src="assets/LOGOMADA.png" alt="Logo" width="100">'; ?>
+
                         </div>
                         <h1 class="ml-3 text-xl font-bold text-gray-800"><?php echo $schoolName; ?></h1>
                     </div>
