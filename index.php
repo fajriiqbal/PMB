@@ -57,7 +57,7 @@
 <body class="bg-gradient-to-b from-blue-50 to-white">
     <?php
     // PHP variables and data
-    $schoolName = "Westfield Academy";
+    $schoolName = "PMB MTs Sunan Kalijaga Tulung";
     $schoolAddress = "123 Education Street, Learning City";
     $schoolPhone = "(555) 123-4567";
     $schoolEmail = "registration@westfield.edu";
