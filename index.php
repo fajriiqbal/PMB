@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="<?php echo base_url('assets/LOGOMADA.png'); ?>">
+
     <title>PMB-MTs Sunan Kalijaga</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -123,10 +125,10 @@
             <div class="container mx-auto px-4 py-4">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
-                        <div class="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center">
+                        
                            <?php echo '<img src="assets/LOGOMADA.png" alt="Logo" width="100">'; ?>
 
-                        </div>
+                       
                         <h1 class="ml-3 text-xl font-bold text-gray-800"><?php echo $schoolName; ?></h1>
                     </div>
 
