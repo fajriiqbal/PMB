@@ -307,9 +307,9 @@
         <!-- CTA Section -->
         <section class="py-16 bg-blue-600 text-white">
             <div class="container mx-auto px-4 text-center">
-                <h2 class="text-2xl md:text-3xl font-bold mb-4">Ready to Register?</h2>
+                <h2 class="text-2xl md:text-3xl font-bold mb-4">Siap Untuk Bergambung?</h2>
                 <p class="max-w-2xl mx-auto mb-8 text-blue-100">
-                    Complete your registration today to secure your spot for the upcoming school year.
+                    Lengkapi dan bergambung dengan kami.
                 </p>
                 <a 
                     href="https://docs.google.com/forms" 
