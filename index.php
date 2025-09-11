@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="<?php echo base_url('assets/LOGOMADA.png'); ?>">
-
+    
     <title>PMB-MTs Sunan Kalijaga</title>
+    <link rel="icon" type="image/png" href="assets/LOGOMADA.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Custom mobile-app like styling */
