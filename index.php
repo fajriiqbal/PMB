@@ -58,9 +58,9 @@
     <?php
     // PHP variables and data
     $schoolName = "PMB MTs Sunan Kalijaga Tulung";
-    $schoolAddress = "123 Education Street, Learning City";
-    $schoolPhone = "(555) 123-4567";
-    $schoolEmail = "registration@westfield.edu";
+    $schoolAddress = "Jl. Raya Tulung - Ngangkruk,KM 0.1 , Tulung, Klaten";
+    $schoolPhone = "08974333024";
+    $schoolEmail = "mtssunankalijaga01@gmail.com";
     
     $announcements = [
         [
