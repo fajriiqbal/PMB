@@ -309,7 +309,7 @@
             <div class="container mx-auto px-4 text-center">
                 <h2 class="text-2xl md:text-3xl font-bold mb-4">Siap Untuk Bergambung?</h2>
                 <p class="max-w-2xl mx-auto mb-8 text-blue-100">
-                    Lengkapi dan bergambung dengan kami.
+                    Lengkapi dan bergabung dengan kami di <?php $schoolName ?>.
                 </p>
                 <a 
                     href="https://docs.google.com/forms" 
