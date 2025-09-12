@@ -8,6 +8,7 @@
     <link rel="icon" type="image/png" href="assets/LOGOMADA.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* Custom mobile-app like styling */
         @media (max-width: 768px) {
@@ -326,6 +327,18 @@
                 </a>
             </div>
         </section>
+        <!-- Statistik dari Google Sheet -->
+        <section id="stats" class="py-12 bg-gray-50">
+            <div class="container mx-auto px-4">
+                <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-10">
+                    Statistik Pendaftar
+                </h2>
+                <div class="max-w-3xl mx-auto">
+                    <canvas id="registrantChart" height="120"></canvas>
+                </div>
+            </div>
+        </section>
+
 
         <!-- Footer -->
         <footer class="bg-gray-800 text-white py-10">
@@ -401,5 +414,56 @@
             }
         });
     </script>
+    <script>
+    // Ganti dengan link CSV Google Sheets Anda
+    const sheetURL = "https://docs.google.com/spreadsheets/d/1k1cxiIRWcxqkgMHGJ_LFzzn-rCQ_GNvV35VW-jIPPTE/edit?usp=sharing";
+
+    async function loadChart() {
+        const response = await fetch(sheetURL);
+        const csvText = await response.text();
+
+        // Convert CSV ke array
+        const rows = csvText.split("\n").map(r => r.split(","));
+        const labels = [];
+        const values = [];
+
+        // Asumsi format: Nama,Kuantitas
+        for (let i = 1; i < rows.length; i++) {
+            if (rows[i][0] && rows[i][1]) {
+                labels.push(rows[i][0]);
+                values.push(parseInt(rows[i][1]));
+            }
+        }
+
+        const ctx = document.getElementById("registrantChart").getContext("2d");
+        new Chart(ctx, {
+            type: "bar", // bisa diganti 'pie', 'line', dll
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: "Jumlah Pendaftar",
+                    data: values,
+                    backgroundColor: "rgba(37, 99, 235, 0.6)",
+                    borderColor: "rgba(37, 99, 235, 1)",
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true },
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    loadChart();
+</script>
+
 </body>
 </html>
