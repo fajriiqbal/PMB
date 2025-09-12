@@ -179,7 +179,7 @@
         </header>
 
         <!-- Hero Section -->
-        <section class="py-12 md:py-20 animate-fade-in">
+        <!-- <section class="py-12 md:py-20 animate-fade-in">
             <div class="container mx-auto px-4">
                 <div class="max-w-3xl mx-auto text-center">
                     <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
@@ -199,10 +199,10 @@
                     </a>
                 </div>
             </div>
-        </section>
+        </section> -->
 
         <!-- Information Section -->
-        <section id="info" class="py-12 bg-white">
+        <!-- <section id="info" class="py-12 bg-white">
             <div class="container mx-auto px-4">
                 <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-10">
                     Registration Information
@@ -263,10 +263,10 @@
                     <p class="text-blue-600 font-medium">Contact us at <?php echo $schoolEmail; ?> or <?php echo $schoolPhone; ?></p>
                 </div>
             </div>
-        </section>
+        </section> -->
 
         <!-- Key Dates Section -->
-        <section id="dates" class="py-12 bg-gray-50">
+        <!-- <section id="dates" class="py-12 bg-gray-50">
             <div class="container mx-auto px-4">
                 <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-10">
                     Important Dates
@@ -286,10 +286,10 @@
                     </div>
                 </div>
             </div>
-        </section>
+        </section> -->
 
         <!-- Announcements Section -->
-        <section id="announcements" class="py-12 bg-white">
+        <!-- <section id="announcements" class="py-12 bg-white">
             <div class="container mx-auto px-4">
                 <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-10">
                     Latest Announcements
@@ -307,10 +307,10 @@
                     <?php endforeach; ?>
                 </div>
             </div>
-        </section>
+        </section> -->
 
         <!-- CTA Section -->
-        <section class="py-16 bg-blue-600 text-white">
+        <!-- <section class="py-16 bg-blue-600 text-white">
             <div class="container mx-auto px-4 text-center">
                 <h2 class="text-2xl md:text-3xl font-bold mb-4">Siap Untuk Bergambung?</h2>
                 <p class="max-w-2xl mx-auto mb-8 text-blue-100">
@@ -326,7 +326,7 @@
                     <?php echo renderIcon('arrow-right'); ?>
                 </a>
             </div>
-        </section>
+                    </section> -->
         <!-- Statistik dari Google Sheet -->
         <section id="stats" class="py-12 bg-gray-50">
             <div class="container mx-auto px-4">
