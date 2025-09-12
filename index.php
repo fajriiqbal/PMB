@@ -333,9 +333,16 @@
                 <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-10">
                     Statistik Pendaftar
                 </h2>
-                <div class="max-w-3xl mx-auto">
-                    <canvas id="registrantChart" height="120"></canvas>
+                <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <div style="width:300px;">
+                    <canvas id="genderChart"></canvas>
                 </div>
+                <div style="width:300px;">
+                    <canvas id="ponpesChart"></canvas>
+                </div>
+                </div>
+
+                <p id="totalSiswa" class="text-center font-semibold mt-4"></p>
             </div>
         </section>
 
@@ -418,56 +425,76 @@
     // Ganti dengan link CSV Google Sheets Anda
     const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkWDi-X_jfYIUpR04AupM-ubJ-hBT-RO6W9HSyIN5_n15SN_AD1vDNM4CW-GV_4EpIm-9MTgW1iLvl/pub?gid=1123091940&single=true&output=csv";
 
-   async function loadChart() {
-        const response = await fetch(sheetURL);
-        const csvText = await response.text();
+   async function loadStats() {
+    const response = await fetch(sheetURL);
+    const csvText = await response.text();
+    const rows = csvText.split("\n").map(r => r.split(","));
 
-        const rows = csvText.split("\n").map(r => r.split(","));
-        const labels = [];
-        const values = [];
+    // cari index kolom sesuai header
+    const headers = rows[0];
+    const colGender = headers.indexOf("Jenis Kelamin");
+    const colPonpes = headers.indexOf("Pilihan Pondok Pesantren");
 
-        // Asumsi format: Nama,Kuantitas
-        for (let i = 1; i < rows.length; i++) {
-            if (rows[i][0] && rows[i][1]) {
-                labels.push(rows[i][0]);
-                values.push(parseInt(rows[i][1]));
-            }
-        }
+    let total = 0;
+    let male = 0, female = 0;
+    let ponpes = 0, nonponpes = 0;
 
-        // Jika sheet kosong → isi dengan data dummy
-        if (labels.length === 0) {
-            labels.push("Belum ada data");
-            values.push(0);
-        }
+    for (let i = 1; i < rows.length; i++) {
+        const gender = rows[i][colGender]?.trim().toLowerCase();
+        const pondok = rows[i][colPonpes]?.trim().toLowerCase();
 
-        const ctx = document.getElementById("registrantChart").getContext("2d");
-        new Chart(ctx, {
-            type: "bar",
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: "Jumlah Pendaftar",
-                    data: values,
-                    backgroundColor: "rgba(37, 99, 235, 0.6)",
-                    borderColor: "rgba(37, 99, 235, 1)",
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: true },
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
+        if (!gender && !pondok) continue; // skip baris kosong
+        total++;
+
+        // hitung gender
+        if (gender.includes("laki")) male++;
+        else if (gender.includes("perempuan")) female++;
+
+        // hitung ponpes
+        if (pondok === "ya" || pondok === "pondok") ponpes++;
+        else nonponpes++;
     }
 
-    loadChart();
+    // tampilkan total siswa
+    document.getElementById("totalSiswa").textContent = 
+        `Total Siswa Terdaftar: ${total}`;
+
+    // Chart Gender
+    new Chart(document.getElementById("genderChart"), {
+        type: "doughnut",
+        data: {
+            labels: ["Laki-laki", "Perempuan"],
+            datasets: [{
+                data: [male, female],
+                backgroundColor: ["#3b82f6", "#ec4899"]
+            }]
+        },
+        options: {
+            plugins: {
+                title: { display: true, text: "Jenis Kelamin" }
+            }
+        }
+    });
+
+    // Chart Ponpes
+    new Chart(document.getElementById("ponpesChart"), {
+        type: "doughnut",
+        data: {
+            labels: ["Pondok", "Non-Pondok"],
+            datasets: [{
+                data: [ponpes, nonponpes],
+                backgroundColor: ["#10b981", "#f59e0b"]
+            }]
+        },
+        options: {
+            plugins: {
+                title: { display: true, text: "Status Ponpes" }
+            }
+        }
+    });
+}
+
+loadStats();
 </script>
 
 </body>
