@@ -418,11 +418,10 @@
     // Ganti dengan link CSV Google Sheets Anda
     const sheetURL = "https://docs.google.com/spreadsheets/d/1k1cxiIRWcxqkgMHGJ_LFzzn-rCQ_GNvV35VW-jIPPTE/edit?usp=sharing";
 
-    async function loadChart() {
+   async function loadChart() {
         const response = await fetch(sheetURL);
         const csvText = await response.text();
 
-        // Convert CSV ke array
         const rows = csvText.split("\n").map(r => r.split(","));
         const labels = [];
         const values = [];
@@ -435,9 +434,15 @@
             }
         }
 
+        // Jika sheet kosong → isi dengan data dummy
+        if (labels.length === 0) {
+            labels.push("Belum ada data");
+            values.push(0);
+        }
+
         const ctx = document.getElementById("registrantChart").getContext("2d");
         new Chart(ctx, {
-            type: "bar", // bisa diganti 'pie', 'line', dll
+            type: "bar",
             data: {
                 labels: labels,
                 datasets: [{
