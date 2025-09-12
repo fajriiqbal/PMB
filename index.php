@@ -416,7 +416,7 @@
     </script>
     <script>
     // Ganti dengan link CSV Google Sheets Anda
-    const sheetURL = "https://docs.google.com/spreadsheets/d/1k1cxiIRWcxqkgMHGJ_LFzzn-rCQ_GNvV35VW-jIPPTE/edit?usp=sharing";
+    const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkWDi-X_jfYIUpR04AupM-ubJ-hBT-RO6W9HSyIN5_n15SN_AD1vDNM4CW-GV_4EpIm-9MTgW1iLvl/pub?gid=1123091940&single=true&output=csv";
 
    async function loadChart() {
         const response = await fetch(sheetURL);
