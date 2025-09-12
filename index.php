@@ -126,16 +126,16 @@
         <header class="sticky top-0 z-50 bg-white shadow-sm">
             <div class="container mx-auto px-4 py-4">
                 <div class="flex items-center justify-between">
-                    <div class="flex items-center">
+                    <!-- <div class="flex items-center">
                         
                            <?php echo '<img src="assets/LOGOMADA.png" alt="Logo" width="100">'; ?>
 
                        
                         <h1 class="ml-3 text-xl font-bold text-gray-800"><?php echo $schoolName; ?></h1>
-                    </div>
+                    </div> -->
 
                     <!-- Desktop Navigation -->
-                    <nav class="hidden md:flex items-center space-x-6">
+                    <!-- <nav class="hidden md:flex items-center space-x-6">
                         <a href="#info" class="text-gray-600 hover:text-blue-600 transition-colors">Information</a>
                         <a href="#dates" class="text-gray-600 hover:text-blue-600 transition-colors">Key Dates</a>
                         <a href="#announcements" class="text-gray-600 hover:text-blue-600 transition-colors">Announcements</a>
@@ -147,7 +147,7 @@
                         >
                             Register <?php echo renderIcon('arrow-right'); ?>
                         </a>
-                    </nav>
+                    </nav> -->
 
                     <!-- Mobile menu button -->
                     <button 
@@ -159,7 +159,7 @@
                 </div>
 
                 <!-- Mobile Navigation -->
-                <div id="mobileMenu" class="hidden mt-4 md:hidden border-t pt-4">
+                <!-- <div id="mobileMenu" class="hidden mt-4 md:hidden border-t pt-4">
                     <div class="flex flex-col space-y-3">
                         <a href="#info" class="text-gray-600 hover:text-blue-600 py-2" onclick="closeMobileMenu()">Information</a>
                         <a href="#dates" class="text-gray-600 hover:text-blue-600 py-2" onclick="closeMobileMenu()">Key Dates</a>
@@ -174,7 +174,7 @@
                             Register <?php echo renderIcon('arrow-right'); ?>
                         </a>
                     </div>
-                </div>
+                </div> -->
             </div>
         </header>
 
