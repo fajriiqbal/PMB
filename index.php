@@ -63,7 +63,7 @@
     // PHP variables and data
     $schoolName = "PMB MTs Sunan Kalijaga Tulung";
     $schoolAddress = "Jl. Raya Tulung - Ngangkruk,KM 0.1 , Tulung, Klaten";
-    $schoolPhone = "08974333024";
+    $schoolPhone = "082241509229";
     $schoolEmail = "mtssunankalijaga01@gmail.com";
     
     $announcements = [
@@ -368,7 +368,7 @@
                 </div>
                 
                 <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-                    <p>© 2023 <?php echo $schoolName; ?>. All rights reserved.</p>
+                    <p>© 2025 <?php echo $schoolName; ?>. IT Madsuka.</p>
                 </div>
             </div>
         </footer>
