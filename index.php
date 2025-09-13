@@ -356,7 +356,7 @@
       <table class="min-w-full bg-white border border-gray-200 rounded-lg">
         <thead class="bg-blue-600 text-white">
           <tr>
-            <th class="px-4 py-2 text-left">Tanggal</th>
+            <th class="px-4 py-2 text-left">Nomor</th>
             <th class="px-4 py-2 text-left">Nama</th>
             <th class="px-4 py-2 text-left">Jenis Kelamin</th>
             <th class="px-4 py-2 text-left">Pilihan Pondok</th>
