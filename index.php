@@ -328,47 +328,77 @@
             </div>
                     </section> -->
         <!-- Statistik dari Google Sheet -->
-        <section id="stats" class="py-12 bg-gray-50">
-            <div class="container mx-auto px-4">
-                <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-10">
-                    Statistik Pendaftar
-                </h2>
-                <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-                <div style="width:300px;">
-                    <canvas id="genderChart"></canvas>
-                </div>
-                <div style="width:300px;">
-                    <canvas id="ponpesChart"></canvas>
-                </div>
-                </div>
+       <!-- Statistik Pendaftar -->
+<section id="stats" class="py-12 bg-gray-50">
+  <div class="container mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center text-gray-800 mb-10">
+      Statistik Pendaftar
+    </h2>
 
-                <p id="totalSiswa" class="text-center font-semibold mt-4"></p>
-            </div>
-        </section>
+    <!-- Grid untuk Chart -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+      <!-- Card Gender -->
+      <div class="bg-white shadow-lg rounded-2xl p-6">
+        <h3 class="text-lg font-semibold text-gray-700 mb-4 text-center">
+          Jenis Kelamin
+        </h3>
+        <canvas id="genderChart"></canvas>
+      </div>
+
+      <!-- Card Pondok -->
+      <div class="bg-white shadow-lg rounded-2xl p-6">
+        <h3 class="text-lg font-semibold text-gray-700 mb-4 text-center">
+          Pilihan Pondok Pesantren
+        </h3>
+        <canvas id="ponpesChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Total -->
+    <div class="mt-10 text-center">
+      <span
+        id="totalSiswa"
+        class="inline-block bg-blue-600 text-white font-bold py-3 px-6 rounded-full shadow-md"
+      >
+        Total Siswa Terdaftar: 0
+      </span>
+    </div>
+  </div>
+</section>
+
 <!-- Daftar Pendaftar -->
 <section id="pendaftar" class="py-12 bg-white">
   <div class="container mx-auto px-4">
-    <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-10">
+    <h2 class="text-3xl font-bold text-center text-gray-800 mb-10">
       Data Pendaftar
     </h2>
 
-    <div class="overflow-x-auto shadow-md rounded-lg">
-      <table class="min-w-full bg-white border border-gray-200 rounded-lg">
-        <thead class="bg-blue-600 text-white">
+    <div class="overflow-x-auto bg-white shadow-lg rounded-2xl">
+      <table class="min-w-full border-collapse">
+        <thead class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
           <tr>
-            <th class="px-4 py-2 text-left">Nomor</th>
-            <th class="px-4 py-2 text-left">Nama</th>
-            <th class="px-4 py-2 text-left">Jenis Kelamin</th>
-            <th class="px-4 py-2 text-left">Pilihan Pondok</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
+              Nomor
+            </th>
+            <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
+              Nama
+            </th>
+            <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
+              Jenis Kelamin
+            </th>
+            <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
+              Pilihan Pondok
+            </th>
           </tr>
         </thead>
-        <tbody id="pendaftarTable" class="text-gray-700">
-          <!-- Data akan diisi lewat JavaScript -->
+        <tbody id="pendaftarTable" class="divide-y divide-gray-200 text-sm">
+          <!-- Data dari JavaScript -->
         </tbody>
       </table>
     </div>
   </div>
 </section>
+
 
         <!-- Footer -->
         <!-- <footer class="bg-gray-800 text-white py-10">
