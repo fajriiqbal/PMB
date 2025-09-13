@@ -345,7 +345,30 @@
                 <p id="totalSiswa" class="text-center font-semibold mt-4"></p>
             </div>
         </section>
+<!-- Daftar Pendaftar -->
+<section id="pendaftar" class="py-12 bg-white">
+  <div class="container mx-auto px-4">
+    <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-10">
+      Data Pendaftar
+    </h2>
 
+    <div class="overflow-x-auto shadow-md rounded-lg">
+      <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+        <thead class="bg-blue-600 text-white">
+          <tr>
+            <th class="px-4 py-2 text-left">Tanggal</th>
+            <th class="px-4 py-2 text-left">Nama</th>
+            <th class="px-4 py-2 text-left">Jenis Kelamin</th>
+            <th class="px-4 py-2 text-left">Pilihan Pondok</th>
+          </tr>
+        </thead>
+        <tbody id="pendaftarTable" class="text-gray-700">
+          <!-- Data akan diisi lewat JavaScript -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
 
         <!-- Footer -->
         <!-- <footer class="bg-gray-800 text-white py-10">
@@ -431,6 +454,7 @@
     const rows = csvText.split("\n").map(r => r.split(","));
 
     const headers = rows[0].map(h => h.trim());
+    const colNama = headers.indexOf("Nama Siswa");
     const colGender = headers.indexOf("Jenis Kelamin");
     const colPonpes = headers.indexOf("Pilihan Pondok Pesantren");
 
@@ -438,11 +462,16 @@
     let male = 0, female = 0;
     let ponpesCounts = {};
 
+    // 🔹 referensi tbody tabel
+    const tbody = document.getElementById("pendaftarTable");
+    if (tbody) tbody.innerHTML = "";
+
     for (let i = 1; i < rows.length; i++) {
+        const nama = rows[i][colNama]?.trim();
         const gender = rows[i][colGender]?.trim().toLowerCase();
         const pondok = rows[i][colPonpes]?.trim();
 
-        if (!gender && !pondok) continue;
+        if (!nama) continue; // skip baris kosong
         total++;
 
         // hitung gender
@@ -456,6 +485,18 @@
             } else {
                 ponpesCounts[pondok] = 1;
             }
+        }
+
+        // isi tabel
+        if (tbody) {
+            let tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td class="border px-4 py-2">${i}</td>
+                <td class="border px-4 py-2">${nama}</td>
+                <td class="border px-4 py-2">${rows[i][colGender] || ""}</td>
+                <td class="border px-4 py-2">${pondok || ""}</td>
+            `;
+            tbody.appendChild(tr);
         }
     }
 
@@ -505,6 +546,7 @@
 }
 
 loadStats();
+
 </script>
 
 </body>
