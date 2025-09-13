@@ -466,7 +466,7 @@
     new Chart(document.getElementById("genderChart"), {
         type: "doughnut",
         data: {
-            labels: ["Laki-laki", "Perempuan"],
+            labels: ["Laki-Laki", "Perempuan"],
             datasets: [{
                 data: [male, female],
                 backgroundColor: ["#3b82f6", "#ec4899"]
