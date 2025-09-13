@@ -329,7 +329,7 @@
                     </section> -->
         <!-- Statistik dari Google Sheet -->
        <!-- Statistik Pendaftar -->
-<section id="stats" class="py-12 bg-gray-50">
+<!-- <section id="stats" class="py-12 bg-gray-50">
   <div class="container mx-auto px-4">
     <h2 class="text-3xl font-bold text-center text-gray-800 mb-10">
       Statistik Pendaftar
@@ -364,10 +364,10 @@
       </span>
     </div>
   </div>
-</section>
+</section> 
 
 <!-- Daftar Pendaftar -->
-<section id="pendaftar" class="py-12 bg-white">
+<!-- <section id="pendaftar" class="py-12 bg-white">
   <div class="container mx-auto px-4">
     <h2 class="text-3xl font-bold text-center text-gray-800 mb-10">
       Data Pendaftar
@@ -395,6 +395,83 @@
           <!-- Data dari JavaScript -->
         </tbody>
       </table>
+    </div>
+  </div>
+</section> 
+
+<!-- Statistik Pendaftar -->
+<section id="stats" class="py-8 bg-gray-100 min-h-screen">
+  <div class="container mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">
+      Statistik Pendaftar
+    </h2>
+
+    <!-- Grid Chart -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Gender -->
+      <div class="bg-white shadow-lg rounded-2xl p-6">
+        <h3 class="text-lg font-semibold text-gray-700 mb-4 text-center">
+          Jenis Kelamin
+        </h3>
+        <canvas id="genderChart" class="w-full max-h-72"></canvas>
+      </div>
+
+      <!-- Pondok -->
+      <div class="bg-white shadow-lg rounded-2xl p-6">
+        <h3 class="text-lg font-semibold text-gray-700 mb-4 text-center">
+          Pilihan Pondok Pesantren
+        </h3>
+        <canvas id="ponpesChart" class="w-full max-h-72"></canvas>
+      </div>
+    </div>
+
+    <!-- Total siswa -->
+    <div class="mt-8 text-center">
+      <span
+        id="totalSiswa"
+        class="inline-block bg-blue-600 text-white font-bold py-3 px-6 rounded-full shadow-md"
+      >
+        Total Siswa Terdaftar: 0
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- Data Pendaftar -->
+<section id="pendaftar" class="py-12 bg-white">
+  <div class="container mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center text-gray-800 mb-10">
+      Data Pendaftar
+    </h2>
+
+    <!-- 📊 Tabel Desktop -->
+    <div class="hidden md:block overflow-x-auto shadow rounded-2xl">
+      <table class="min-w-full border-collapse">
+        <thead class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+          <tr>
+            <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
+              Nomor
+            </th>
+            <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
+              Nama
+            </th>
+            <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
+              Jenis Kelamin
+            </th>
+            <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
+              Pilihan Pondok
+            </th>
+          </tr>
+        </thead>
+        <tbody id="pendaftarTable" class="divide-y divide-gray-200 text-sm text-gray-700">
+          <!-- Diisi dari JavaScript -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 📱 Card List Mobile -->
+    <div id="pendaftarList" class="space-y-4 md:hidden">
+      <!-- Diisi dari JavaScript -->
     </div>
   </div>
 </section>
@@ -573,6 +650,42 @@
             }
         }
     });
+    const tbody = document.getElementById("pendaftarTable");
+const listContainer = document.getElementById("pendaftarList");
+if (tbody) tbody.innerHTML = "";
+if (listContainer) listContainer.innerHTML = "";
+
+for (let i = 1; i < rows.length; i++) {
+  const nama = rows[i][colNama]?.trim();
+  const genderText = rows[i][colGender] || "-";
+  const pondok = rows[i][colPonpes] || "-";
+  if (!nama) continue;
+
+  // ---- Isi tabel (desktop)
+  if (tbody) {
+    let tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="px-6 py-3">${i}</td>
+      <td class="px-6 py-3">${nama}</td>
+      <td class="px-6 py-3">${genderText}</td>
+      <td class="px-6 py-3">${pondok}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+
+  // ---- Isi list (mobile)
+  if (listContainer) {
+    let card = document.createElement("div");
+    card.className = "bg-gray-50 rounded-xl shadow p-4";
+    card.innerHTML = `
+      <p class="font-semibold text-gray-800">${i}. ${nama}</p>
+      <p class="text-sm text-gray-600">Gender: ${genderText}</p>
+      <p class="text-sm text-gray-600">Pondok: ${pondok}</p>
+    `;
+    listContainer.appendChild(card);
+  }
+}
+
 }
 
 loadStats();
