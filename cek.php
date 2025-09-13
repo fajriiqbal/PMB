@@ -217,4 +217,5 @@
                         <p class="text-gray-400">Email: <?php echo $schoolEmail; ?></p>
                     </div>
                 </div>
+                const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkWDi-X_jfYIUpR04AupM-ubJ-hBT-RO6W9HSyIN5_n15SN_AD1vDNM4CW-GV_4EpIm-9MTgW1iLvl/pub?gid=1123091940&single=true&output=csv";
         </section>
