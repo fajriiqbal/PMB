@@ -480,10 +480,10 @@
     new Chart(document.getElementById("ponpesChart"), {
         type: "doughnut",
         data: {
-            labels: ["Pondok", "Non-Pondok"],
+            labels: ["Pondok", "Non-Pondok", "Pondok Pesantren AN Najah Dawar", "Pondok Pesantren Nurush Shobah 3 Selogringging", "Pondok Pesantren Kyai Ageng Selo Gringging", "Pondok Pesantren Darut Tauhid Majegan", "Pondok Pesantren Al Qohar Pulon", "MK Nurudholam AdDanuriyah Sepet", "Pondok Pesantren Al Mubarok Karang Lor",],
             datasets: [{
-                data: [ponpes, nonponpes],
-                backgroundColor: ["#10b981", "#f59e0b"]
+                data: [ponpes, nonponpes, Pondok Pesantren AN Najah Dawar, Pondok Pesantren Nurush Shobah 3 Selogringging, Pondok Pesantren Kyai Ageng Selo Gringging, Pondok Pesantren Darut Tauhid Majegan, Pondok Pesantren Al Qohar Pulon, MK Nurudholam AdDanuriyah Sepet, Pondok Pesantren Al Mubarok Karang Lor,],
+                backgroundColor: ["#10b981", "#f59e0b", "#2bf264ff", "#def50bff", "#f5780bff", "#b62217ff", "#5f0505ff"]
             }]
         },
         options: {
