@@ -374,7 +374,7 @@
         </footer> -->
 
         <!-- Floating Register Button for Mobile -->
-        <?php if ($isMobile): ?>
+        <!-- <?php if ($isMobile): ?>
         <div class="floating-button">
             <a 
                 href="https://docs.google.com/forms" 
@@ -386,7 +386,7 @@
             </a>
         </div>
         <?php endif; ?>
-    </div>
+    </div> -->
 
     <script>
         // Mobile menu functionality
@@ -447,8 +447,8 @@
         total++;
 
         // hitung gender
-        if (gender.includes("laki")) male++;
-        else if (gender.includes("perempuan")) female++;
+        if (gender.includes("Laki-Laki")) male++;
+        else if (gender.includes("Perempuan")) female++;
 
         // hitung ponpes
         if (pondok === "ya" || pondok === "pondok") ponpes++;
@@ -463,7 +463,7 @@
     new Chart(document.getElementById("genderChart"), {
         type: "doughnut",
         data: {
-            labels: ["Laki-laki", "Perempuan"],
+            labels: ["Laki-Laki", "Perempuan"],
             datasets: [{
                 data: [male, female],
                 backgroundColor: ["#3b82f6", "#ec4899"]
