@@ -446,8 +446,8 @@
         total++;
 
         // hitung gender
-        if (gender.includes("Laki-Laki")) male++;
-        else if (gender.includes("Perempuan")) female++;
+        if (gender.includes("laki")) male++;
+        else if (gender.includes("perempuan")) female++;
 
         // hitung pondok
         if (pondok) {
