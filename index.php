@@ -430,40 +430,43 @@
     const csvText = await response.text();
     const rows = csvText.split("\n").map(r => r.split(","));
 
-    // cari index kolom sesuai header
-    const headers = rows[0];
+    const headers = rows[0].map(h => h.trim());
     const colGender = headers.indexOf("Jenis Kelamin");
     const colPonpes = headers.indexOf("Pilihan Pondok Pesantren");
 
     let total = 0;
     let male = 0, female = 0;
-    let ponpes = 0, nonponpes = 0;
+    let ponpesCounts = {};
 
     for (let i = 1; i < rows.length; i++) {
         const gender = rows[i][colGender]?.trim().toLowerCase();
-        const pondok = rows[i][colPonpes]?.trim().toLowerCase();
+        const pondok = rows[i][colPonpes]?.trim();
 
-        if (!gender && !pondok) continue; // skip baris kosong
+        if (!gender && !pondok) continue;
         total++;
 
         // hitung gender
-        if (gender.includes("Laki-Laki")) male++;
-        else if (gender.includes("Perempuan")) female++;
+        if (gender.includes("laki")) male++;
+        else if (gender.includes("perempuan")) female++;
 
-        // hitung ponpes
-        if (pondok === "ya" || pondok === "pondok") ponpes++;
-        else nonponpes++;
+        // hitung pondok
+        if (pondok) {
+            if (ponpesCounts[pondok]) {
+                ponpesCounts[pondok]++;
+            } else {
+                ponpesCounts[pondok] = 1;
+            }
+        }
     }
 
-    // tampilkan total siswa
-    document.getElementById("totalSiswa").textContent = 
-        `Total Siswa Terdaftar: ${total}`;
+    // tampilkan total
+    document.getElementById("totalSiswa").textContent = `Total Siswa Terdaftar: ${total}`;
 
     // Chart Gender
     new Chart(document.getElementById("genderChart"), {
         type: "doughnut",
         data: {
-            labels: ["Laki-Laki", "Perempuan"],
+            labels: ["Laki-laki", "Perempuan"],
             datasets: [{
                 data: [male, female],
                 backgroundColor: ["#3b82f6", "#ec4899"]
@@ -476,19 +479,26 @@
         }
     });
 
-    // Chart Ponpes
+    // Data untuk pondok
+    const ponpesLabels = Object.keys(ponpesCounts);
+    const ponpesValues = Object.values(ponpesCounts);
+
+    // Chart Pondok
     new Chart(document.getElementById("ponpesChart"), {
         type: "doughnut",
         data: {
-            labels: ["Pondok", "Non-Pondok", "Pondok Pesantren AN Najah Dawar", "Pondok Pesantren Nurush Shobah 3 Selogringging", "Pondok Pesantren Kyai Ageng Selo Gringging", "Pondok Pesantren Darut Tauhid Majegan", "Pondok Pesantren Al Qohar Pulon", "MK Nurudholam AdDanuriyah Sepet", "Pondok Pesantren Al Mubarok Karang Lor",],
+            labels: ponpesLabels,
             datasets: [{
-                data: [ponpes, nonponpes, Pondok Pesantren AN Najah Dawar, Pondok Pesantren Nurush Shobah 3 Selogringging, Pondok Pesantren Kyai Ageng Selo Gringging, Pondok Pesantren Darut Tauhid Majegan, Pondok Pesantren Al Qohar Pulon, MK Nurudholam AdDanuriyah Sepet, Pondok Pesantren Al Mubarok Karang Lor,],
-                backgroundColor: ["#10b981", "#f59e0b", "#2bf264ff", "#def50bff", "#f5780bff", "#b62217ff", "#5f0505ff"]
+                data: ponpesValues,
+                backgroundColor: [
+                    "#10b981", "#f59e0b", "#3b82f6", "#ef4444", "#8b5cf6",
+                    "#ec4899", "#22c55e", "#eab308", "#06b6d4", "#f97316"
+                ]
             }]
         },
         options: {
             plugins: {
-                title: { display: true, text: "Status Ponpes" }
+                title: { display: true, text: "Pilihan Pondok Pesantren" }
             }
         }
     });
