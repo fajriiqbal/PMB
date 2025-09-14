@@ -556,7 +556,7 @@
 
     // Chart Pondok
     new Chart(document.getElementById("ponpesChart"), {
-        type: "doughnut",
+        type: "bar",
         data: {
             labels: ponpesLabels,
             datasets: [{
