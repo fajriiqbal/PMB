@@ -481,7 +481,8 @@
    async function loadStats() {
     const response = await fetch(sheetURL);
     const csvText = await response.text();
-    const rows = csvText.split("\n").map(r => r.split(","));
+    const rows = csvText.split("\n").map(r =>
+        r.split(",").map(c => c.replace(/^"|"$/g, '').trim()));
 
     const headers = rows[0].map(h => h.trim());
     const colNama = headers.indexOf("Nama Siswa");
