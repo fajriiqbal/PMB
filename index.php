@@ -507,7 +507,7 @@ async function loadStats() {
         total++;
 
         // hitung gender
-        if (gender === "laki") male++;
+        if (gender === "laki-laki") male++;
         else if (gender === "perempuan") female++;
 
         // hitung pondok
