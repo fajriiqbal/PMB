@@ -475,17 +475,19 @@
         });
     </script>
     <script>
-    // Ganti dengan link CSV Google Sheets Anda
-    const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkWDi-X_jfYIUpR04AupM-ubJ-hBT-RO6W9HSyIN5_n15SN_AD1vDNM4CW-GV_4EpIm-9MTgW1iLvl/pub?gid=1123091940&single=true&output=csv";
+const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkWDi-X_jfYIUpR04AupM-ubJ-hBT-RO6W9HSyIN5_n15SN_AD1vDNM4CW-GV_4EpIm-9MTgW1iLvl/pub?gid=1123091940&single=true&output=csv";
 
-   async function loadStats() {
+async function loadStats() {
     const response = await fetch(sheetURL);
     const csvText = await response.text();
-    const rows = csvText.split("\n").map(r =>
-        r.split(",").map(c => c.replace(/^"|"$/g, '').trim()));
 
-    const headers = rows[0].map(h => h.trim());
-    const colNama = headers.indexOf("Nama Siswa");
+    // split CSV dan bersihkan tanda kutip
+    const rows = csvText.split("\n").map(r =>
+        r.split(",").map(c => c.replace(/^"|"$/g, '').trim())
+    );
+
+    const headers = rows[0];
+    const colNama   = headers.indexOf("Nama Siswa");
     const colGender = headers.indexOf("Jenis Kelamin");
     const colPonpes = headers.indexOf("Pilihan Pondok Pesantren");
 
@@ -493,29 +495,24 @@
     let male = 0, female = 0;
     let ponpesCounts = {};
 
-    // 🔹 referensi tbody tabel
     const tbody = document.getElementById("pendaftarTable");
     if (tbody) tbody.innerHTML = "";
 
     for (let i = 1; i < rows.length; i++) {
-        const nama = rows[i][colNama]?.trim();
-        const gender = rows[i][colGender]?.trim().toLowerCase();
-        const pondok = rows[i][colPonpes]?.trim();
+        const nama   = rows[i][colNama]   || "";
+        const gender = (rows[i][colGender] || "").toLowerCase();
+        const pondok = rows[i][colPonpes] || "";
 
-        if (!nama) continue; // skip baris kosong
+        if (!nama) continue;
         total++;
 
         // hitung gender
-        if (gender.includes("Laki-Laki")) male++;
-        else if (gender.includes("Perempuan")) female++;
+        if (gender === "laki-laki") male++;
+        else if (gender === "perempuan") female++;
 
         // hitung pondok
         if (pondok) {
-            if (ponpesCounts[pondok]) {
-                ponpesCounts[pondok]++;
-            } else {
-                ponpesCounts[pondok] = 1;
-            }
+            ponpesCounts[pondok] = (ponpesCounts[pondok] || 0) + 1;
         }
 
         // isi tabel
@@ -525,13 +522,12 @@
                 <td class="border px-4 py-2">${i}</td>
                 <td class="border px-4 py-2">${nama}</td>
                 <td class="border px-4 py-2">${rows[i][colGender] || ""}</td>
-                <td class="border px-4 py-2">${pondok || ""}</td>
+                <td class="border px-4 py-2">${pondok}</td>
             `;
             tbody.appendChild(tr);
         }
     }
 
-    // tampilkan total
     document.getElementById("totalSiswa").textContent = `Total Siswa Terdaftar: ${total}`;
 
     // Chart Gender
@@ -551,11 +547,10 @@
         }
     });
 
-    // Data untuk pondok
+    // Chart Pondok
     const ponpesLabels = Object.keys(ponpesCounts);
     const ponpesValues = Object.values(ponpesCounts);
 
-    // Chart Pondok
     new Chart(document.getElementById("ponpesChart"), {
         type: "doughnut",
         data: {
@@ -577,8 +572,8 @@
 }
 
 loadStats();
-
 </script>
+
 
 </body>
 </html>
