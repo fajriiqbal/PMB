@@ -474,22 +474,27 @@
             }
         });
     </script>
-    <script>
+   <script>
 const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkWDi-X_jfYIUpR04AupM-ubJ-hBT-RO6W9HSyIN5_n15SN_AD1vDNM4CW-GV_4EpIm-9MTgW1iLvl/pub?gid=1123091940&single=true&output=csv";
 
 async function loadStats() {
     const response = await fetch(sheetURL);
     const csvText = await response.text();
 
-    // split CSV dan bersihkan tanda kutip
+    // split CSV + bersihkan spasi & tanda kutip
     const rows = csvText.split("\n").map(r =>
         r.split(",").map(c => c.replace(/^"|"$/g, '').trim())
     );
 
-    const headers = rows[0];
-    const colNama   = headers.indexOf("Nama Siswa");
-    const colGender = headers.indexOf("Jenis Kelamin");
-    const colPonpes = headers.indexOf("Pilihan Pondok Pesantren");
+    // bersihkan header juga
+    const headers = rows[0].map(h => h.trim());
+    console.log("Headers:", headers);
+
+    const colNama   = headers.findIndex(h => h.toLowerCase() === "nama siswa");
+    const colGender = headers.findIndex(h => h.toLowerCase() === "jenis kelamin");
+    const colPonpes = headers.findIndex(h => h.toLowerCase() === "pilihan pondok pesantren");
+
+    console.log("Index Nama:", colNama, "Gender:", colGender, "Ponpes:", colPonpes);
 
     let total = 0;
     let male = 0, female = 0;
@@ -500,22 +505,20 @@ async function loadStats() {
 
     for (let i = 1; i < rows.length; i++) {
         const nama   = rows[i][colNama]   || "";
-        const gender = (rows[i][colGender] || "").toLowerCase();
+        const gender = (rows[i][colGender] || "").trim().toLowerCase();
         const pondok = rows[i][colPonpes] || "";
 
         if (!nama) continue;
         total++;
 
-        // hitung gender
-        if (gender === "laki-laki") male++;
-        else if (gender === "perempuan") female++;
+        // hitung gender (biar fleksibel)
+        if (gender.includes("laki")) male++;
+        else if (gender.includes("perempuan")) female++;
 
-        // hitung pondok
         if (pondok) {
             ponpesCounts[pondok] = (ponpesCounts[pondok] || 0) + 1;
         }
 
-        // isi tabel
         if (tbody) {
             let tr = document.createElement("tr");
             tr.innerHTML = `
@@ -539,11 +542,6 @@ async function loadStats() {
                 data: [male, female],
                 backgroundColor: ["#3b82f6", "#ec4899"]
             }]
-        },
-        options: {
-            plugins: {
-                title: { display: true, text: "Jenis Kelamin" }
-            }
         }
     });
 
@@ -562,17 +560,13 @@ async function loadStats() {
                     "#ec4899", "#22c55e", "#eab308", "#06b6d4", "#f97316"
                 ]
             }]
-        },
-        options: {
-            plugins: {
-                title: { display: true, text: "Pilihan Pondok Pesantren" }
-            }
         }
     });
 }
 
 loadStats();
 </script>
+
 
 
 </body>
