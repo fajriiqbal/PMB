@@ -507,6 +507,7 @@ async function loadStats() {
     for (let i = 1; i < rows.length; i++) {
         const nama   = rows[i][colNama]   || "";
         const gender = (rows[i][colGender] || "").trim().toLowerCase();
+        console.log("Row", i, "Gender:", gender);
         const pondok = rows[i][colPonpes] || "";
 
         if (!nama) continue;
