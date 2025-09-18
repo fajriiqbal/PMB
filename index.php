@@ -495,7 +495,6 @@ async function loadStats() {
     const colPonpes = headers.findIndex(h => h.toLowerCase() === "pilihan pondok pesantren");
 
     console.log("Index Nama:", colNama, "Gender:", colGender, "Ponpes:", colPonpes);
-    
 
     let total = 0;
     let male = 0, female = 0;
@@ -505,17 +504,19 @@ async function loadStats() {
     if (tbody) tbody.innerHTML = "";
 
     for (let i = 1; i < rows.length; i++) {
-        const nama   = rows[i][colNama]   || "";
-        const gender = (rows[i][colGender] || "").trim().toLowerCase();
-        console.log("Row", i, "Gender:", gender);
-        const pondok = rows[i][colPonpes] || "";
+        const nama   = (rows[i][colNama]   || "").trim();
+        const genderRaw = rows[i][colGender] || "";
+        const gender = genderRaw.replace(/\r/g, "").trim(); // ✅ bersihin CR+LF
+        const pondok = (rows[i][colPonpes] || "").trim();
+
+        console.log(`Row ${i} Nama: "${nama}", Gender RAW: "${genderRaw}", Clean: "${gender}"`);
 
         if (!nama) continue;
         total++;
 
-        // hitung gender (biar fleksibel)
-        if (gender.includes("laki")) male++;
-        else if (gender.includes("perempuan")) female++;
+        // hitung gender (lebih fleksibel)
+        if (gender.toLowerCase().includes("laki")) male++;
+        else if (gender.toLowerCase().includes("perempuan")) female++;
 
         if (pondok) {
             ponpesCounts[pondok] = (ponpesCounts[pondok] || 0) + 1;
@@ -526,7 +527,7 @@ async function loadStats() {
             tr.innerHTML = `
                 <td class="border px-4 py-2">${i}</td>
                 <td class="border px-4 py-2">${nama}</td>
-                <td class="border px-4 py-2">${gender}</td>
+                <td class="border px-4 py-2">${gender}</td>   <!-- ✅ pakai gender bersih -->
                 <td class="border px-4 py-2">${pondok}</td>
             `;
             tbody.appendChild(tr);
