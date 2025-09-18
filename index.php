@@ -495,8 +495,7 @@ async function loadStats() {
     const colPonpes = headers.findIndex(h => h.toLowerCase() === "pilihan pondok pesantren");
 
     console.log("Index Nama:", colNama, "Gender:", colGender, "Ponpes:", colPonpes);
-    console.log(rows[i]);
-
+    
 
     let total = 0;
     let male = 0, female = 0;
