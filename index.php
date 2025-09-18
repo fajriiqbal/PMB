@@ -389,6 +389,9 @@
             <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
               Pilihan Pondok
             </th>
+            <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
+              Nomor Hp
+            </th>
           </tr>
         </thead>
         <tbody id="pendaftarTable" class="divide-y divide-gray-200 text-sm">
