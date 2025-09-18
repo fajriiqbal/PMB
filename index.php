@@ -507,7 +507,10 @@ async function loadStats() {
         const nama   = rows[i][colNama]   || "";
         const gender = (rows[i][colGender] || "").trim().toLowerCase();
         const pondok = rows[i][colPonpes] || "";
-        const hp     = (rows[i][colHp] || "").replace(/[^0-9]/g, ""); // hanya angka
+        const hpRaw = rows[i][colHp] || "";let hp = hpRaw.replace(/[^0-9]/g, "");
+        if (hp.startsWith("0")) {
+             hp = "62" + hp.substring(1); // ubah 08xxx → 62xxx
+            }
 
         if (!nama) continue;
         total++;
