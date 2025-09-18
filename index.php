@@ -373,6 +373,22 @@
       Data Pendaftar
     </h2>
 
+    <!-- 🔎 Search bar -->
+    <div class="mb-4 flex flex-col sm:flex-row items-center gap-3">
+      <input 
+        type="text" 
+        id="searchInput" 
+        placeholder="Cari siswa..." 
+        class="border border-gray-300 px-3 py-2 rounded-lg w-full sm:w-1/2 focus:ring-2 focus:ring-blue-500"
+      >
+      <button 
+        id="broadcastBtn" 
+        class="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition"
+      >
+        WhatsApp Grup
+      </button>
+    </div>
+
     <div class="overflow-x-auto bg-white shadow-lg rounded-2xl">
       <table class="min-w-full border-collapse">
         <thead class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
@@ -390,7 +406,13 @@
               Pilihan Pondok
             </th>
             <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
-              Nomor Hp
+              Nomor HP
+            </th>
+            <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
+              Status Berkas
+            </th>
+            <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
+              Kontak
             </th>
           </tr>
         </thead>
@@ -399,6 +421,8 @@
         </tbody>
       </table>
     </div>
+
+    <p id="totalSiswa" class="mt-4 text-lg font-semibold text-gray-700"></p>
   </div>
 </section>
 
@@ -480,6 +504,8 @@
   <script>
 const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkWDi-X_jfYIUpR04AupM-ubJ-hBT-RO6W9HSyIN5_n15SN_AD1vDNM4CW-GV_4EpIm-9MTgW1iLvl/pub?gid=1123091940&single=true&output=csv";
 
+let globalData = []; // simpan data untuk search & broadcast
+
 async function loadStats() {
     const response = await fetch(sheetURL);
     const csvText = await response.text();
@@ -495,6 +521,9 @@ async function loadStats() {
     const colGender = headers.findIndex(h => h.toLowerCase() === "jenis kelamin");
     const colPonpes = headers.findIndex(h => h.toLowerCase() === "pilihan pondok pesantren");
     const colHp     = headers.findIndex(h => h.toLowerCase() === "nomor hp orang tua");
+    const colKK     = headers.findIndex(h => h.toLowerCase().includes("kartu keluarga"));
+    const colAkte   = headers.findIndex(h => h.toLowerCase().includes("akte"));
+    const colKIP    = headers.findIndex(h => h.toLowerCase().includes("kartu sakti"));
 
     let total = 0;
     let male = 0, female = 0;
@@ -502,15 +531,21 @@ async function loadStats() {
 
     const tbody = document.getElementById("pendaftarTable");
     if (tbody) tbody.innerHTML = "";
+    globalData = [];
 
     for (let i = 1; i < rows.length; i++) {
         const nama   = rows[i][colNama]   || "";
         const gender = (rows[i][colGender] || "").trim().toLowerCase();
         const pondok = rows[i][colPonpes] || "";
-        const hpRaw = rows[i][colHp] || "";let hp = hpRaw.replace(/[^0-9]/g, "");
+        const hpRaw  = rows[i][colHp]     || "";
+        let hp = hpRaw.replace(/[^0-9]/g, "");
         if (hp.startsWith("0")) {
-             hp = "62" + hp.substring(1); // ubah 08xxx → 62xxx
-            }
+            hp = "62" + hp.substring(1);
+        }
+
+        const kk   = rows[i][colKK]  || "";
+        const akte = rows[i][colAkte]|| "";
+        const kip  = rows[i][colKIP] || "";
 
         if (!nama) continue;
         total++;
@@ -522,9 +557,18 @@ async function loadStats() {
             ponpesCounts[pondok] = (ponpesCounts[pondok] || 0) + 1;
         }
 
+        // status berkas
+        let statusBerkas = `<span class="text-red-500 font-bold">❌ Belum Lengkap</span>`;
+        if (kk && akte && kip) {
+            statusBerkas = `<span class="text-green-600 font-bold">✅ Lengkap</span>`;
+        }
+
         // teks pesan default
         const pesan = `Halo, kami dari Panitia Pendaftaran MTs Sunan Kalijaga Tulung. Kami ingin mengonfirmasi data pendaftaran atas nama ${nama}.`;
         const linkWA = hp ? `https://wa.me/${hp}?text=${encodeURIComponent(pesan)}` : "";
+
+        // cek riwayat kontak
+        let contacted = localStorage.getItem("contacted_" + hp) ? "✔️" : "";
 
         if (tbody) {
             let tr = document.createElement("tr");
@@ -533,12 +577,16 @@ async function loadStats() {
                 <td class="border px-4 py-2">${nama}</td>
                 <td class="border px-4 py-2">${rows[i][colGender] || ""}</td>
                 <td class="border px-4 py-2">${pondok}</td>
+                <td class="border px-4 py-2">${hpRaw}</td>
+                <td class="border px-4 py-2">${statusBerkas}</td>
                 <td class="border px-4 py-2">
-                    ${hp ? `<a href="${linkWA}" target="_blank" class="bg-green-500 text-white px-3 py-1 rounded">Hubungi</a>` : "-"}
+                    ${hp ? `<a href="${linkWA}" target="_blank" class="bg-green-500 text-white px-3 py-1 rounded" onclick="markContacted('${hp}')">Hubungi</a>` : "-"} ${contacted}
                 </td>
             `;
             tbody.appendChild(tr);
         }
+
+        globalData.push({nama, gender, pondok, hp, linkWA});
     }
 
     document.getElementById("totalSiswa").textContent = `Total Siswa Terdaftar: ${total}`;
@@ -571,6 +619,31 @@ async function loadStats() {
         }
     });
 }
+
+// tandai sudah dihubungi
+function markContacted(num) {
+    localStorage.setItem("contacted_" + num, true);
+}
+
+// fitur search
+document.getElementById("searchInput").addEventListener("keyup", function() {
+    const filter = this.value.toLowerCase();
+    const rows = document.querySelectorAll("#pendaftarTable tr");
+    rows.forEach(r => {
+        const text = r.innerText.toLowerCase();
+        r.style.display = text.includes(filter) ? "" : "none";
+    });
+});
+
+// tombol broadcast
+document.getElementById("broadcastBtn").addEventListener("click", function() {
+    let message = encodeURIComponent("Assalamu'alaikum, ini panitia MTs Sunan Kalijaga Tulung. Kami ingin menyampaikan informasi terkait pendaftaran.");
+    globalData.forEach(d => {
+        if (d.hp) {
+            window.open(`https://wa.me/${d.hp}?text=${message}`, "_blank");
+        }
+    });
+});
 
 loadStats();
 </script>
