@@ -481,22 +481,17 @@ async function loadStats() {
     const response = await fetch(sheetURL);
     const csvText = await response.text();
 
-    // split CSV dan bersihkan CR+LF
     const rows = csvText.split("\n").map(r =>
-        r.split(",").map(c => c.replace(/^"|"$/g, '').trim().replace(/\r/g, ""))
+        r.split(",").map(c => c.replace(/^"|"$/g, '').trim())
     );
 
     const headers = rows[0].map(h => h.trim());
     console.log("Headers:", headers);
 
     const colNama   = headers.findIndex(h => h.toLowerCase() === "nama siswa");
-    let colGender   = headers.findIndex(h => h.toLowerCase() === "jenis kelamin");
+    const colGender = headers.findIndex(h => h.toLowerCase() === "jenis kelamin");
     const colPonpes = headers.findIndex(h => h.toLowerCase() === "pilihan pondok pesantren");
-
-    // jika tidak ketemu, fallback ke kolom terakhir
-    if (colGender === -1) colGender = headers.length - 1;
-
-    console.log("Index Nama:", colNama, "Gender:", colGender, "Ponpes:", colPonpes);
+    const colHp     = headers.findIndex(h => h.toLowerCase() === "nomor hp orang tua");
 
     let total = 0;
     let male = 0, female = 0;
@@ -506,11 +501,10 @@ async function loadStats() {
     if (tbody) tbody.innerHTML = "";
 
     for (let i = 1; i < rows.length; i++) {
-        const nama   = (rows[i][colNama]   || "").trim();
+        const nama   = rows[i][colNama]   || "";
         const gender = (rows[i][colGender] || "").trim().toLowerCase();
-        const pondok = (rows[i][colPonpes] || "").trim();
-
-        console.log(`Row ${i}: Nama=${nama}, Gender=${gender}, Pondok=${pondok}`);
+        const pondok = rows[i][colPonpes] || "";
+        const hp     = (rows[i][colHp] || "").replace(/[^0-9]/g, ""); // hanya angka
 
         if (!nama) continue;
         total++;
@@ -522,13 +516,20 @@ async function loadStats() {
             ponpesCounts[pondok] = (ponpesCounts[pondok] || 0) + 1;
         }
 
+        // teks pesan default
+        const pesan = `Halo, kami dari Panitia Pendaftaran MTs Sunan Kalijaga Tulung. Kami ingin mengonfirmasi data pendaftaran atas nama ${nama}.`;
+        const linkWA = hp ? `https://wa.me/${hp}?text=${encodeURIComponent(pesan)}` : "";
+
         if (tbody) {
             let tr = document.createElement("tr");
             tr.innerHTML = `
                 <td class="border px-4 py-2">${i}</td>
                 <td class="border px-4 py-2">${nama}</td>
-                <td class="border px-4 py-2">${gender}</td>
+                <td class="border px-4 py-2">${rows[i][colGender] || ""}</td>
                 <td class="border px-4 py-2">${pondok}</td>
+                <td class="border px-4 py-2">
+                    ${hp ? `<a href="${linkWA}" target="_blank" class="bg-green-500 text-white px-3 py-1 rounded">Hubungi</a>` : "-"}
+                </td>
             `;
             tbody.appendChild(tr);
         }
@@ -536,7 +537,6 @@ async function loadStats() {
 
     document.getElementById("totalSiswa").textContent = `Total Siswa Terdaftar: ${total}`;
 
-    // Chart Gender
     new Chart(document.getElementById("genderChart"), {
         type: "doughnut",
         data: {
@@ -548,7 +548,6 @@ async function loadStats() {
         }
     });
 
-    // Chart Pondok
     const ponpesLabels = Object.keys(ponpesCounts);
     const ponpesValues = Object.values(ponpesCounts);
 
@@ -569,6 +568,7 @@ async function loadStats() {
 
 loadStats();
 </script>
+
 
 
 
