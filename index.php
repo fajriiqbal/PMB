@@ -474,25 +474,27 @@
             }
         });
     </script>
-   <script>
+  <script>
 const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkWDi-X_jfYIUpR04AupM-ubJ-hBT-RO6W9HSyIN5_n15SN_AD1vDNM4CW-GV_4EpIm-9MTgW1iLvl/pub?gid=1123091940&single=true&output=csv";
 
 async function loadStats() {
     const response = await fetch(sheetURL);
     const csvText = await response.text();
 
-    // split CSV + bersihkan spasi & tanda kutip
+    // split CSV dan bersihkan CR+LF
     const rows = csvText.split("\n").map(r =>
-        r.split(",").map(c => c.replace(/^"|"$/g, '').trim())
+        r.split(",").map(c => c.replace(/^"|"$/g, '').trim().replace(/\r/g, ""))
     );
 
-    // bersihkan header juga
     const headers = rows[0].map(h => h.trim());
     console.log("Headers:", headers);
 
     const colNama   = headers.findIndex(h => h.toLowerCase() === "nama siswa");
-    const colGender = headers.findIndex(h => h.toLowerCase() === "jenis kelamin");
+    let colGender   = headers.findIndex(h => h.toLowerCase() === "jenis kelamin");
     const colPonpes = headers.findIndex(h => h.toLowerCase() === "pilihan pondok pesantren");
+
+    // jika tidak ketemu, fallback ke kolom terakhir
+    if (colGender === -1) colGender = headers.length - 1;
 
     console.log("Index Nama:", colNama, "Gender:", colGender, "Ponpes:", colPonpes);
 
@@ -505,18 +507,16 @@ async function loadStats() {
 
     for (let i = 1; i < rows.length; i++) {
         const nama   = (rows[i][colNama]   || "").trim();
-        const genderRaw = rows[i][colGender] || "";
-        const gender = genderRaw.replace(/\r/g, "").trim(); // ✅ bersihin CR+LF
+        const gender = (rows[i][colGender] || "").trim().toLowerCase();
         const pondok = (rows[i][colPonpes] || "").trim();
 
-        console.log(`Row ${i} Nama: "${nama}", Gender RAW: "${genderRaw}", Clean: "${gender}"`);
+        console.log(`Row ${i}: Nama=${nama}, Gender=${gender}, Pondok=${pondok}`);
 
         if (!nama) continue;
         total++;
 
-        // hitung gender (lebih fleksibel)
-        if (gender.toLowerCase().includes("laki")) male++;
-        else if (gender.toLowerCase().includes("perempuan")) female++;
+        if (gender.includes("laki")) male++;
+        else if (gender.includes("perempuan")) female++;
 
         if (pondok) {
             ponpesCounts[pondok] = (ponpesCounts[pondok] || 0) + 1;
@@ -527,7 +527,7 @@ async function loadStats() {
             tr.innerHTML = `
                 <td class="border px-4 py-2">${i}</td>
                 <td class="border px-4 py-2">${nama}</td>
-                <td class="border px-4 py-2">${gender}</td>   <!-- ✅ pakai gender bersih -->
+                <td class="border px-4 py-2">${gender}</td>
                 <td class="border px-4 py-2">${pondok}</td>
             `;
             tbody.appendChild(tr);
