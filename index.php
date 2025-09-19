@@ -525,10 +525,9 @@ async function loadStats() {
     const colGender = headers.findIndex(h => h.toLowerCase() === "jenis kelamin");
     const colPonpes = headers.findIndex(h => h.toLowerCase() === "pilihan pondok pesantren");
     const colHp     = headers.findIndex(h => h.toLowerCase() === "nomor hp orang tua");
-    const colKK     = headers.findIndex(h => h.toLowerCase().includes("upload berkas kartu keluarga (kk)"));
-    const colAkte   = headers.findIndex(h => h.toLowerCase().includes("upload berkas akte kelahiran"));
-    const colKIP    = headers.findIndex(h => h.toLowerCase().includes("upload berkas kartu sakti (kip, kks, pkh)"));
-
+    const colKK   = headers.findIndex(h => h.toLowerCase().includes("upload berkas kartu keluarga"));
+    const colAkte = headers.findIndex(h => h.toLowerCase().includes("upload berkas akte kelahiran"));
+    const colKIP  = headers.findIndex(h => h.toLowerCase().includes("upload berkas kartu sakti"));
     let total = 0;
     let male = 0, female = 0;
     let ponpesCounts = {};
