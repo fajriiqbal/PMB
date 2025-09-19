@@ -567,7 +567,7 @@ async function loadStats() {
 
         // status berkas
         let statusBerkas = `<span class="text-red-500 font-bold">❌ Belum Lengkap</span>`;
-        if (kk && akte && kip) {
+        if (kk && kip) {
             statusBerkas = `<span class="text-green-600 font-bold">✅ Lengkap</span>`;
         }
 
