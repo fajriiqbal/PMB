@@ -397,6 +397,9 @@
               Nomor
             </th>
             <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
+              Asal Sekolah
+            </th>
+            <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
               Nama
             </th>
             <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
@@ -517,6 +520,7 @@ async function loadStats() {
     const headers = rows[0].map(h => h.trim());
     console.log("Headers:", headers);
 
+    const colSekolah   = headers.findIndex(h => h.toLowerCase() === "asal sekolah");
     const colNama   = headers.findIndex(h => h.toLowerCase() === "nama siswa");
     const colGender = headers.findIndex(h => h.toLowerCase() === "jenis kelamin");
     const colPonpes = headers.findIndex(h => h.toLowerCase() === "pilihan pondok pesantren");
@@ -534,6 +538,7 @@ async function loadStats() {
     globalData = [];
 
     for (let i = 1; i < rows.length; i++) {
+        const sekolah   = rows[i][colSekolah]   || "";
         const nama   = rows[i][colNama]   || "";
         const gender = (rows[i][colGender] || "").trim().toLowerCase();
         const pondok = rows[i][colPonpes] || "";
@@ -591,6 +596,7 @@ Untuk selanjutnya ,mohon dipersiapkan berkas sebagai persyaratan daftar ulang  s
             let tr = document.createElement("tr");
             tr.innerHTML = `
                 <td class="border px-4 py-2">${i}</td>
+                <td class="border px-4 py-2">${sekolah}</td>
                 <td class="border px-4 py-2">${nama}</td>
                 <td class="border px-4 py-2">${rows[i][colGender] || ""}</td>
                 <td class="border px-4 py-2">${pondok}</td>
