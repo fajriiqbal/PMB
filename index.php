@@ -527,7 +527,7 @@ async function loadStats() {
     const colHp     = headers.findIndex(h => h.toLowerCase() === "nomor hp orang tua");
     const colKK   = headers.findIndex(h => h.toLowerCase().includes("upload berkas kartu keluarga"));
     const colAkte = headers.findIndex(h => h.toLowerCase().includes("upload berkas akte kelahiran"));
-    const colKIP  = headers.findIndex(h => h.toLowerCase().includes("upload berkas kartu sakti"));
+    
     let total = 0;
     let male = 0, female = 0;
     let ponpesCounts = {};
@@ -553,7 +553,7 @@ async function loadStats() {
 
         const statusKK   = kk && kk.includes("http") ? "✅" : "❌";
         const statusAkte = akte && akte.includes("http") ? "✅" : "❌";
-        const statusKIP  = kip && kip.includes("http") ? "✅" : "❌";
+        
 
         if (!nama) continue;
         total++;
@@ -567,7 +567,7 @@ async function loadStats() {
 
         // status berkas
         let statusBerkas = `<span class="text-red-500 font-bold">❌ Belum Lengkap</span>`;
-        if (kk && akte && kip) {
+        if (kk && akte) {
             statusBerkas = `<span class="text-green-600 font-bold">✅ Lengkap</span>`;
         }
 
