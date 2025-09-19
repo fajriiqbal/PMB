@@ -552,6 +552,10 @@ async function loadStats() {
         const akte = rows[i][colAkte]|| "";
         const kip  = rows[i][colKIP] || "";
 
+        const statusKK   = kk && kk.includes("http") ? "✅" : "❌";
+        const statusAkte = akte && akte.includes("http") ? "✅" : "❌";
+        const statusKIP  = kip && kip.includes("http") ? "✅" : "❌";
+
         if (!nama) continue;
         total++;
 
