@@ -549,11 +549,11 @@ async function loadStats() {
 
         const kk   = rows[i][colKK]  || "";
         const akte = rows[i][colAkte]|| "";
-        
+        const kip  = rows[i][colKIP] || "";
 
         const statusKK   = kk && kk.includes("http") ? "✅" : "❌";
         const statusAkte = akte && akte.includes("http") ? "✅" : "❌";
-        
+        const statusKIP  = kip && kip.includes("http") ? "✅" : "❌";
 
         if (!nama) continue;
         total++;
@@ -567,7 +567,7 @@ async function loadStats() {
 
         // status berkas
         let statusBerkas = `<span class="text-red-500 font-bold">❌ Belum Lengkap</span>`;
-        if (kk && kip) {
+        if (kk && akte && kip) {
             statusBerkas = `<span class="text-green-600 font-bold">✅ Lengkap</span>`;
         }
 
