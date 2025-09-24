@@ -385,7 +385,7 @@
         id="broadcastBtn" 
         class="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition"
       >
-        WhatsApp Grup
+        View Database
       </button>
     </div>
 
@@ -663,12 +663,7 @@ document.getElementById("searchInput").addEventListener("keyup", function() {
 
 // tombol broadcast
 document.getElementById("broadcastBtn").addEventListener("click", function() {
-    let message = encodeURIComponent("Assalamu'alaikum, ini panitia MTs Sunan Kalijaga Tulung. Kami ingin menyampaikan informasi terkait pendaftaran.");
-    globalData.forEach(d => {
-        if (d.hp) {
-            window.open(`https://wa.me/${d.hp}?text=${message}`, "_blank");
-        }
-    });
+    window.open("tabel.html", "_blank"); // buka tabel siswa di tab baru
 });
 
 loadStats();
