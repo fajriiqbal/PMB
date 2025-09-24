@@ -663,7 +663,7 @@ document.getElementById("searchInput").addEventListener("keyup", function() {
 
 // tombol broadcast
 document.getElementById("broadcastBtn").addEventListener("click", function() {
-    window.open("tabel.html", "_blank"); // buka tabel siswa di tab baru
+    window.open("tabel.php", "_blank"); // buka tabel siswa di tab baru
 });
 
 loadStats();
