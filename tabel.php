@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Fitur Dalam Pengembangan</title>
+  <link rel="icon" type="image/png" href="assets/LOGOMADA.png">
   <style>
     body {
       margin: 0;
@@ -73,6 +74,6 @@
   <h1>🚧 Fitur Dalam Pengembangan 🚧</h1>
   <p>Halaman ini sedang dalam tahap pengembangan.<br>
      Nantikan update terbaru dari sistem pendaftaran MTs Sunan Kalijaga Tulung.</p>
-  <a href="index.html" class="btn-home">⬅ Kembali ke Beranda</a>
+  <a href="index.php" class="btn-home">⬅ Kembali ke Beranda</a>
 </body>
 </html>
