@@ -689,22 +689,23 @@ const closeModal = document.getElementById("closeModal");
 const dataSection = document.getElementById("dataSection");
 const loadingMsg = document.getElementById("loadingMsg");
 
+// tombol buka modal
 document.getElementById("broadcastBtn").addEventListener("click", async function() {
-  let container = document.getElementById("dataSection");
-  
-  // tampilkan loading
-  container.innerHTML = "<p class='text-center text-gray-500'>⏳ Loading data...</p>";
-  container.classList.remove("hidden");
-  
-  // ambil isi tabel.php
+  modal.classList.remove("hidden");
+  dataSection.innerHTML = "";
+  loadingMsg.style.display = "block";
+
   try {
     let res = await fetch("tabel.php");
     let html = await res.text();
-    container.innerHTML = html;
+    dataSection.innerHTML = html;
+    loadingMsg.style.display = "none";
   } catch (err) {
-    container.innerHTML = "<p class='text-red-500'>Gagal memuat data.</p>";
+    loadingMsg.innerHTML = "<p class='text-red-500'>⚠️ Gagal memuat data.</p>";
   }
 });
+
+// tombol close modal
 closeModal.addEventListener("click", function() {
   modal.classList.add("hidden");
 });
