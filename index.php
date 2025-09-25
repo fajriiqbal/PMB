@@ -386,29 +386,8 @@
                 class="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition"
                 >
                 View Database
-                
         </button>
-        <div id="dataModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white w-11/12 md:w-3/4 lg:w-2/3 rounded-lg shadow-lg p-6 relative max-h-[80vh] overflow-y-auto">
-            
-            <!-- Tombol close -->
-            <button id="closeModal" 
-            class="absolute top-3 right-3 text-gray-600 hover:text-red-600 text-xl font-bold">
-            &times;
-            </button>
-
-            <h2 class="text-2xl font-bold mb-4 text-center text-green-700">📋 Database Pendaftar</h2>
-            
-            <!-- Loader -->
-            <div id="loadingMsg" class="text-center text-gray-500">⏳ Loading data...</div>
-
-            <!-- Konten tabel -->
-            <div id="dataSection"></div>
-        </div>
-        </div>
-
     </div>
-    <div id="dataSection" class="mt-4 hidden p-4 border rounded shadow bg-white"></div>
 
     <div class="overflow-x-auto bg-white shadow-lg rounded-2xl">
       <table class="min-w-full border-collapse">
@@ -683,38 +662,8 @@ document.getElementById("searchInput").addEventListener("keyup", function() {
 });
 
 // tombol broadcast
-
-const modal = document.getElementById("dataModal");
-const closeModal = document.getElementById("closeModal");
-const dataSection = document.getElementById("dataSection");
-const loadingMsg = document.getElementById("loadingMsg");
-
-// tombol buka modal
-document.getElementById("broadcastBtn").addEventListener("click", async function() {
-  modal.classList.remove("hidden");
-  dataSection.innerHTML = "";
-  loadingMsg.style.display = "block";
-
-  try {
-    let res = await fetch("tabel.php");
-    let html = await res.text();
-    dataSection.innerHTML = html;
-    loadingMsg.style.display = "none";
-  } catch (err) {
-    loadingMsg.innerHTML = "<p class='text-red-500'>⚠️ Gagal memuat data.</p>";
-  }
-});
-
-// tombol close modal
-closeModal.addEventListener("click", function() {
-  modal.classList.add("hidden");
-});
-
-// klik luar modal untuk close
-modal.addEventListener("click", function(e) {
-  if (e.target === modal) {
-    modal.classList.add("hidden");
-  }
+document.getElementById("broadcastBtn").addEventListener("click", function() {
+    window.open("tabel.php", "_blank"); // buka tabel siswa di tab baru
 });
 
 loadStats();
