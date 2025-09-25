@@ -389,10 +389,11 @@
         </button> -->
                     </div>
         <div class="relative w-full h-[400px] flex items-center justify-center border bg-gray-100">
+  <div class="relative w-full h-[300px] flex items-center justify-center border bg-gray-100">
+  <!-- Tombol dengan "forcefield" -->
   <button 
-    id="escapeBtn"
-    class="absolute bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition-all duration-500 ease-in-out cursor-default"
-    style="top: 50%; left: 50%; transform: translate(-50%, -50%);"
+    id="forceBtn"
+    class="bg-green-600 text-white px-4 py-2 rounded-lg shadow transition-all duration-300"
   >
     View Database
   </button>
@@ -675,28 +676,11 @@ document.getElementById("searchInput").addEventListener("keyup", function() {
 //     window.open("tabel.php", "_blank"); // buka tabel siswa di tab baru
 // });
 
-const btn = document.getElementById("escapeBtn");
-const container = btn.parentElement;
+const btn = document.getElementById("forceBtn");
+const offset = 80; // radius forcefield
 
-function moveButton() {
+document.addEventListener("mousemove", function(e) {
   const rect = btn.getBoundingClientRect();
-  const safeMargin = 80;
-
-  let maxLeft = container.clientWidth - rect.width - safeMargin;
-  let maxTop  = container.clientHeight - rect.height - safeMargin;
-
-  let newLeft = safeMargin + Math.random() * maxLeft;
-  let newTop  = safeMargin + Math.random() * maxTop;
-
-  btn.style.left = newLeft + "px";
-  btn.style.top = newTop + "px";
-  btn.style.transform = "translate(0,0)";
-}
-
-// tombol kabur ketika mouse mendekat
-container.addEventListener("mousemove", function(e) {
-  const rect = btn.getBoundingClientRect();
-  const offset = 80;
 
   const mouseX = e.clientX;
   const mouseY = e.clientY;
@@ -707,15 +691,14 @@ container.addEventListener("mousemove", function(e) {
   const distX = Math.abs(mouseX - btnX);
   const distY = Math.abs(mouseY - btnY);
 
-  if (distX < offset && distY < offset) {
-    moveButton();
+  // kalau kursor masuk ke zona "forcefield"
+  if (distX < rect.width / 2 + offset && distY < rect.height / 2 + offset) {
+    btn.style.opacity = "0.2";      // tombol jadi transparan
+    btn.style.pointerEvents = "none"; // nggak bisa diklik
+  } else {
+    btn.style.opacity = "1";          // tombol normal
+    btn.style.pointerEvents = "auto"; // bisa disentuh lagi
   }
-});
-
-// cegah klik (kalau tetap ketangkep)
-btn.addEventListener("click", function(e) {
-  e.preventDefault();
-  moveButton();
 });
 
 loadStats();
