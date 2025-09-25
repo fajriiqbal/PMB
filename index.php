@@ -388,6 +388,7 @@
                 View Database
         </button>
     </div>
+    <div id="dataSection" class="mt-4 hidden p-4 border rounded shadow bg-white"></div>
 
     <div class="overflow-x-auto bg-white shadow-lg rounded-2xl">
       <table class="min-w-full border-collapse">
@@ -662,8 +663,6 @@ document.getElementById("searchInput").addEventListener("keyup", function() {
 });
 
 // tombol broadcast
-<div id="dataSection" class="mt-4 hidden p-4 border rounded shadow bg-white"></div>
-
 
 document.getElementById("broadcastBtn").addEventListener("click", async function() {
   let container = document.getElementById("dataSection");
