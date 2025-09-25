@@ -664,7 +664,7 @@ document.getElementById("searchInput").addEventListener("keyup", function() {
 // tombol broadcast
 <div id="dataSection" class="mt-4 hidden p-4 border rounded shadow bg-white"></div>
 
-<script>
+
 document.getElementById("broadcastBtn").addEventListener("click", async function() {
   let container = document.getElementById("dataSection");
   
