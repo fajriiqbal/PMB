@@ -680,8 +680,8 @@ const container = btn.parentElement;
 
 container.addEventListener("mousemove", function(e) {
   const rect = btn.getBoundingClientRect();
-  const offset = 100; // jarak deteksi
-  const safeMargin = 80; // jarak aman dari tepi
+  const offset = 50; // jarak deteksi
+  const safeMargin = 20; // jarak aman dari tepi
 
   const mouseX = e.clientX;
   const mouseY = e.clientY;
