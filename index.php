@@ -381,11 +381,18 @@
         placeholder="Cari siswa..." 
         class="border border-gray-300 px-3 py-2 rounded-lg w-full sm:w-1/2 focus:ring-2 focus:ring-blue-500"
       >
-      <button 
+      <!-- <button 
             id="broadcastBtn" 
                 class="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition"
                 >
                 View Database
+        </button> -->
+        <button 
+                id="escapeBtn"
+                class="absolute bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition"
+                style="top: 50%; left: 50%; transform: translate(-50%, -50%);"
+                    >
+                        View Database
         </button>
     </div>
 
@@ -666,6 +673,32 @@ document.getElementById("broadcastBtn").addEventListener("click", function() {
     window.open("tabel.php", "_blank"); // buka tabel siswa di tab baru
 });
 
+const btn = document.getElementById("escapeBtn");
+const container = btn.parentElement;
+
+container.addEventListener("mousemove", function(e) {
+  const rect = btn.getBoundingClientRect();
+  const offset = 60; // jarak deteksi
+  
+  const mouseX = e.clientX;
+  const mouseY = e.clientY;
+
+  const btnX = rect.left + rect.width / 2;
+  const btnY = rect.top + rect.height / 2;
+
+  const distX = Math.abs(mouseX - btnX);
+  const distY = Math.abs(mouseY - btnY);
+
+  // kalau cursor dekat tombol
+  if (distX < offset && distY < offset) {
+    let newLeft = Math.random() * (container.clientWidth - rect.width);
+    let newTop = Math.random() * (container.clientHeight - rect.height);
+
+    btn.style.left = newLeft + "px";
+    btn.style.top = newTop + "px";
+    btn.style.transform = "translate(0,0)"; // reset biar gak nyangkut
+  }
+});
 loadStats();
 </script>
 
