@@ -386,10 +386,10 @@
                 class="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition"
                 >
                 View Database
-                <div id="dataSection" class="mt-4 hidden p-4 border rounded shadow bg-white"></div>
+                
         </button>
     </div>
-    
+    <div id="dataSection" class="mt-4 hidden p-4 border rounded shadow bg-white"></div>
 
     <div class="overflow-x-auto bg-white shadow-lg rounded-2xl">
       <table class="min-w-full border-collapse">
