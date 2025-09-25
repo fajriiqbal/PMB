@@ -388,12 +388,11 @@
                 View Database
         </button> -->
                     </div>
-        <div class="relative w-full h-[400px] flex items-center justify-center border bg-gray-100">
-  <div class="relative w-full h-[300px] flex items-center justify-center border bg-gray-100">
-  <!-- Tombol dengan "forcefield" -->
+        <div class="relative w-full h-[400px] flex items-center justify-center border bg-gray-100 overflow-hidden">
   <button 
-    id="forceBtn"
-    class="bg-green-600 text-white px-4 py-2 rounded-lg shadow transition-all duration-300"
+    id="runBtn"
+    class="absolute bg-green-600 text-white px-4 py-2 rounded-lg shadow transition-transform duration-300"
+    style="top: 50%; left: 50%; transform: translate(-50%, -50%);"
   >
     View Database
   </button>
@@ -676,11 +675,13 @@ document.getElementById("searchInput").addEventListener("keyup", function() {
 //     window.open("tabel.php", "_blank"); // buka tabel siswa di tab baru
 // });
 
-const btn = document.getElementById("forceBtn");
-const offset = 80; // radius forcefield
+const btn = document.getElementById("runBtn");
+const container = btn.parentElement;
+const offset = 120; // jarak "zona bahaya" di sekitar tombol
 
-document.addEventListener("mousemove", function(e) {
+container.addEventListener("mousemove", function(e) {
   const rect = btn.getBoundingClientRect();
+  const containerRect = container.getBoundingClientRect();
 
   const mouseX = e.clientX;
   const mouseY = e.clientY;
@@ -688,17 +689,29 @@ document.addEventListener("mousemove", function(e) {
   const btnX = rect.left + rect.width / 2;
   const btnY = rect.top + rect.height / 2;
 
-  const distX = Math.abs(mouseX - btnX);
-  const distY = Math.abs(mouseY - btnY);
+  const distX = mouseX - btnX;
+  const distY = mouseY - btnY;
+  const distance = Math.sqrt(distX ** 2 + distY ** 2);
 
-  // kalau kursor masuk ke zona "forcefield"
-  if (distX < rect.width / 2 + offset && distY < rect.height / 2 + offset) {
-    btn.style.opacity = "0.2";      // tombol jadi transparan
-    btn.style.pointerEvents = "none"; // nggak bisa diklik
-  } else {
-    btn.style.opacity = "1";          // tombol normal
-    btn.style.pointerEvents = "auto"; // bisa disentuh lagi
+  if (distance < offset) {
+    // Tentukan arah lari menjauhi cursor
+    let moveX = (rect.left - containerRect.left) + (distX > 0 ? -100 : 100);
+    let moveY = (rect.top - containerRect.top) + (distY > 0 ? -100 : 100);
+
+    // Batas agar nggak keluar container
+    moveX = Math.max(0, Math.min(containerRect.width - rect.width, moveX));
+    moveY = Math.max(0, Math.min(containerRect.height - rect.height, moveY));
+
+    btn.style.left = moveX + "px";
+    btn.style.top = moveY + "px";
+    btn.style.transform = "translate(0,0)";
   }
+});
+
+// Hapus klik total (nggak bisa dipencet meski kejar pakai inspect element)
+btn.addEventListener("click", (e) => {
+  e.preventDefault();
+  alert("😜 Tombol ini tidak bisa kamu klik!");
 });
 
 loadStats();
