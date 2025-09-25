@@ -391,12 +391,12 @@
         <div class="relative w-full h-[400px] flex items-center justify-center border bg-gray-100">
   <button 
     id="escapeBtn"
-    class="absolute bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition-all duration-500 ease-in-out"
+    class="absolute bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition-all duration-500 ease-in-out cursor-default"
     style="top: 50%; left: 50%; transform: translate(-50%, -50%);"
   >
     View Database
   </button>
-    </div>
+</div>
 
     <div class="overflow-x-auto bg-white shadow-lg rounded-2xl">
       <table class="min-w-full border-collapse">
@@ -678,10 +678,25 @@ document.getElementById("searchInput").addEventListener("keyup", function() {
 const btn = document.getElementById("escapeBtn");
 const container = btn.parentElement;
 
+function moveButton() {
+  const rect = btn.getBoundingClientRect();
+  const safeMargin = 80;
+
+  let maxLeft = container.clientWidth - rect.width - safeMargin;
+  let maxTop  = container.clientHeight - rect.height - safeMargin;
+
+  let newLeft = safeMargin + Math.random() * maxLeft;
+  let newTop  = safeMargin + Math.random() * maxTop;
+
+  btn.style.left = newLeft + "px";
+  btn.style.top = newTop + "px";
+  btn.style.transform = "translate(0,0)";
+}
+
+// tombol kabur ketika mouse mendekat
 container.addEventListener("mousemove", function(e) {
   const rect = btn.getBoundingClientRect();
-  const offset = 50; // jarak deteksi
-  const safeMargin = 20; // jarak aman dari tepi
+  const offset = 80;
 
   const mouseX = e.clientX;
   const mouseY = e.clientY;
@@ -693,18 +708,16 @@ container.addEventListener("mousemove", function(e) {
   const distY = Math.abs(mouseY - btnY);
 
   if (distX < offset && distY < offset) {
-    let maxLeft = container.clientWidth - rect.width - safeMargin;
-    let maxTop  = container.clientHeight - rect.height - safeMargin;
-
-    let newLeft = safeMargin + Math.random() * maxLeft;
-    let newTop  = safeMargin + Math.random() * maxTop;
-
-    // biar smooth, jangan pakai transform reset langsung
-    btn.style.left = newLeft + "px";
-    btn.style.top = newTop + "px";
-    btn.style.transform = "translate(0,0)";
+    moveButton();
   }
 });
+
+// cegah klik (kalau tetap ketangkep)
+btn.addEventListener("click", function(e) {
+  e.preventDefault();
+  moveButton();
+});
+
 loadStats();
 </script>
 
