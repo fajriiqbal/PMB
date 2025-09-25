@@ -669,9 +669,9 @@ document.getElementById("searchInput").addEventListener("keyup", function() {
 });
 
 // tombol broadcast
-document.getElementById("broadcastBtn").addEventListener("click", function() {
-    window.open("tabel.php", "_blank"); // buka tabel siswa di tab baru
-});
+// document.getElementById("broadcastBtn").addEventListener("click", function() {
+//     window.open("tabel.php", "_blank"); // buka tabel siswa di tab baru
+// });
 
 const btn = document.getElementById("escapeBtn");
 const container = btn.parentElement;
