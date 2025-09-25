@@ -387,9 +387,11 @@
                 >
                 View Database
         </button> -->
-        <button 
+                    </div>
+        <div class="relative w-full h-[400px] flex items-center justify-center border bg-gray-100">
+  <button 
     id="escapeBtn"
-    class="absolute bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition"
+    class="absolute bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition-all duration-500 ease-in-out"
     style="top: 50%; left: 50%; transform: translate(-50%, -50%);"
   >
     View Database
@@ -691,13 +693,13 @@ container.addEventListener("mousemove", function(e) {
   const distY = Math.abs(mouseY - btnY);
 
   if (distX < offset && distY < offset) {
-    // hitung batas max & min posisi
     let maxLeft = container.clientWidth - rect.width - safeMargin;
     let maxTop  = container.clientHeight - rect.height - safeMargin;
 
     let newLeft = safeMargin + Math.random() * maxLeft;
     let newTop  = safeMargin + Math.random() * maxTop;
 
+    // biar smooth, jangan pakai transform reset langsung
     btn.style.left = newLeft + "px";
     btn.style.top = newTop + "px";
     btn.style.transform = "translate(0,0)";
