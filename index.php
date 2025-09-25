@@ -382,11 +382,11 @@
         class="border border-gray-300 px-3 py-2 rounded-lg w-full sm:w-1/2 focus:ring-2 focus:ring-blue-500"
       >
       <button 
-        id="broadcastBtn" 
-        class="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition"
-      >
-        View Database
-      </button>
+            id="broadcastBtn" 
+                class="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition"
+                >
+                View Database
+        </button>
     </div>
 
     <div class="overflow-x-auto bg-white shadow-lg rounded-2xl">
@@ -662,13 +662,30 @@ document.getElementById("searchInput").addEventListener("keyup", function() {
 });
 
 // tombol broadcast
-document.getElementById("broadcastBtn").addEventListener("click", function() {
-    window.open("tabel.php", "_blank"); // buka tabel siswa di tab baru
+<div id="dataSection" class="mt-4 hidden p-4 border rounded shadow bg-white"></div>
+
+<script>
+document.getElementById("broadcastBtn").addEventListener("click", async function() {
+  let container = document.getElementById("dataSection");
+  
+  // tampilkan loading
+  container.innerHTML = "<p class='text-center text-gray-500'>⏳ Loading data...</p>";
+  container.classList.remove("hidden");
+  
+  // ambil isi tabel.php
+  try {
+    let res = await fetch("tabel.php");
+    let html = await res.text();
+    container.innerHTML = html;
+  } catch (err) {
+    container.innerHTML = "<p class='text-red-500'>Gagal memuat data.</p>";
+  }
 });
 
 loadStats();
 </script>
 
+</script>
 
 
 
