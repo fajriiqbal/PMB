@@ -665,6 +665,11 @@ document.getElementById("searchInput").addEventListener("keyup", function() {
 
 // tombol broadcast
 
+const modal = document.getElementById("dataModal");
+const closeModal = document.getElementById("closeModal");
+const dataSection = document.getElementById("dataSection");
+const loadingMsg = document.getElementById("loadingMsg");
+
 document.getElementById("broadcastBtn").addEventListener("click", async function() {
   let container = document.getElementById("dataSection");
   
