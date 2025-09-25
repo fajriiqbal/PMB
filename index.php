@@ -388,12 +388,12 @@
                 View Database
         </button> -->
         <button 
-                id="escapeBtn"
-                class="absolute bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition"
-                style="top: 50%; left: 50%; transform: translate(-50%, -50%);"
-                    >
-                        View Database
-        </button>
+    id="escapeBtn"
+    class="absolute bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition"
+    style="top: 50%; left: 50%; transform: translate(-50%, -50%);"
+  >
+    View Database
+  </button>
     </div>
 
     <div class="overflow-x-auto bg-white shadow-lg rounded-2xl">
@@ -679,7 +679,8 @@ const container = btn.parentElement;
 container.addEventListener("mousemove", function(e) {
   const rect = btn.getBoundingClientRect();
   const offset = 60; // jarak deteksi
-  
+  const safeMargin = 80; // jarak aman dari tepi
+
   const mouseX = e.clientX;
   const mouseY = e.clientY;
 
@@ -689,14 +690,17 @@ container.addEventListener("mousemove", function(e) {
   const distX = Math.abs(mouseX - btnX);
   const distY = Math.abs(mouseY - btnY);
 
-  // kalau cursor dekat tombol
   if (distX < offset && distY < offset) {
-    let newLeft = Math.random() * (container.clientWidth - rect.width);
-    let newTop = Math.random() * (container.clientHeight - rect.height);
+    // hitung batas max & min posisi
+    let maxLeft = container.clientWidth - rect.width - safeMargin;
+    let maxTop  = container.clientHeight - rect.height - safeMargin;
+
+    let newLeft = safeMargin + Math.random() * maxLeft;
+    let newTop  = safeMargin + Math.random() * maxTop;
 
     btn.style.left = newLeft + "px";
     btn.style.top = newTop + "px";
-    btn.style.transform = "translate(0,0)"; // reset biar gak nyangkut
+    btn.style.transform = "translate(0,0)";
   }
 });
 loadStats();
