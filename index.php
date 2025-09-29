@@ -388,15 +388,25 @@
                 View Database
         </button> -->
                     </div>
+<!-- Dropdown Gelombang -->
+                    <div class="mb-4">
+                    <label for="filterGelombang" class="mr-2 font-semibold">Filter Gelombang:</label>
+                        <select id="filterGelombang" class="border rounded p-2">
+                            <option value="all">Semua Gelombang</option>
+                            <option value="1">Gelombang 1 (Sep–Nov)</option>
+                            <option value="2">Gelombang 2 (Des–Feb)</option>
+                            <option value="3">Gelombang 3 (Mar–Mei)</option>
+                        </select>
+                    </div>
         <div class="relative w-full h-[400px] flex items-center justify-center border bg-gray-100 overflow-hidden">
-  <button 
-    id="runBtn"
-    class="absolute bg-green-600 text-white px-4 py-2 rounded-lg shadow transition-transform duration-300"
-    style="top: 50%; left: 50%; transform: translate(-50%, -50%);"
-  >
-    View Database
-  </button>
-</div>
+            <button 
+                id="runBtn"
+                class="absolute bg-green-600 text-white px-4 py-2 rounded-lg shadow transition-transform duration-300"
+                style="top: 50%; left: 50%; transform: translate(-50%, -50%);"
+            >
+                View Database
+            </button>
+        </div>
 
     <div class="overflow-x-auto bg-white shadow-lg rounded-2xl">
       <table class="min-w-full border-collapse">
@@ -669,50 +679,139 @@ document.getElementById("searchInput").addEventListener("keyup", function() {
         r.style.display = text.includes(filter) ? "" : "none";
     });
 });
+// fitur Dropdown
+function getGelombang(dateStr) {
+  if (!dateStr) return null;
+  const date = new Date(dateStr);
+  const month = date.getMonth() + 1;
+
+  if ([9, 10, 11].includes(month)) return 1;   // Sep–Nov
+  if ([12, 1, 2].includes(month)) return 2;    // Des–Feb
+  if ([3, 4, 5].includes(month)) return 3;     // Mar–Mei
+  return null;
+}
+
+async function loadStats() {
+  const response = await fetch(sheetURL);
+  const csvText = await response.text();
+  const rows = csvText.split("\n").map(r => r.split(",").map(c => c.replace(/^"|"$/g, '').trim()));
+  const headers = rows[0].map(h => h.trim());
+
+  const colTanggal = 0; // biasanya timestamp ada di kolom pertama
+  const colSekolah   = headers.findIndex(h => h.toLowerCase() === "asal sekolah");
+  const colNama      = headers.findIndex(h => h.toLowerCase() === "nama siswa");
+  const colGender    = headers.findIndex(h => h.toLowerCase() === "jenis kelamin");
+  const colPonpes    = headers.findIndex(h => h.toLowerCase() === "pilihan pondok pesantren");
+  const colHp        = headers.findIndex(h => h.toLowerCase() === "nomor hp orang tua");
+
+  let total = 0, male = 0, female = 0;
+  let ponpesCounts = {};
+  const tbody = document.getElementById("pendaftarTable");
+  tbody.innerHTML = "";
+
+  for (let i = 1; i < rows.length; i++) {
+    const tgl = rows[i][colTanggal];
+    const sekolah = rows[i][colSekolah] || "";
+    const nama    = rows[i][colNama]    || "";
+    const gender  = (rows[i][colGender] || "").toLowerCase();
+    const pondok  = rows[i][colPonpes]  || "";
+    const hpRaw   = rows[i][colHp]      || "";
+
+    if (!nama) continue;
+    total++;
+    if (gender.includes("laki")) male++;
+    else if (gender.includes("perempuan")) female++;
+    if (pondok) ponpesCounts[pondok] = (ponpesCounts[pondok] || 0) + 1;
+
+    const gelombang = getGelombang(tgl) || "unknown";
+
+    let tr = document.createElement("tr");
+    tr.setAttribute("data-gelombang", gelombang);
+    tr.innerHTML = `
+      <td class="border px-4 py-2">${i}</td>
+      <td class="border px-4 py-2">${sekolah}</td>
+      <td class="border px-4 py-2">${nama}</td>
+      <td class="border px-4 py-2">${rows[i][colGender] || ""}</td>
+      <td class="border px-4 py-2">${pondok}</td>
+      <td class="border px-4 py-2">${hpRaw}</td>
+      <td class="border px-4 py-2">-</td>
+      <td class="border px-4 py-2">-</td>
+    `;
+    tbody.appendChild(tr);
+  }
+
+  document.getElementById("totalSiswa").textContent = `Total Siswa Terdaftar: ${total}`;
+
+  new Chart(document.getElementById("genderChart"), {
+    type: "doughnut",
+    data: {
+      labels: ["Laki-Laki", "Perempuan"],
+      datasets: [{ data: [male, female], backgroundColor: ["#3b82f6", "#ec4899"] }]
+    }
+  });
+
+  new Chart(document.getElementById("ponpesChart"), {
+    type: "doughnut",
+    data: {
+      labels: Object.keys(ponpesCounts),
+      datasets: [{ data: Object.values(ponpesCounts) }]
+    }
+  });
+}
+
+// --- filter gelombang saat dropdown berubah
+document.getElementById("filterGelombang").addEventListener("change", function() {
+  const val = this.value;
+  document.querySelectorAll("#pendaftarTable tr").forEach(tr => {
+    const gel = tr.getAttribute("data-gelombang");
+    tr.style.display = (val === "all" || val == gel) ? "" : "none";
+  });
+});
+
 
 // tombol broadcast
 // document.getElementById("broadcastBtn").addEventListener("click", function() {
 //     window.open("tabel.php", "_blank"); // buka tabel siswa di tab baru
 // });
 
-const btn = document.getElementById("runBtn");
-const container = btn.parentElement;
-const offset = 120; // jarak "zona bahaya" di sekitar tombol
+    const btn = document.getElementById("runBtn");
+    const container = btn.parentElement;
+    const offset = 120; // jarak "zona bahaya" di sekitar tombol
 
-container.addEventListener("mousemove", function(e) {
-  const rect = btn.getBoundingClientRect();
-  const containerRect = container.getBoundingClientRect();
+    container.addEventListener("mousemove", function(e) {
+    const rect = btn.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
 
-  const mouseX = e.clientX;
-  const mouseY = e.clientY;
+    const mouseX = e.clientX;
+    const mouseY = e.clientY;
 
-  const btnX = rect.left + rect.width / 2;
-  const btnY = rect.top + rect.height / 2;
+    const btnX = rect.left + rect.width / 2;
+    const btnY = rect.top + rect.height / 2;
 
-  const distX = mouseX - btnX;
-  const distY = mouseY - btnY;
-  const distance = Math.sqrt(distX ** 2 + distY ** 2);
+    const distX = mouseX - btnX;
+    const distY = mouseY - btnY;
+    const distance = Math.sqrt(distX ** 2 + distY ** 2);
 
-  if (distance < offset) {
-    // Tentukan arah lari menjauhi cursor
-    let moveX = (rect.left - containerRect.left) + (distX > 0 ? -100 : 100);
-    let moveY = (rect.top - containerRect.top) + (distY > 0 ? -100 : 100);
+    if (distance < offset) {
+        // Tentukan arah lari menjauhi cursor
+        let moveX = (rect.left - containerRect.left) + (distX > 0 ? -100 : 100);
+        let moveY = (rect.top - containerRect.top) + (distY > 0 ? -100 : 100);
 
-    // Batas agar nggak keluar container
-    moveX = Math.max(0, Math.min(containerRect.width - rect.width, moveX));
-    moveY = Math.max(0, Math.min(containerRect.height - rect.height, moveY));
+        // Batas agar nggak keluar container
+        moveX = Math.max(0, Math.min(containerRect.width - rect.width, moveX));
+        moveY = Math.max(0, Math.min(containerRect.height - rect.height, moveY));
 
-    btn.style.left = moveX + "px";
-    btn.style.top = moveY + "px";
-    btn.style.transform = "translate(0,0)";
-  }
-});
+        btn.style.left = moveX + "px";
+        btn.style.top = moveY + "px";
+        btn.style.transform = "translate(0,0)";
+    }
+    });
 
-// Hapus klik total (nggak bisa dipencet meski kejar pakai inspect element)
-btn.addEventListener("click", (e) => {
-  e.preventDefault();
-  alert("😜 Tombol ini tidak bisa kamu klik!");
-});
+    // Hapus klik total (nggak bisa dipencet meski kejar pakai inspect element)
+    btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    alert("😜 Tombol ini tidak bisa kamu klik!");
+    });
 
 loadStats();
 </script>
