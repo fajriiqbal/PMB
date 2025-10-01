@@ -585,7 +585,7 @@ async function loadStats() {
         // teks pesan default
         const pesan = `
         اَلْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ
-        `.`
+        
         Kami ucapkan : 
         " SELAMAT DITERIMA "
         Atas Nama : ${nama} 
