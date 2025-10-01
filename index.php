@@ -585,24 +585,26 @@ async function loadStats() {
         // teks pesan default
         const pesan = `
         اَلْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ
-        
-        Kami ucapkan : 
-        " SELAMAT DITERIMA "
-        Atas Nama : ${nama} 
-        Sebagai 
-        CALON SISWA BARU 
+
+        Kami ucapkan :
+        "SELAMAT DITERIMA"
+        Atas Nama : ${nama}
+        Sebagai
+        CALON SISWA BARU
         TP. 2026/2027
 
         ________________
-        Untuk selanjutnya ,mohon dipersiapkan berkas sebagai persyaratan daftar ulang  sbb:
-        1. Fc.KK ( 4 lb ) 
-        2. Fc. Akte Kelahiran ( 4 lb ) 
-        3. Fc. KTP Ayah ( 4lb ) 
-        4. Fc. KTP Ibu ( 4 lb ) 
-        5. Pas Photo ukuran 3X4  background  merah / biru ( 2 lb ) 
+        Untuk selanjutnya, mohon dipersiapkan berkas sebagai persyaratan daftar ulang sbb:
+        1. Fc. KK (4 lb)
+        2. Fc. Akte Kelahiran (4 lb)
+        3. Fc. KTP Ayah (4 lb)
+        4. Fc. KTP Ibu (4 lb)
+        5. Pas Photo ukuran 3X4 background merah / biru (2 lb)
         6. Administrasi Keuangan Seragam
 
-        ⏳ Daftar ulang dilaksanakan Bulan Desember 2025.`;
+        ⏳ Daftar ulang dilaksanakan Bulan Desember 2025.
+        `.trim();
+
         const linkWA = hp ? `https://wa.me/${hp}?text=${encodeURIComponent(pesan)}` : "";
 
         // cek riwayat kontak
