@@ -473,7 +473,7 @@ document.getElementById("searchInput").addEventListener("keyup", function() {
 });
 
 //filtering gelombang
-function getGelombang(dateStr) {
+ function getGelombang(dateStr) {
     if (!dateStr) return null;
 
     // Format dari Google Form: "DD/MM/YYYY HH:mm:ss"
@@ -493,7 +493,6 @@ function getGelombang(dateStr) {
     if ([6, 7, 8].includes(month)) return 4;    // Jun-Agu
     return null;
 }
-
 
     // Render tabel berdasarkan data
     function renderTable(data) {
@@ -530,45 +529,6 @@ function getGelombang(dateStr) {
 //     window.open("tabel.php", "_blank"); // buka tabel siswa di tab baru
 // });
 //gelombang
-function getGelombang(dateStr) {
-    if (!dateStr) return null;
-    const bulan = new Date(dateStr).getMonth() + 1;
-    if ([9, 10, 11].includes(bulan)) return 1;
-    if ([12, 1, 2].includes(bulan)) return 2;
-    if ([3, 4, 5].includes(bulan)) return 3;
-    if ([6, 7, 8].includes(bulan)) return 4;
-    return null;
-}
-
-// Render tabel data
-function renderTable(data) {
-    const tbody = document.getElementById("pendaftarTable");
-    tbody.innerHTML = "";
-    data.forEach((d, i) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td class="border px-4 py-2">${i + 1}</td>
-            <td class="border px-4 py-2">${d.tanggal}</td>
-            <td class="border px-4 py-2">${d.sekolah}</td>
-            <td class="border px-4 py-2">${d.nama}</td>
-            <td class="border px-4 py-2">${d.gender}</td>
-            <td class="border px-4 py-2">${d.pondok}</td>`;
-        tbody.appendChild(tr);
-    });
-}
-
-// Setup filter dropdown
-function setupFilter(allData) {
-    const filter = document.getElementById("gelombangFilter");
-    filter.addEventListener("change", () => {
-        const val = filter.value;
-        if (val === "all") renderTable(allData);
-        else {
-            const filtered = allData.filter(d => getGelombang(d.tanggal) == val);
-            renderTable(filtered);
-        }
-    });
-}
 
 
 
