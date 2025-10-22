@@ -186,8 +186,8 @@
         <label for="gelombangFilter" class="mr-2 font-semibold">Pilih Gelombang:</label>
         <select id="gelombangFilter" class="p-2 rounded border border-gray-400">
           <option value="all">Semua Gelombang</option>
-          <option value="1">Gelombang 1 (Sep - Nov)</option>
-          <option value="2">Gelombang 2 (Des - Feb)</option>
+          <option value="1">Gelombang 1 (Sep - Okt)</option>
+          <option value="2">Gelombang 2 (Nov - Feb)</option>
           <option value="3">Gelombang 3 (Mar - Mei)</option>
         
         </select>
