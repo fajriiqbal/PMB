@@ -387,9 +387,20 @@
                 >
                 View Database
         </button> -->
+       <div class="container mx-auto mt-6">
+    <div class="flex justify-between items-center mb-4">
+      <div>
+        <label for="gelombangFilter" class="mr-2 font-semibold">Pilih Gelombang:</label>
+        <select id="gelombangFilter" class="p-2 rounded border border-gray-400">
+          <option value="all">Semua Gelombang</option>
+          <option value="1">Gelombang 1 (Sep - Nov)</option>
+          <option value="2">Gelombang 2 (Des - Feb)</option>
+          <option value="3">Gelombang 3 (Mar - Mei)</option>
+          <option value="4">Gelombang 4 (Jun - Agu)</option>
+        </select>
+      </div>
+    </div>
                     </div>
-
-                    
         <div class="relative w-full h-[400px] flex items-center justify-center border bg-gray-100 overflow-hidden">
   <button 
     id="runBtn"
@@ -676,6 +687,47 @@ document.getElementById("searchInput").addEventListener("keyup", function() {
     });
 });
 
+//filtering gelombang
+ function getGelombang(dateStr) {
+      if (!dateStr) return null;
+      const bulan = new Date(dateStr).getMonth() + 1; // 1–12
+      if ([9, 10, 11].includes(bulan)) return 1;
+      if ([12, 1, 2].includes(bulan)) return 2;
+      if ([3, 4, 5].includes(bulan)) return 3;
+      if ([6, 7, 8].includes(bulan)) return 4;
+      return null;
+    }
+
+    // Render tabel berdasarkan data
+    function renderTable(data) {
+      const tbody = document.querySelector("#pendaftarTable tbody");
+      tbody.innerHTML = "";
+      data.forEach((d, i) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="border px-4 py-2">${i + 1}</td>
+          <td class="border px-4 py-2">${d.nama}</td>
+          <td class="border px-4 py-2">${d.tanggal}</td>
+          <td class="border px-4 py-2">${d.sekolah}</td>
+          <td class="border px-4 py-2">${d.gender}</td>
+          <td class="border px-4 py-2">${d.pondok}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Filter dropdown
+    function setupFilter(allData) {
+      const filter = document.getElementById("gelombangFilter");
+      filter.addEventListener("change", () => {
+        const val = filter.value;
+        if (val === "all") renderTable(allData);
+        else {
+          const filtered = allData.filter(d => getGelombang(d.tanggal) == val);
+          renderTable(filtered);
+        }
+      });
+    }
 // tombol broadcast
 // document.getElementById("broadcastBtn").addEventListener("click", function() {
 //     window.open("tabel.php", "_blank"); // buka tabel siswa di tab baru
