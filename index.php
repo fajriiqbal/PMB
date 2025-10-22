@@ -387,9 +387,8 @@
                 >
                 View Database
         </button> -->
-       <div class="container mx-auto mt-6">
-    <div class="flex justify-between items-center mb-4">
-      </div>
+    
+    
       <div>
         <label for="gelombangFilter" class="mr-2 font-semibold">Pilih Gelombang:</label>
         <select id="gelombangFilter" class="p-2 rounded border border-gray-400">
