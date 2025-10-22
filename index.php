@@ -467,7 +467,12 @@ function getGelombang(dateStr) {
 function renderTable(data) {
     const tbody = document.querySelector("#pendaftarTable");
     tbody.innerHTML = "";
+
     data.forEach((d, i) => {
+        const hp = d.hp || "";
+        const linkWA = d.linkWA || "";
+        const contacted = localStorage.getItem("contacted_" + hp) ? "✔️" : "";
+
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td class="border px-4 py-2">${i + 1}</td>
@@ -475,16 +480,16 @@ function renderTable(data) {
           <td class="border px-4 py-2">${d.nama}</td>
           <td class="border px-4 py-2">${d.gender}</td>
           <td class="border px-4 py-2">${d.pondok}</td>
-          <td class="border px-4 py-2">${d.hp}</td>
-          <td class="border px-4 py-2">${d.statusBerkas}</td>
+          <td class="border px-4 py-2">${hp}</td>
+          <td class="border px-4 py-2">${d.statusBerkas || "-"}</td>
           <td class="border px-4 py-2">
-                    ${hp ? `<a href="${linkWA}" target="_blank" class="bg-green-500 text-white px-3 py-1 rounded" onclick="markContacted('${hp}')">Hubungi</a>` : "-"} ${contacted}
-                </td>
-            `;
-        
+            ${hp ? `<a href="${linkWA}" target="_blank" class="bg-green-500 text-white px-3 py-1 rounded" onclick="markContacted('${hp}')">Hubungi</a>` : "-"} ${contacted}
+          </td>
+        `;
         tbody.appendChild(tr);
     });
 }
+
 
 function setupFilter(allData) {
     const filter = document.getElementById("gelombangFilter");
