@@ -521,8 +521,6 @@ document.getElementById("searchInput").addEventListener("keyup", function() {
 loadStats();
 </script>
 
-</script>
-
 
 
 </body>
