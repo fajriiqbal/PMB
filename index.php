@@ -189,7 +189,7 @@
           <option value="1">Gelombang 1 (Sep - Nov)</option>
           <option value="2">Gelombang 2 (Des - Feb)</option>
           <option value="3">Gelombang 3 (Mar - Mei)</option>
-          <option value="4">Gelombang 4 (Jun - Agu)</option>
+        
         </select>
       </div>
     </div>
