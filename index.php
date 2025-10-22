@@ -341,13 +341,7 @@ async function loadStats() {
 
     const tbody = document.getElementById("pendaftarTable");
     if (tbody) tbody.innerHTML = "";
-    globalData.push({
-            nama,
-            tanggal,
-            sekolah,
-            gender,
-            pondok
-        });
+    globalData = [];
 
     for (let i = 1; i < rows.length; i++) {
         const sekolah   = rows[i][colSekolah]   || "";
@@ -529,10 +523,7 @@ document.getElementById("searchInput").addEventListener("keyup", function() {
         }
       });
     }
-renderTable(globalData);
 
-    // aktifkan dropdown filter
-    setupFilter(globalData);
 loadStats();
 </script>
 
