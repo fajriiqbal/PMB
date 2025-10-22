@@ -462,7 +462,6 @@ function getGelombang(dateStr) {
     if ([9, 10, 11].includes(month)) return 1;  // Sep–Nov
     if ([12, 1, 2].includes(month)) return 2;   // Des–Feb
     if ([3, 4, 5].includes(month)) return 3;    // Mar–Mei
-    if ([6, 7, 8].includes(month)) return 4;    // Jun–Agu
     return null;
 }
 
@@ -473,7 +472,6 @@ function renderTable(data) {
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td class="border px-4 py-2">${i + 1}</td>
-          <td class="border px-4 py-2">${d.tanggal}</td>
           <td class="border px-4 py-2">${d.sekolah}</td>
           <td class="border px-4 py-2">${d.nama}</td>
           <td class="border px-4 py-2">${d.gender}</td>
