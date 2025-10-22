@@ -384,7 +384,6 @@ async function loadStats() {
             let tr = document.createElement("tr");
             tr.innerHTML = `
                 <td class="border px-4 py-2">${i}</td>
-                <td class="border px-4 py-2">${tanggal}</td>
                 <td class="border px-4 py-2">${sekolah}</td>
                 <td class="border px-4 py-2">${nama}</td>
                 <td class="border px-4 py-2">${rows[i][colGender] || ""}</td>
@@ -476,11 +475,13 @@ function renderTable(data) {
           <td class="border px-4 py-2">${d.nama}</td>
           <td class="border px-4 py-2">${d.gender}</td>
           <td class="border px-4 py-2">${d.pondok}</td>
-          <td class="border px-4 py-2">${d.hp}</td>
-          <td class="border px-4 py-2">${d.linkWA}</td>
+          <td class="border px-4 py-2">${d.hpRaw}</td>
           <td class="border px-4 py-2">${d.statusBerkas}</td>
+          <td class="border px-4 py-2">
+                    ${hp ? `<a href="${linkWA}" target="_blank" class="bg-green-500 text-white px-3 py-1 rounded" onclick="markContacted('${hp}')">Hubungi</a>` : "-"} ${contacted}
+                </td>
         `;
-     
+        
         tbody.appendChild(tr);
     });
 }
