@@ -313,7 +313,7 @@
   <script>
 const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkWDi-X_jfYIUpR04AupM-ubJ-hBT-RO6W9HSyIN5_n15SN_AD1vDNM4CW-GV_4EpIm-9MTgW1iLvl/pub?gid=1123091940&single=true&output=csv";
 
-let globalData = []; // simpan data untuk search & filter
+let globalData = []; // simpan data untuk search & broadcast
 
 async function loadStats() {
     const response = await fetch(sheetURL);
@@ -327,34 +327,40 @@ async function loadStats() {
     console.log("Headers:", headers);
 
     const colTanggal  = headers.findIndex(h => h.toLowerCase().includes("timestamp"));
-    const colSekolah  = headers.findIndex(h => h.toLowerCase() === "asal sekolah");
-    const colNama     = headers.findIndex(h => h.toLowerCase() === "nama siswa");
-    const colGender   = headers.findIndex(h => h.toLowerCase() === "jenis kelamin");
-    const colPonpes   = headers.findIndex(h => h.toLowerCase() === "pilihan pondok pesantren");
-    const colHp       = headers.findIndex(h => h.toLowerCase() === "nomor hp orang tua");
-    const colKK       = headers.findIndex(h => h.toLowerCase().includes("upload berkas kartu keluarga"));
-    const colAkte     = headers.findIndex(h => h.toLowerCase().includes("upload berkas akte kelahiran"));
+    const colSekolah   = headers.findIndex(h => h.toLowerCase() === "asal sekolah");
+    const colNama      = headers.findIndex(h => h.toLowerCase() === "nama siswa");
+    const colGender    = headers.findIndex(h => h.toLowerCase() === "jenis kelamin");
+    const colPonpes    = headers.findIndex(h => h.toLowerCase() === "pilihan pondok pesantren");
+    const colHp        = headers.findIndex(h => h.toLowerCase() === "nomor hp orang tua");
+    const colKK        = headers.findIndex(h => h.toLowerCase().includes("upload berkas kartu keluarga"));
+    const colAkte      = headers.findIndex(h => h.toLowerCase().includes("upload berkas akte kelahiran"));
     
     let total = 0;
     let male = 0, female = 0;
     let ponpesCounts = {};
 
-    const tbody = document.querySelector("#pendaftarTable tbody");
+    const tbody = document.getElementById("pendaftarTable");
     if (tbody) tbody.innerHTML = "";
     globalData = [];
 
     for (let i = 1; i < rows.length; i++) {
-        const tanggal  = rows[i][colTanggal] || "";
-        const sekolah  = rows[i][colSekolah] || "";
-        const nama     = rows[i][colNama]    || "";
-        const gender   = (rows[i][colGender] || "").trim().toLowerCase();
-        const pondok   = rows[i][colPonpes]  || "";
-        const hpRaw    = rows[i][colHp]      || "";
+        const sekolah   = rows[i][colSekolah]   || "";
+        const nama   = rows[i][colNama]   || "";
+        const gender = (rows[i][colGender] || "").trim().toLowerCase();
+        const pondok = rows[i][colPonpes] || "";
+        const hpRaw  = rows[i][colHp]     || "";
         let hp = hpRaw.replace(/[^0-9]/g, "");
-        if (hp.startsWith("0")) hp = "62" + hp.substring(1);
+        if (hp.startsWith("0")) {
+            hp = "62" + hp.substring(1);
+        }
 
         const kk   = rows[i][colKK]  || "";
         const akte = rows[i][colAkte]|| "";
+       
+
+        const statusKK   = kk && kk.includes("http") ? "✅" : "❌";
+        const statusAkte = akte && akte.includes("http") ? "✅" : "❌";
+        
 
         if (!nama) continue;
         total++;
@@ -362,28 +368,48 @@ async function loadStats() {
         if (gender.includes("laki")) male++;
         else if (gender.includes("perempuan")) female++;
 
-        if (pondok) ponpesCounts[pondok] = (ponpesCounts[pondok] || 0) + 1;
+        if (pondok) {
+            ponpesCounts[pondok] = (ponpesCounts[pondok] || 0) + 1;
+        }
 
-        const statusBerkas = (kk && akte)
-            ? `<span class="text-green-600 font-bold">✅ Lengkap</span>`
-            : `<span class="text-red-500 font-bold">❌ Belum Lengkap</span>`;
+        // status berkas
+        let statusBerkas = `<span class="text-red-500 font-bold">❌ Belum Lengkap</span>`;
+        if (kk && akte) {
+            statusBerkas = `<span class="text-green-600 font-bold">✅ Lengkap</span>`;
+        }
 
+        // teks pesan default
         const pesan = `
-        Kami ucapkan:
+        اَلْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ
+
+        Kami ucapkan :
         "SELAMAT DITERIMA"
-        Atas Nama: ${nama}
-        Sebagai CALON SISWA BARU TP. 2026/2027.
+        Atas Nama : ${nama}
+        Sebagai
+        CALON SISWA BARU
+        TP. 2026/2027
+
+        ________________
+        Untuk selanjutnya, mohon dipersiapkan berkas sebagai persyaratan daftar ulang sbb:
+        1. Fc. KK (4 lb)
+        2. Fc. Akte Kelahiran (4 lb)
+        3. Fc. KTP Ayah (4 lb)
+        4. Fc. KTP Ibu (4 lb)
+        5. Pas Photo ukuran 3X4 background merah / biru (2 lb)
+        6. Administrasi Keuangan Seragam
+
+        ⏳ Daftar ulang dilaksanakan Bulan Desember 2025.
         `.trim();
 
         const linkWA = hp ? `https://wa.me/${hp}?text=${encodeURIComponent(pesan)}` : "";
-        const contacted = localStorage.getItem("contacted_" + hp) ? "✔️" : "";
 
-        // Tambah ke tabel awal
+        // cek riwayat kontak
+        let contacted = localStorage.getItem("contacted_" + hp) ? "✔️" : "";
+
         if (tbody) {
-            const tr = document.createElement("tr");
+            let tr = document.createElement("tr");
             tr.innerHTML = `
                 <td class="border px-4 py-2">${i}</td>
-                <td class="border px-4 py-2">${tanggal}</td>
                 <td class="border px-4 py-2">${sekolah}</td>
                 <td class="border px-4 py-2">${nama}</td>
                 <td class="border px-4 py-2">${rows[i][colGender] || ""}</td>
@@ -397,14 +423,38 @@ async function loadStats() {
             tbody.appendChild(tr);
         }
 
-        // Simpan ke globalData untuk filter
-        globalData.push({ 
-            tanggal, sekolah, nama, gender, pondok, hp, linkWA, statusBerkas 
-        });
+        globalData.push({nama, gender, pondok, hp, linkWA});
     }
 
     document.getElementById("totalSiswa").textContent = `Total Siswa Terdaftar: ${total}`;
-    setupFilter(globalData);
+
+    new Chart(document.getElementById("genderChart"), {
+        type: "doughnut",
+        data: {
+            labels: ["Laki-Laki", "Perempuan"],
+            datasets: [{
+                data: [male, female],
+                backgroundColor: ["#3b82f6", "#ec4899"]
+            }]
+        }
+    });
+
+    const ponpesLabels = Object.keys(ponpesCounts);
+    const ponpesValues = Object.values(ponpesCounts);
+
+    new Chart(document.getElementById("ponpesChart"), {
+        type: "doughnut",
+        data: {
+            labels: ponpesLabels,
+            datasets: [{
+                data: ponpesValues,
+                backgroundColor: [
+                    "#10b981", "#f59e0b", "#3b82f6", "#ef4444", "#8b5cf6",
+                    "#ec4899", "#22c55e", "#eab308", "#06b6d4", "#f97316"
+                ]
+            }]
+        }
+    });
 }
 
 // tandai sudah dihubungi
@@ -422,54 +472,60 @@ document.getElementById("searchInput").addEventListener("keyup", function() {
     });
 });
 
-// ==== FILTERING GELOMBANG ====
-function getGelombang(dateStr) {
+//filtering gelombang
+ function getGelombang(dateStr) {
     if (!dateStr) return null;
+
+    // Format dari Google Form: "DD/MM/YYYY HH:mm:ss"
     const parts = dateStr.split(" ");
     const tanggalPart = parts[0]?.split("/") || [];
     if (tanggalPart.length !== 3) return null;
+
     const [day, month, year] = tanggalPart.map(Number);
+
+    // Pastikan bulan valid
     if (isNaN(month)) return null;
-    if ([9, 10, 11].includes(month)) return 1;  // Sep–Nov
-    if ([12, 1, 2].includes(month)) return 2;   // Des–Feb
-    if ([3, 4, 5].includes(month)) return 3;    // Mar–Mei
-    if ([6, 7, 8].includes(month)) return 4;    // Jun–Agu
+
+    // Tentukan gelombang berdasarkan bulan
+    if ([9, 10, 11].includes(month)) return 1;  // Sep-Nov
+    if ([12, 1, 2].includes(month)) return 2;   // Des-Feb
+    if ([3, 4, 5].includes(month)) return 3;    // Mar-Mei
     return null;
 }
 
-function renderTable(data) {
-    const tbody = document.querySelector("#pendaftarTable tbody");
-    tbody.innerHTML = "";
-    data.forEach((d, i) => {
+    // Render tabel berdasarkan data
+    function renderTable(data) {
+      const tbody = document.querySelector("#pendaftarTable tbody");
+      tbody.innerHTML = "";
+      data.forEach((d, i) => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-            <td class="border px-4 py-2">${i + 1}</td>
-            <td class="border px-4 py-2">${d.tanggal}</td>
-            <td class="border px-4 py-2">${d.sekolah}</td>
-            <td class="border px-4 py-2">${d.nama}</td>
-            <td class="border px-4 py-2">${d.gender}</td>
-            <td class="border px-4 py-2">${d.pondok}</td>
+          <td class="border px-4 py-2">${i + 1}</td>
+          <td class="border px-4 py-2">${d.nama}</td>
+          <td class="border px-4 py-2">${d.tanggal}</td>
+          <td class="border px-4 py-2">${d.sekolah}</td>
+          <td class="border px-4 py-2">${d.gender}</td>
+          <td class="border px-4 py-2">${d.pondok}</td>
         `;
         tbody.appendChild(tr);
-    });
-}
+      });
+    }
 
-function setupFilter(allData) {
-    const filter = document.getElementById("gelombangFilter");
-    filter.addEventListener("change", () => {
+    // Filter dropdown
+    function setupFilter(allData) {
+      const filter = document.getElementById("gelombangFilter");
+      filter.addEventListener("change", () => {
         const val = filter.value;
         if (val === "all") renderTable(allData);
         else {
-            const filtered = allData.filter(d => getGelombang(d.tanggal) == val);
-            renderTable(filtered);
+          const filtered = allData.filter(d => getGelombang(d.tanggal) == val);
+          renderTable(filtered);
         }
-    });
-}
+      });
+    }
 
-// Jalankan
 loadStats();
 </script>
-
 
 
 
