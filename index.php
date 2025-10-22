@@ -529,7 +529,10 @@ document.getElementById("searchInput").addEventListener("keyup", function() {
         }
       });
     }
+renderTable(globalData);
 
+    // aktifkan dropdown filter
+    setupFilter(globalData);
 loadStats();
 </script>
 
