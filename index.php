@@ -389,6 +389,7 @@
         </button> -->
        <div class="container mx-auto mt-6">
     <div class="flex justify-between items-center mb-4">
+      </div>
       <div>
         <label for="gelombangFilter" class="mr-2 font-semibold">Pilih Gelombang:</label>
         <select id="gelombangFilter" class="p-2 rounded border border-gray-400">
@@ -400,16 +401,7 @@
         </select>
       </div>
     </div>
-                    </div>
-        <div class="relative w-full h-[400px] flex items-center justify-center border bg-gray-100 overflow-hidden">
-  <button 
-    id="runBtn"
-    class="absolute bg-green-600 text-white px-4 py-2 rounded-lg shadow transition-transform duration-300"
-    style="top: 50%; left: 50%; transform: translate(-50%, -50%);"
-  >
-    View Database
-  </button>
-</div>
+        
 
     <div class="overflow-x-auto bg-white shadow-lg rounded-2xl">
       <table class="min-w-full border-collapse">
