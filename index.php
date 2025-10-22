@@ -327,12 +327,12 @@ async function loadStats() {
     console.log("Headers:", headers);
 
     const colSekolah   = headers.findIndex(h => h.toLowerCase() === "asal sekolah");
-    const colNama   = headers.findIndex(h => h.toLowerCase() === "nama siswa");
-    const colGender = headers.findIndex(h => h.toLowerCase() === "jenis kelamin");
-    const colPonpes = headers.findIndex(h => h.toLowerCase() === "pilihan pondok pesantren");
-    const colHp     = headers.findIndex(h => h.toLowerCase() === "nomor hp orang tua");
-    const colKK   = headers.findIndex(h => h.toLowerCase().includes("upload berkas kartu keluarga"));
-    const colAkte = headers.findIndex(h => h.toLowerCase().includes("upload berkas akte kelahiran"));
+    const colNama      = headers.findIndex(h => h.toLowerCase() === "nama siswa");
+    const colGender    = headers.findIndex(h => h.toLowerCase() === "jenis kelamin");
+    const colPonpes    = headers.findIndex(h => h.toLowerCase() === "pilihan pondok pesantren");
+    const colHp        = headers.findIndex(h => h.toLowerCase() === "nomor hp orang tua");
+    const colKK        = headers.findIndex(h => h.toLowerCase().includes("upload berkas kartu keluarga"));
+    const colAkte      = headers.findIndex(h => h.toLowerCase().includes("upload berkas akte kelahiran"));
     
     let total = 0;
     let male = 0, female = 0;
@@ -517,44 +517,6 @@ document.getElementById("searchInput").addEventListener("keyup", function() {
 //     window.open("tabel.php", "_blank"); // buka tabel siswa di tab baru
 // });
 
-    const btn = document.getElementById("runBtn");
-    const container = btn.parentElement;
-    const offset = 120; // jarak "zona bahaya" di sekitar tombol
-
-    container.addEventListener("mousemove", function(e) {
-    const rect = btn.getBoundingClientRect();
-    const containerRect = container.getBoundingClientRect();
-
-    const mouseX = e.clientX;
-    const mouseY = e.clientY;
-
-    const btnX = rect.left + rect.width / 2;
-    const btnY = rect.top + rect.height / 2;
-
-    const distX = mouseX - btnX;
-    const distY = mouseY - btnY;
-    const distance = Math.sqrt(distX ** 2 + distY ** 2);
-
-    if (distance < offset) {
-        // Tentukan arah lari menjauhi cursor
-        let moveX = (rect.left - containerRect.left) + (distX > 0 ? -100 : 100);
-        let moveY = (rect.top - containerRect.top) + (distY > 0 ? -100 : 100);
-
-        // Batas agar nggak keluar container
-        moveX = Math.max(0, Math.min(containerRect.width - rect.width, moveX));
-        moveY = Math.max(0, Math.min(containerRect.height - rect.height, moveY));
-
-        btn.style.left = moveX + "px";
-        btn.style.top = moveY + "px";
-        btn.style.transform = "translate(0,0)";
-    }
-    });
-
-    // Hapus klik total (nggak bisa dipencet meski kejar pakai inspect element)
-    btn.addEventListener("click", (e) => {
-    e.preventDefault();
-    alert("😜 Tombol ini tidak bisa kamu klik!");
-    });
 
 loadStats();
 </script>
