@@ -341,7 +341,13 @@ async function loadStats() {
 
     const tbody = document.getElementById("pendaftarTable");
     if (tbody) tbody.innerHTML = "";
-    globalData = [];
+    globalData.push({
+            nama,
+            tanggal,
+            sekolah,
+            gender,
+            pondok
+        });
 
     for (let i = 1; i < rows.length; i++) {
         const sekolah   = rows[i][colSekolah]   || "";
@@ -490,7 +496,6 @@ document.getElementById("searchInput").addEventListener("keyup", function() {
     if ([9, 10, 11].includes(month)) return 1;  // Sep-Nov
     if ([12, 1, 2].includes(month)) return 2;   // Des-Feb
     if ([3, 4, 5].includes(month)) return 3;    // Mar-Mei
-    if ([6, 7, 8].includes(month)) return 4;    // Jun-Agu
     return null;
 }
 
@@ -524,13 +529,6 @@ document.getElementById("searchInput").addEventListener("keyup", function() {
         }
       });
     }
-// tombol broadcast
-// document.getElementById("broadcastBtn").addEventListener("click", function() {
-//     window.open("tabel.php", "_blank"); // buka tabel siswa di tab baru
-// });
-//gelombang
-
-
 
 loadStats();
 </script>
