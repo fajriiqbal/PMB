@@ -326,7 +326,7 @@ async function loadStats() {
     const headers = rows[0].map(h => h.trim());
     console.log("Headers:", headers);
 
-    const colWaktu     = headers.findIndex(h=> h.toLowerCase().includes("timestamp"));
+    const colTanggal  = headers.findIndex(h => h.toLowerCase().includes("timestamp"));
     const colSekolah   = headers.findIndex(h => h.toLowerCase() === "asal sekolah");
     const colNama      = headers.findIndex(h => h.toLowerCase() === "nama siswa");
     const colGender    = headers.findIndex(h => h.toLowerCase() === "jenis kelamin");
@@ -473,15 +473,27 @@ document.getElementById("searchInput").addEventListener("keyup", function() {
 });
 
 //filtering gelombang
- function getGelombang(dateStr) {
-      if (!dateStr) return null;
-      const bulan = new Date(dateStr).getMonth() + 1; // 1–12
-      if ([9, 10, 11].includes(bulan)) return 1;
-      if ([12, 1, 2].includes(bulan)) return 2;
-      if ([3, 4, 5].includes(bulan)) return 3;
-      if ([6, 7, 8].includes(bulan)) return 4;
-      return null;
-    }
+function getGelombang(dateStr) {
+    if (!dateStr) return null;
+
+    // Format dari Google Form: "DD/MM/YYYY HH:mm:ss"
+    const parts = dateStr.split(" ");
+    const tanggalPart = parts[0]?.split("/") || [];
+    if (tanggalPart.length !== 3) return null;
+
+    const [day, month, year] = tanggalPart.map(Number);
+
+    // Pastikan bulan valid
+    if (isNaN(month)) return null;
+
+    // Tentukan gelombang berdasarkan bulan
+    if ([9, 10, 11].includes(month)) return 1;  // Sep-Nov
+    if ([12, 1, 2].includes(month)) return 2;   // Des-Feb
+    if ([3, 4, 5].includes(month)) return 3;    // Mar-Mei
+    if ([6, 7, 8].includes(month)) return 4;    // Jun-Agu
+    return null;
+}
+
 
     // Render tabel berdasarkan data
     function renderTable(data) {
