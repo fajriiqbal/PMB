@@ -344,23 +344,17 @@ async function loadStats() {
     globalData = [];
 
     for (let i = 1; i < rows.length; i++) {
-        const sekolah   = rows[i][colSekolah]   || "";
-        const nama   = rows[i][colNama]   || "";
-        const gender = (rows[i][colGender] || "").trim().toLowerCase();
-        const pondok = rows[i][colPonpes] || "";
-        const hpRaw  = rows[i][colHp]     || "";
+        const tanggal = rows[i][colTanggal] || "";
+        const sekolah = rows[i][colSekolah] || "";
+        const nama    = rows[i][colNama] || "";
+        const gender  = (rows[i][colGender] || "").trim().toLowerCase();
+        const pondok  = rows[i][colPonpes] || "";
+        const hpRaw   = rows[i][colHp] || "";
         let hp = hpRaw.replace(/[^0-9]/g, "");
-        if (hp.startsWith("0")) {
-            hp = "62" + hp.substring(1);
-        }
+        if (hp.startsWith("0")) hp = "62" + hp.substring(1);
 
-        const kk   = rows[i][colKK]  || "";
-        const akte = rows[i][colAkte]|| "";
-       
-
-        const statusKK   = kk && kk.includes("http") ? "✅" : "❌";
-        const statusAkte = akte && akte.includes("http") ? "✅" : "❌";
-        
+        const kk   = rows[i][colKK] || "";
+        const akte = rows[i][colAkte] || "";
 
         if (!nama) continue;
         total++;
@@ -368,48 +362,29 @@ async function loadStats() {
         if (gender.includes("laki")) male++;
         else if (gender.includes("perempuan")) female++;
 
-        if (pondok) {
-            ponpesCounts[pondok] = (ponpesCounts[pondok] || 0) + 1;
-        }
+        if (pondok) ponpesCounts[pondok] = (ponpesCounts[pondok] || 0) + 1;
 
-        // status berkas
         let statusBerkas = `<span class="text-red-500 font-bold">❌ Belum Lengkap</span>`;
-        if (kk && akte) {
-            statusBerkas = `<span class="text-green-600 font-bold">✅ Lengkap</span>`;
-        }
+        if (kk && akte) statusBerkas = `<span class="text-green-600 font-bold">✅ Lengkap</span>`;
 
-        // teks pesan default
         const pesan = `
         اَلْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ
 
         Kami ucapkan :
         "SELAMAT DITERIMA"
         Atas Nama : ${nama}
-        Sebagai
-        CALON SISWA BARU
+        Sebagai CALON SISWA BARU
         TP. 2026/2027
-
-        ________________
-        Untuk selanjutnya, mohon dipersiapkan berkas sebagai persyaratan daftar ulang sbb:
-        1. Fc. KK (4 lb)
-        2. Fc. Akte Kelahiran (4 lb)
-        3. Fc. KTP Ayah (4 lb)
-        4. Fc. KTP Ibu (4 lb)
-        5. Pas Photo ukuran 3X4 background merah / biru (2 lb)
-        6. Administrasi Keuangan Seragam
-
-        ⏳ Daftar ulang dilaksanakan Bulan Desember 2025.
         `.trim();
 
         const linkWA = hp ? `https://wa.me/${hp}?text=${encodeURIComponent(pesan)}` : "";
-
-        // cek riwayat kontak
         let contacted = localStorage.getItem("contacted_" + hp) ? "✔️" : "";
 
         if (tbody) {
             let tr = document.createElement("tr");
             tr.innerHTML = `
                 <td class="border px-4 py-2">${i}</td>
+                <td class="border px-4 py-2">${tanggal}</td>
                 <td class="border px-4 py-2">${sekolah}</td>
                 <td class="border px-4 py-2">${nama}</td>
                 <td class="border px-4 py-2">${rows[i][colGender] || ""}</td>
@@ -423,7 +398,8 @@ async function loadStats() {
             tbody.appendChild(tr);
         }
 
-        globalData.push({nama, gender, pondok, hp, linkWA});
+        // ✅ Tambahkan tanggal ke globalData untuk filter gelombang
+        globalData.push({tanggal, sekolah, nama, gender, pondok, hp, linkWA, statusBerkas});
     }
 
     document.getElementById("totalSiswa").textContent = `Total Siswa Terdaftar: ${total}`;
@@ -455,6 +431,9 @@ async function loadStats() {
             }]
         }
     });
+
+    // ✅ Panggil filter setelah data dimuat
+    setupFilter(globalData);
 }
 
 // tandai sudah dihubungi
@@ -472,60 +451,54 @@ document.getElementById("searchInput").addEventListener("keyup", function() {
     });
 });
 
-//filtering gelombang
- function getGelombang(dateStr) {
+// ✅ Fitur filter gelombang
+function getGelombang(dateStr) {
     if (!dateStr) return null;
-
-    // Format dari Google Form: "DD/MM/YYYY HH:mm:ss"
     const parts = dateStr.split(" ");
     const tanggalPart = parts[0]?.split("/") || [];
     if (tanggalPart.length !== 3) return null;
-
     const [day, month, year] = tanggalPart.map(Number);
-
-    // Pastikan bulan valid
     if (isNaN(month)) return null;
-
-    // Tentukan gelombang berdasarkan bulan
-    if ([9, 10, 11].includes(month)) return 1;  // Sep-Nov
-    if ([12, 1, 2].includes(month)) return 2;   // Des-Feb
-    if ([3, 4, 5].includes(month)) return 3;    // Mar-Mei
+    if ([9, 10, 11].includes(month)) return 1;  // Sep–Nov
+    if ([12, 1, 2].includes(month)) return 2;   // Des–Feb
+    if ([3, 4, 5].includes(month)) return 3;    // Mar–Mei
+    if ([6, 7, 8].includes(month)) return 4;    // Jun–Agu
     return null;
 }
 
-    // Render tabel berdasarkan data
-    function renderTable(data) {
-      const tbody = document.querySelector("#pendaftarTable tbody");
-      tbody.innerHTML = "";
-      data.forEach((d, i) => {
+function renderTable(data) {
+    const tbody = document.querySelector("#pendaftarTable");
+    tbody.innerHTML = "";
+    data.forEach((d, i) => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td class="border px-4 py-2">${i + 1}</td>
-          <td class="border px-4 py-2">${d.nama}</td>
           <td class="border px-4 py-2">${d.tanggal}</td>
           <td class="border px-4 py-2">${d.sekolah}</td>
+          <td class="border px-4 py-2">${d.nama}</td>
           <td class="border px-4 py-2">${d.gender}</td>
           <td class="border px-4 py-2">${d.pondok}</td>
         `;
         tbody.appendChild(tr);
-      });
-    }
+    });
+}
 
-    // Filter dropdown
-    function setupFilter(allData) {
-      const filter = document.getElementById("gelombangFilter");
-      filter.addEventListener("change", () => {
+function setupFilter(allData) {
+    const filter = document.getElementById("gelombangFilter");
+    if (!filter) return; // pastikan elemen ada
+    filter.addEventListener("change", () => {
         const val = filter.value;
         if (val === "all") renderTable(allData);
         else {
-          const filtered = allData.filter(d => getGelombang(d.tanggal) == val);
-          renderTable(filtered);
+            const filtered = allData.filter(d => getGelombang(d.tanggal) == val);
+            renderTable(filtered);
         }
-      });
-    }
+    });
+}
 
 loadStats();
 </script>
+
 
 
 
