@@ -491,7 +491,7 @@ function getGelombang(dateStr) {
 
     if (date <= batasGelombang1) {
         return 1;
-    } else if (month === 10 || month === 12 || month === 1 || month === 2) {
+    } else if (month === 10 || month === 11 || month === 12 || month === 1 || month === 2) {
         // Gelombang 2: Nov–Feb
         return 2;
     } else if (month >= 3 && month <= 5) {
