@@ -468,8 +468,8 @@ function getGelombang(dateStr) {
     if (tanggalPart.length !== 3) return null;
     const [day, month, year] = tanggalPart.map(Number);
     if (isNaN(month)) return null;
-    if ([9, 10, 11].includes(month)) return 1;  // Sep–Nov
-    if ([12, 1, 2].includes(month)) return 2;   // Des–Feb
+    if ([9, 10].includes(month)) return 1;  // Sep–Nov
+    if ([11, 12, 1, 2].includes(month)) return 2;   // Des–Feb
     if ([3, 4, 5].includes(month)) return 3;    // Mar–Mei
     return null;
 }
