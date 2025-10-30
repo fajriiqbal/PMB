@@ -461,19 +461,47 @@ document.getElementById("searchInput").addEventListener("keyup", function() {
 });
 
 // ✅ Fitur filter gelombang
+// function getGelombang(dateStr) {
+//     if (!dateStr) return null;
+//     const parts = dateStr.split(" ");
+//     const tanggalPart = parts[0]?.split("/") || [];
+//     if (tanggalPart.length !== 3) return null;
+//     const [day, month, year] = tanggalPart.map(Number);
+//     if (isNaN(month)) return null;
+//     if ([9, 10].includes(month)) return 1;  // Sep–Nov
+//     if ([11, 12, 1, 2].includes(month)) return 2;   // Des–Feb
+//     if ([3, 4, 5].includes(month)) return 3;    // Mar–Mei
+//     return null;
+// }
 function getGelombang(dateStr) {
     if (!dateStr) return null;
+
+    // Pisahkan tanggal dari format "DD/MM/YYYY" atau "DD/MM/YYYY HH:mm"
     const parts = dateStr.split(" ");
     const tanggalPart = parts[0]?.split("/") || [];
     if (tanggalPart.length !== 3) return null;
-    const [day, month, year] = tanggalPart.map(Number);
-    if (isNaN(month)) return null;
-    if ([9, 10].includes(month)) return 1;  // Sep–Nov
-    if ([11, 12, 1, 2].includes(month)) return 2;   // Des–Feb
-    if ([3, 4, 5].includes(month)) return 3;    // Mar–Mei
-    return null;
-}
 
+    const [day, month, year] = tanggalPart.map(Number);
+    if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
+
+    // Cek logika gelombang berdasarkan tanggal dan bulan
+    // Gelombang 1: sampai 30 Oktober
+    const date = new Date(year, month - 1, day);
+    const batasGelombang1 = new Date(year, 9, 29); // 30 Oktober (bulan 9 = Oktober karena index mulai 0)
+
+    if (date <= batasGelombang1) {
+        return 1;
+    } else if (month === 11 || month === 12 || month === 1 || month === 2) {
+        // Gelombang 2: Nov–Feb
+        return 2;
+    } else if (month >= 3 && month <= 5) {
+        // Gelombang 3: Mar–Mei
+        return 3;
+    } else {
+        // Sisanya, misal Juni–Agustus, bisa diatur nanti
+        return null;
+    }
+}
 function renderTable(data) {
     const tbody = document.querySelector("#pendaftarTable");
     tbody.innerHTML = "";
