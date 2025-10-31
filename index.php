@@ -411,7 +411,7 @@ async function loadStats() {
     }
 
   
-
+let genderChart, ponpesChart;
 // ✅ Fungsi untuk menampilkan ulang chart
 function renderCharts(data) {
     // Hitung ulang total, laki-laki, perempuan, dan ponpes
