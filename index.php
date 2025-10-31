@@ -184,12 +184,11 @@
     
       <div>
         <label for="gelombangFilter" class="mr-2 font-semibold">Pilih Gelombang:</label>
-        <select id="gelombangFilter" class="p-2 rounded border border-gray-400">
-          <option value="all">Semua Gelombang</option>
-          <option value="1">Gelombang 1 (Sep - Okt)</option>
-          <option value="2">Gelombang 2 (Nov - Feb)</option>
-          <option value="3">Gelombang 3 (Mar - Mei)</option>
-        
+        <select id="filterGelombang" class="form-select">
+            <option value="">Semua Gelombang</option>
+            <option value="1">Gelombang 1</option>
+            <option value="2">Gelombang 2</option>
+            <option value="3">Gelombang 3</option>
         </select>
       </div>
     </div>
@@ -411,9 +410,29 @@ async function loadStats() {
         globalData.push({tanggal, sekolah, nama, gender, pondok, hp, linkWA, statusBerkas});
     }
 
+   let genderChart, ponpesChart;
+
+// ✅ Fungsi untuk menampilkan ulang chart
+function renderCharts(data) {
+    // Hitung ulang total, laki-laki, perempuan, dan ponpes
+    const total = data.length;
+    const male = data.filter(s => s.JENIS_KELAMIN === "L").length;
+    const female = data.filter(s => s.JENIS_KELAMIN === "P").length;
+
+    const ponpesCounts = {};
+    data.forEach(s => {
+        ponpesCounts[s.PONPES] = (ponpesCounts[s.PONPES] || 0) + 1;
+    });
+
+    // Tampilkan total siswa
     document.getElementById("totalSiswa").textContent = `Total Siswa Terdaftar: ${total}`;
 
-    new Chart(document.getElementById("genderChart"), {
+    // Hapus chart lama agar tidak menumpuk
+    if (genderChart) genderChart.destroy();
+    if (ponpesChart) ponpesChart.destroy();
+
+    // Buat chart jenis kelamin
+    genderChart = new Chart(document.getElementById("genderChart"), {
         type: "doughnut",
         data: {
             labels: ["Laki-Laki", "Perempuan"],
@@ -424,10 +443,11 @@ async function loadStats() {
         }
     });
 
+    // Buat chart ponpes
     const ponpesLabels = Object.keys(ponpesCounts);
     const ponpesValues = Object.values(ponpesCounts);
 
-    new Chart(document.getElementById("ponpesChart"), {
+    ponpesChart = new Chart(document.getElementById("ponpesChart"), {
         type: "doughnut",
         data: {
             labels: ponpesLabels,
@@ -440,32 +460,31 @@ async function loadStats() {
             }]
         }
     });
-
-    // ✅ Panggil filter setelah data dimuat
-    setupFilter(globalData);
 }
 
-
-// Fungsi filter berdasarkan gelombang
+// ✅ Fungsi filter berdasarkan gelombang
 function filterByGelombang(data, gelombang) {
     if (!gelombang) return data; // semua data jika belum pilih
     return data.filter(s => getGelombang(s.TANGGAL_DAFTAR) === Number(gelombang));
 }
 
-// Panggil setelah semua data siswa dimuat
+// ✅ Fungsi untuk mengatur dropdown filter
 function setupFilter(globalData) {
     const select = document.getElementById("filterGelombang");
 
-    // Render chart pertama kali tanpa filter
+    // Render pertama kali (semua data)
     renderCharts(globalData);
 
-    // Ubah chart saat dropdown diganti
+    // Ganti chart jika dropdown berubah
     select.addEventListener("change", function() {
         const selectedGelombang = this.value;
         const filteredData = filterByGelombang(globalData, selectedGelombang);
         renderCharts(filteredData);
     });
 }
+
+// ✅ Panggil fungsi setup setelah data dimuat
+setupFilter(globalData);
 
 // tandai sudah dihubungi
 function markContacted(num) {
