@@ -445,6 +445,28 @@ async function loadStats() {
     setupFilter(globalData);
 }
 
+
+// Fungsi filter berdasarkan gelombang
+function filterByGelombang(data, gelombang) {
+    if (!gelombang) return data; // semua data jika belum pilih
+    return data.filter(s => getGelombang(s.TANGGAL_DAFTAR) === Number(gelombang));
+}
+
+// Panggil setelah semua data siswa dimuat
+function setupFilter(globalData) {
+    const select = document.getElementById("filterGelombang");
+
+    // Render chart pertama kali tanpa filter
+    renderCharts(globalData);
+
+    // Ubah chart saat dropdown diganti
+    select.addEventListener("change", function() {
+        const selectedGelombang = this.value;
+        const filteredData = filterByGelombang(globalData, selectedGelombang);
+        renderCharts(filteredData);
+    });
+}
+
 // tandai sudah dihubungi
 function markContacted(num) {
     localStorage.setItem("contacted_" + num, true);
