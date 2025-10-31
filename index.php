@@ -410,7 +410,7 @@ async function loadStats() {
         globalData.push({tanggal, sekolah, nama, gender, pondok, hp, linkWA, statusBerkas});
     }
 
-   let genderChart, ponpesChart;
+  
 
 // ✅ Fungsi untuk menampilkan ulang chart
 function renderCharts(data) {
@@ -485,7 +485,7 @@ function setupFilter(globalData) {
 
 // ✅ Panggil fungsi setup setelah data dimuat
 setupFilter(globalData);
-
+}
 // tandai sudah dihubungi
 function markContacted(num) {
     localStorage.setItem("contacted_" + num, true);
