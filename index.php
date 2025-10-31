@@ -184,11 +184,12 @@
     
       <div>
         <label for="gelombangFilter" class="mr-2 font-semibold">Pilih Gelombang:</label>
-        <select id="filterGelombang" class="form-select">
-            <option value="">Semua Gelombang</option>
-            <option value="1">Gelombang 1</option>
-            <option value="2">Gelombang 2</option>
-            <option value="3">Gelombang 3</option>
+        <select id="gelombangFilter" class="p-2 rounded border border-gray-400">
+          <option value="all">Semua Gelombang</option>
+          <option value="1">Gelombang 1 (Sep - Okt)</option>
+          <option value="2">Gelombang 2 (Nov - Feb)</option>
+          <option value="3">Gelombang 3 (Mar - Mei)</option>
+        
         </select>
       </div>
     </div>
@@ -410,29 +411,9 @@ async function loadStats() {
         globalData.push({tanggal, sekolah, nama, gender, pondok, hp, linkWA, statusBerkas});
     }
 
-  
-let genderChart, ponpesChart;
-// ✅ Fungsi untuk menampilkan ulang chart
-function renderCharts(data) {
-    // Hitung ulang total, laki-laki, perempuan, dan ponpes
-    const total = data.length;
-    const male = data.filter(s => s.JENIS_KELAMIN === "L").length;
-    const female = data.filter(s => s.JENIS_KELAMIN === "P").length;
-
-    const ponpesCounts = {};
-    data.forEach(s => {
-        ponpesCounts[s.PONPES] = (ponpesCounts[s.PONPES] || 0) + 1;
-    });
-
-    // Tampilkan total siswa
     document.getElementById("totalSiswa").textContent = `Total Siswa Terdaftar: ${total}`;
 
-    // Hapus chart lama agar tidak menumpuk
-    if (genderChart) genderChart.destroy();
-    if (ponpesChart) ponpesChart.destroy();
-
-    // Buat chart jenis kelamin
-    genderChart = new Chart(document.getElementById("genderChart"), {
+    new Chart(document.getElementById("genderChart"), {
         type: "doughnut",
         data: {
             labels: ["Laki-Laki", "Perempuan"],
@@ -443,11 +424,10 @@ function renderCharts(data) {
         }
     });
 
-    // Buat chart ponpes
     const ponpesLabels = Object.keys(ponpesCounts);
     const ponpesValues = Object.values(ponpesCounts);
 
-    ponpesChart = new Chart(document.getElementById("ponpesChart"), {
+    new Chart(document.getElementById("ponpesChart"), {
         type: "doughnut",
         data: {
             labels: ponpesLabels,
@@ -460,15 +440,68 @@ function renderCharts(data) {
             }]
         }
     });
+
+    // ✅ Panggil filter setelah data dimuat
+    setupFilter(globalData);
 }
 
-// ✅ Fungsi filter berdasarkan gelombang
-function filterByGelombang(data, gelombang) {
-    if (!gelombang) return data; // semua data jika belum pilih
-    return data.filter(s => getGelombang(s.tanggal) === Number(gelombang));
+// tandai sudah dihubungi
+function markContacted(num) {
+    localStorage.setItem("contacted_" + num, true);
 }
 
-// ✅ Render ulang tabel
+// fitur search
+document.getElementById("searchInput").addEventListener("keyup", function() {
+    const filter = this.value.toLowerCase();
+    const rows = document.querySelectorAll("#pendaftarTable tr");
+    rows.forEach(r => {
+        const text = r.innerText.toLowerCase();
+        r.style.display = text.includes(filter) ? "" : "none";
+    });
+});
+
+// ✅ Fitur filter gelombang
+// function getGelombang(dateStr) {
+//     if (!dateStr) return null;
+//     const parts = dateStr.split(" ");
+//     const tanggalPart = parts[0]?.split("/") || [];
+//     if (tanggalPart.length !== 3) return null;
+//     const [day, month, year] = tanggalPart.map(Number);
+//     if (isNaN(month)) return null;
+//     if ([9, 10].includes(month)) return 1;  // Sep–Nov
+//     if ([11, 12, 1, 2].includes(month)) return 2;   // Des–Feb
+//     if ([3, 4, 5].includes(month)) return 3;    // Mar–Mei
+//     return null;
+// }
+function getGelombang(dateStr) {
+    if (!dateStr) return null;
+
+    // Pisahkan tanggal dari format "DD/MM/YYYY" atau "DD/MM/YYYY HH:mm"
+    const parts = dateStr.split(" ");
+    const tanggalPart = parts[0]?.split("/") || [];
+    if (tanggalPart.length !== 3) return null;
+
+    const [day, month, year] = tanggalPart.map(Number);
+    if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
+
+    // Cek logika gelombang berdasarkan tanggal dan bulan
+    // Gelombang 1: sampai 30 Oktober
+    const date = new Date(year, month - 1, day);
+    const batasGelombang1 = new Date(year, 9, 29); // 30 Oktober (bulan 9 = Oktober karena index mulai 0)
+
+    if (date <= batasGelombang1) {
+        return 1;
+    } else if (month === 10 || month === 11 || month === 12 || month === 1 || month === 2) {
+        // Gelombang 2: Nov–Feb
+        return 2;
+    } else if (month >= 3 && month <= 5) {
+        // Gelombang 3: Mar–Mei
+        return 3;
+    } else {
+        // Sisanya, misal Juni–Agustus, bisa diatur nanti
+        return null;
+    }
+}
 function renderTable(data) {
     const tbody = document.querySelector("#pendaftarTable");
     tbody.innerHTML = "";
@@ -495,20 +528,17 @@ function renderTable(data) {
     });
 }
 
-// ✅ Fungsi setup filter untuk Chart dan Tabel
-function setupFilter(globalData) {
-    const select = document.getElementById("filterGelombang");
 
-    // Render awal (tanpa filter)
-    renderCharts(globalData);
-    renderTable(globalData);
-
-    // Saat user ubah dropdown
-    select.addEventListener("change", function() {
-        const selectedGelombang = this.value;
-        const filteredData = filterByGelombang(globalData, selectedGelombang);
-        renderCharts(filteredData);
-        renderTable(filteredData);
+function setupFilter(allData) {
+    const filter = document.getElementById("gelombangFilter");
+    if (!filter) return; // pastikan elemen ada
+    filter.addEventListener("change", () => {
+        const val = filter.value;
+        if (val === "all") renderTable(allData);
+        else {
+            const filtered = allData.filter(d => getGelombang(d.tanggal) == val);
+            renderTable(filtered);
+        }
     });
 }
 
