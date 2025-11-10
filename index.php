@@ -112,9 +112,8 @@
                 return '';
         }
     }
-    
     // Check if mobile device
-    $isMobile = false;
+    $isMobile = false;z
     if (isset($_SERVER['HTTP_USER_AGENT'])) {
         $userAgent = $_SERVER['HTTP_USER_AGENT'];
         $isMobile = preg_match("/(android|iphone|ipod|ipad|blackberry|windows phone)/i", $userAgent);
