@@ -331,7 +331,7 @@ async function loadStats() {
     const colTanggal  = headers.findIndex(h => h.toLowerCase().includes("timestamp"));
     const colSekolah   = headers.findIndex(h => h.toLowerCase() === "asal sekolah");
     const colNama      = headers.findIndex(h => h.toLowerCase() === "nama siswa");
-    const colAlamat    = headres.findIndex(h => h.toLowerCase() === "Alamat");
+    const colAlamat    = headres.findIndex(h => h.toLowerCase() === "alamat");
     const colGender    = headers.findIndex(h => h.toLowerCase() === "jenis kelamin");
     const colPonpes    = headers.findIndex(h => h.toLowerCase() === "pilihan pondok pesantren");
     const colHp        = headers.findIndex(h => h.toLowerCase() === "nomor hp orang tua");
@@ -350,7 +350,7 @@ async function loadStats() {
         const tanggal = rows[i][colTanggal] || "";
         const sekolah = rows[i][colSekolah] || "";
         const nama    = rows[i][colNama] || "";
-        // const alamat  = rows[i][colAlamat] || "";
+        const alamat  = rows[i][colAlamat] || "";
         const gender  = (rows[i][colGender] || "").trim().toLowerCase();
         const pondok  = rows[i][colPonpes] || "";
         const hpRaw   = rows[i][colHp] || "";
