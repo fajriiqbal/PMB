@@ -494,7 +494,7 @@ function renderTable(data) {
 
         const tr = document.createElement("tr");
         tr.innerHTML = `
-            <td class="border px-4 py-2">${d.nomor}</td>
+            <td class="border px-4 py-2">${i + 1}</td>
             <td class="border px-4 py-2">${d.sekolah}</td>
             <td class="border px-4 py-2">${d.nama}</td>
             <td class="border px-4 py-2">${d.alamat}</td>
