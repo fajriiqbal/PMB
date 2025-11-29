@@ -113,7 +113,7 @@
         }
     }
     // Check if mobile device
-    $isMobile = false;z
+    $isMobile = false;
     if (isset($_SERVER['HTTP_USER_AGENT'])) {
         $userAgent = $_SERVER['HTTP_USER_AGENT'];
         $isMobile = preg_match("/(android|iphone|ipod|ipad|blackberry|windows phone)/i", $userAgent);
@@ -206,6 +206,9 @@
             </th>
             <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
               Nama
+            </th>
+            <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
+              Alamat
             </th>
             <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
               Jenis Kelamin
@@ -328,6 +331,7 @@ async function loadStats() {
     const colTanggal  = headers.findIndex(h => h.toLowerCase().includes("timestamp"));
     const colSekolah   = headers.findIndex(h => h.toLowerCase() === "asal sekolah");
     const colNama      = headers.findIndex(h => h.toLowerCase() === "nama siswa");
+    const colAlamat    = headres.findIndex(h => h.toLowerCase() === "alamat");
     const colGender    = headers.findIndex(h => h.toLowerCase() === "jenis kelamin");
     const colPonpes    = headers.findIndex(h => h.toLowerCase() === "pilihan pondok pesantren");
     const colHp        = headers.findIndex(h => h.toLowerCase() === "nomor hp orang tua");
@@ -346,6 +350,7 @@ async function loadStats() {
         const tanggal = rows[i][colTanggal] || "";
         const sekolah = rows[i][colSekolah] || "";
         const nama    = rows[i][colNama] || "";
+        const alamat  = rows[i][colAlamat] || "";
         const gender  = (rows[i][colGender] || "").trim().toLowerCase();
         const pondok  = rows[i][colPonpes] || "";
         const hpRaw   = rows[i][colHp] || "";
@@ -395,6 +400,7 @@ async function loadStats() {
                 <td class="border px-4 py-2">${i}</td>
                 <td class="border px-4 py-2">${sekolah}</td>
                 <td class="border px-4 py-2">${nama}</td>
+                <td class="border px-4 py-2">${alamat}</td>
                 <td class="border px-4 py-2">${rows[i][colGender] || ""}</td>
                 <td class="border px-4 py-2">${pondok}</td>
                 <td class="border px-4 py-2">${hpRaw}</td>
@@ -407,7 +413,7 @@ async function loadStats() {
         }
 
         // ✅ Tambahkan tanggal ke globalData untuk filter gelombang
-        globalData.push({tanggal, sekolah, nama, gender, pondok, hp, linkWA, statusBerkas});
+        globalData.push({tanggal, sekolah, nama, alamat, gender, pondok, hp, linkWA, statusBerkas});
     }
 
     document.getElementById("totalSiswa").textContent = `Total Siswa Terdaftar: ${total}`;
@@ -515,6 +521,7 @@ function renderTable(data) {
           <td class="border px-4 py-2">${i + 1}</td>
           <td class="border px-4 py-2">${d.sekolah}</td>
           <td class="border px-4 py-2">${d.nama}</td>
+          <td class="border px-4 py-2">${d.alamat}</td>
           <td class="border px-4 py-2">${d.gender}</td>
           <td class="border px-4 py-2">${d.pondok}</td>
           <td class="border px-4 py-2">${hp}</td>
