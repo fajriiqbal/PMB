@@ -361,7 +361,6 @@ async function loadStats() {
         const akte = rows[i][colAkte] || "";
 
         if (!nama) continue;
-        total++;
         if (!alamat) continue;
         total++;
         if (gender.includes("laki")) male++;
