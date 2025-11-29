@@ -401,7 +401,7 @@ async function loadStats() {
                 <td class="border px-4 py-2">${i}</td>
                 <td class="border px-4 py-2">${sekolah}</td>
                 <td class="border px-4 py-2">${nama}</td>
-               
+               <td class="border px-4 py-2">${alamat}</td>
                 <td class="border px-4 py-2">${rows[i][colGender] || ""}</td>
                 <td class="border px-4 py-2">${pondok}</td>
                 <td class="border px-4 py-2">${hpRaw}</td>
@@ -522,7 +522,7 @@ function renderTable(data) {
           <td class="border px-4 py-2">${i + 1}</td>
           <td class="border px-4 py-2">${d.sekolah}</td>
           <td class="border px-4 py-2">${d.nama}</td>
-        
+            <td class="border px-4 py-2">${d.alamat}</td>
           <td class="border px-4 py-2">${d.gender}</td>
           <td class="border px-4 py-2">${d.pondok}</td>
           <td class="border px-4 py-2">${hp}</td>
