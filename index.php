@@ -479,7 +479,6 @@ function downloadExcelAdvanced() {
 
 // Tautkan ke tombol Lainnya
 const navMore = document.getElementById("navMore");
-const navMore = document.getElementById("navMore");
 if (navMore) {
     navMore.addEventListener("click", function(e){
         e.preventDefault();
