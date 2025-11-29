@@ -96,7 +96,7 @@ nav.bottom-nav a.active{color:var(--accent);font-weight:700}
 <header class="appbar" role="banner">
   <div>
     <div class="title">PMB MTs Sunan Kalijaga</div>
-    <div class="subtitle">Admin • Tampilan Aplikasi</div>
+    <div class="subtitle">Tim IT Madsuka</div>
   </div>
   <div>
     <img src="assets/LOGOMADA.png" alt="logo" style="width:40px;height:40px;border-radius:10px;object-fit:cover">
