@@ -482,14 +482,8 @@ const navMore = document.getElementById("navMore");
 if (navMore) {
     navMore.addEventListener("click", function(e){
         e.preventDefault();
-        const yakin = confirm("Yakin mau download data pendaftar?");
-        if (yakin) {
-            downloadExcelAdvanced(); // panggil fungsi download
-        } else {
-            alert("Download dibatalkan.");
-        }
+        downloadExcelAdvanced();
     });
-
 }
 
 
