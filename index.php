@@ -362,7 +362,8 @@ async function loadStats() {
 
         if (!nama) continue;
         total++;
-
+        if (!alamat) continue;
+        total++;
         if (gender.includes("laki")) male++;
         else if (gender.includes("perempuan")) female++;
 
