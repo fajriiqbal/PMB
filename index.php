@@ -10,6 +10,8 @@
 <!-- Tailwind + Chart.js -->
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+
 
 <style>
 :root{
@@ -406,7 +408,8 @@ function scrollToSection(id){
   else document.getElementById('navStats').classList.add('active');
 }
 // ===== Fungsi download CSV =====
-function downloadCSV() {
+// ===== Fungsi download Excel =====
+function downloadExcel() {
     if (!globalData || globalData.length === 0) {
         alert("Data kosong, tidak ada yang bisa diunduh.");
         return;
@@ -415,38 +418,40 @@ function downloadCSV() {
     // Urutkan data berdasarkan gelombang
     const sortedData = [...globalData].sort((a, b) => a.gelombang - b.gelombang || a.nomor - b.nomor);
 
-    // Header CSV
-    const headers = ["Nomor", "Asal Sekolah", "Nama", "Alamat", "Jenis Kelamin", "Pilihan Pondok", "Nomor HP", "Status Berkas", "Gelombang"];
-    
-    const rows = sortedData.map(d => [
-        d.nomor,
-        d.sekolah,
-        d.nama,
-        d.alamat,
-        d.gender,
-        d.pondok,
-        d.hpRaw || d.hp,
-        d.statusBerkas.replace(/<[^>]+>/g, ""), // Hapus HTML dari status
-        d.gelombang
-    ]);
+    // Siapkan array untuk SheetJS
+    const wsData = [
+        ["Nomor","Asal Sekolah","Nama","Alamat","Jenis Kelamin","Pilihan Pondok","Nomor HP","Status Berkas","Gelombang"]
+    ];
 
-    const csvContent = [headers, ...rows].map(e => e.map(f => `"${f}"`).join(",")).join("\n");
+    sortedData.forEach(d => {
+        wsData.push([
+            d.nomor,
+            d.sekolah,
+            d.nama,
+            d.alamat,
+            d.gender,
+            d.pondok,
+            d.hpRaw || d.hp,
+            d.statusBerkas.replace(/<[^>]+>/g,''), // Bersihkan HTML
+            d.gelombang
+        ]);
+    });
 
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `pendaftar_sorted_gelombang.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+    // Buat workbook dan worksheet
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    XLSX.utils.book_append_sheet(wb, ws, "Pendaftar");
+
+    // Download Excel
+    XLSX.writeFile(wb, "pendaftar_sorted_gelombang.xlsx");
 }
 
-// Tautkan tombol "Lainnya" ke download CSV
+// Tautkan tombol "Lainnya" ke download Excel
 const navMore = document.getElementById("navMore");
 if (navMore) {
-    navMore.addEventListener("click", function(e) {
+    navMore.addEventListener("click", function(e){
         e.preventDefault();
-        downloadCSV();
+        downloadExcel();
     });
 }
 
