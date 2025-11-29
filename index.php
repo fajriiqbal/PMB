@@ -1,317 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <title>PMB-MTs Sunan Kalijaga</title>
-    <link rel="icon" type="image/png" href="assets/LOGOMADA.png">
+<meta charset="UTF-8">
+<title>PMB MTs Sunan Kalijaga – Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="assets/LOGOMADA.png">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        /* Custom mobile-app like styling */
-        @media (max-width: 768px) {
-            body {
-                -webkit-tap-highlight-color: transparent;
-            }
-            
-            .mobile-app-container {
-                max-width: 100%;
-                margin: 0 auto;
-                padding: 0;
-                background: #f8fafc;
-                min-height: 100vh;
-            }
-            
-            .floating-button {
-                position: fixed;
-                bottom: 24px;
-                right: 24px;
-                z-index: 50;
-                width: 60px;
-                height: 60px;
-                border-radius: 50%;
-                background: #2563eb;
-                color: white;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-                transition: all 0.3s ease;
-            }
-            
-            .floating-button:hover {
-                transform: scale(1.05);
-                box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
-            }
-        }
-        
-        /* Custom animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .animate-fade-in {
-            animation: fadeIn 0.5s ease-out;
-        }
-    </style>
+<style>
+    /* sidebar animation */
+    .sidebar {
+        transition: all 0.3s ease-in-out;
+    }
+</style>
 </head>
-<body class="bg-gradient-to-b from-blue-50 to-white">
-    <?php
-    // PHP variables and data
-    $schoolName = "PMB MTs Sunan Kalijaga Tulung";
-    $schoolAddress = "Jl. Raya Tulung - Ngangkruk,KM 0.1 , Tulung, Klaten";
-    $schoolPhone = "082241509229";
-    $schoolEmail = "mtssunankalijaga01@gmail.com";
-    
-    $announcements = [
-        [
-            "title" => "Registration Deadline Approaching",
-            "date" => "August 15, 2023",
-            "content" => "Final day to submit registration forms is August 30th. Late submissions may be subject to waiting list placement."
-        ],
-        [
-            "title" => "New Student Orientation",
-            "date" => "September 5, 2023",
-            "content" => "All newly registered students are required to attend orientation on September 5th at 9:00 AM in the main auditorium."
-        ],
-        [
-            "title" => "Transportation Services Available",
-            "date" => "August 10, 2023",
-            "content" => "Bus route information and registration for transportation services is now available through the parent portal."
-        ]
-    ];
-    
-    $keyDates = [
-        ["date" => "Aug 15, 2023", "event" => "Registration Opens", "icon" => "calendar"],
-        ["date" => "Aug 30, 2023", "event" => "Registration Deadline", "icon" => "clock"],
-        ["date" => "Sep 1, 2023", "event" => "Class Lists Posted", "icon" => "users"],
-        ["date" => "Sep 5, 2023", "event" => "First Day of School", "icon" => "book-open"]
-    ];
-    
-    // Function to render icon SVG
-    function renderIcon($iconName) {
-        switch($iconName) {
-            case 'calendar': 
-                return '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>';
-            case 'clock':
-                return '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>';
-            case 'users':
-                return '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>';
-            case 'book-open':
-                return '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>';
-            case 'arrow-right':
-                return '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>';
-            case 'menu':
-                return '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>';
-            case 'x':
-                return '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>';
-            default:
-                return '';
-        }
-    }
-    // Check if mobile device
-    $isMobile = false;
-    if (isset($_SERVER['HTTP_USER_AGENT'])) {
-        $userAgent = $_SERVER['HTTP_USER_AGENT'];
-        $isMobile = preg_match("/(android|iphone|ipod|ipad|blackberry|windows phone)/i", $userAgent);
-    }
-    ?>
-    
-    
-<section id="stats" class="py-12 bg-gray-50">
-  <div class="container mx-auto px-4">
-    <h2 class="text-3xl font-bold text-center text-gray-800 mb-10">
-      Statistik Pendaftar
-    </h2>
+<body class="bg-gray-100 flex">
 
-    <!-- Grid untuk Chart -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-      <!-- Card Gender -->
-      <div class="bg-white shadow-lg rounded-2xl p-6">
-        <h3 class="text-lg font-semibold text-gray-700 mb-4 text-center">
-          Jenis Kelamin
-        </h3>
-        <canvas id="genderChart"></canvas>
-      </div>
-
-      <!-- Card Pondok -->
-      <div class="bg-white shadow-lg rounded-2xl p-6">
-        <h3 class="text-lg font-semibold text-gray-700 mb-4 text-center">
-          Pilihan Pondok Pesantren
-        </h3>
-        <canvas id="ponpesChart"></canvas>
-      </div>
+<!-- SIDEBAR -->
+<aside id="sidebar" class="sidebar w-64 bg-white shadow-xl h-screen fixed md:relative transform -translate-x-full md:translate-x-0">
+    <div class="p-6 border-b">
+        <h1 class="font-bold text-xl text-blue-700">PMB Dashboard</h1>
+        <p class="text-sm text-gray-500">MTs Sunan Kalijaga</p>
     </div>
 
-    <!-- Total -->
-    <div class="mt-10 text-center">
-      <span
-        id="totalSiswa"
-        class="inline-block bg-blue-600 text-white font-bold py-3 px-6 rounded-full shadow-md"
-      >
-        Total Siswa Terdaftar: 0
-      </span>
-    </div>
-  </div>
-</section>
+    <nav class="p-4 space-y-3">
+        <a href="#" class="block px-4 py-2 rounded-lg bg-blue-600 text-white font-medium">Dashboard</a>
+        <a href="#stats" class="block px-4 py-2 rounded-lg hover:bg-blue-100">Statistik</a>
+        <a href="#pendaftar" class="block px-4 py-2 rounded-lg hover:bg-blue-100">Data Pendaftar</a>
+    </nav>
+</aside>
 
-<!-- Daftar Pendaftar -->
-<section id="pendaftar" class="py-12 bg-white">
-  <div class="container mx-auto px-4">
-    <h2 class="text-3xl font-bold text-center text-gray-800 mb-10">
-      Data Pendaftar
-    </h2>
+<!-- MAIN CONTENT -->
+<div class="flex-1 ml-0 md:ml-64">
 
-    <!-- 🔎 Search bar -->
-    <div class="mb-4 flex flex-col sm:flex-row items-center gap-3">
-      <input 
-        type="text" 
-        id="searchInput" 
-        placeholder="Cari siswa..." 
-        class="border border-gray-300 px-3 py-2 rounded-lg w-full sm:w-1/2 focus:ring-2 focus:ring-blue-500"
-      >
-      <!-- <button 
-            id="broadcastBtn" 
-                class="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition"
-                >
-                View Database
-        </button> -->
-    
-    
-      <div>
-        <label for="gelombangFilter" class="mr-2 font-semibold">Pilih Gelombang:</label>
-        <select id="gelombangFilter" class="p-2 rounded border border-gray-400">
-          <option value="all">Semua Gelombang</option>
-          <option value="1">Gelombang 1 (Sep - Okt)</option>
-          <option value="2">Gelombang 2 (Nov - Feb)</option>
-          <option value="3">Gelombang 3 (Mar - Mei)</option>
-        
-        </select>
-      </div>
-    </div>
-        
+    <!-- TOP NAVBAR -->
+    <header class="bg-white shadow p-4 flex items-center justify-between">
+        <button onclick="toggleSidebar()" class="md:hidden bg-blue-600 text-white px-3 py-2 rounded">
+            Menu
+        </button>
+        <h2 class="text-xl font-semibold">Dashboard Penerimaan</h2>
+    </header>
 
-    <div class="overflow-x-auto bg-white shadow-lg rounded-2xl">
-      <table class="min-w-full border-collapse">
-        <thead class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-          <tr>
-            <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
-              Nomor
-            </th>
-            <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
-              Asal Sekolah
-            </th>
-            <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
-              Nama
-            </th>
-            <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
-              Alamat
-            </th>
-            <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
-              Jenis Kelamin
-            </th>
-            <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
-              Pilihan Pondok
-            </th>
-            <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
-              Nomor HP
-            </th>
-            <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
-              Status Berkas
-            </th>
-            <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
-              Kontak
-            </th>
-          </tr>
-        </thead>
-        <tbody id="pendaftarTable" class="divide-y divide-gray-200 text-sm">
-          <!-- Data dari JavaScript -->
-        </tbody>
-      </table>
-    </div>
+    <!-- MAIN CONTENT -->
+    <main class="p-6 space-y-10">
 
-    <p id="totalSiswa" class="mt-4 text-lg font-semibold text-gray-700"></p>
-  </div>
-</section>
+        <!-- ==================== -->
+        <!--  STATISTIK SECTION   -->
+        <!-- ==================== -->
+        <section id="stats" class="mt-6">
+            <h2 class="text-2xl font-bold mb-6">Statistik Pendaftar</h2>
 
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-        <!-- Footer -->
-        <!-- <footer class="bg-gray-800 text-white py-10">
-            <div class="container mx-auto px-4">
-                <div class="flex flex-col md:flex-row justify-between items-center">
-                    <div class="mb-6 md:mb-0">
-                        <div class="flex items-center">
-                            <div class="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center">
-                                <?php echo renderIcon('book-open'); ?>
-                            </div>
-                            <h3 class="ml-2 text-xl font-bold"><?php echo $schoolName; ?></h3>
-                        </div>
-                        <p class="mt-2 text-gray-400"><?php echo $schoolAddress; ?></p>
-                    </div>
-                    
-                    <div class="text-center md:text-right">
-                        <p class="text-gray-400">Phone: <?php echo $schoolPhone; ?></p>
-                        <p class="text-gray-400">Email: <?php echo $schoolEmail; ?></p>
-                    </div>
+                <!-- Card Gender -->
+                <div class="bg-white p-6 shadow rounded-xl">
+                    <h3 class="font-semibold mb-4 text-gray-700">Jenis Kelamin</h3>
+                    <canvas id="genderChart"></canvas>
                 </div>
-                
-                <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-                    <p>© 2025 <?php echo $schoolName; ?>. IT Madsuka.</p>
+
+                <!-- Card Ponpes -->
+                <div class="bg-white p-6 shadow rounded-xl">
+                    <h3 class="font-semibold mb-4 text-gray-700">Pilihan Pondok</h3>
+                    <canvas id="ponpesChart"></canvas>
                 </div>
+
             </div>
-        </footer> -->
 
-        <!-- Floating Register Button for Mobile -->
-        <!-- <?php if ($isMobile): ?>
-        <div class="floating-button">
-            <a 
-                href="https://docs.google.com/forms" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                class="w-full h-full flex items-center justify-center"
-            >
-                <?php echo renderIcon('book-open'); ?>
-            </a>
-        </div>
-        <?php endif; ?>
-    </div> -->
+            <div class="mt-6 text-center">
+                <span id="totalSiswa"
+                    class="bg-blue-600 text-white px-6 py-3 rounded-full font-semibold shadow">
+                    Total Siswa Terdaftar: 0
+                </span>
+            </div>
+        </section>
 
-    <script>
-        // Mobile menu functionality
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobileMenu');
-            const menuBtn = document.querySelector('.mobile-menu-btn');
-            
-            if (menu.classList.contains('hidden')) {
-                menu.classList.remove('hidden');
-                menuBtn.innerHTML = `<?php echo renderIcon('x'); ?>`;
-            } else {
-                menu.classList.add('hidden');
-                menuBtn.innerHTML = `<?php echo renderIcon('menu'); ?>`;
-            }
-        }
-        
-        function closeMobileMenu() {
-            const menu = document.getElementById('mobileMenu');
-            const menuBtn = document.querySelector('.mobile-menu-btn');
-            
-            menu.classList.add('hidden');
-            menuBtn.innerHTML = `<?php echo renderIcon('menu'); ?>`;
-        }
-        
-        // Close menu when clicking outside
-        document.addEventListener('click', function(event) {
-            const menu = document.getElementById('mobileMenu');
-            const menuBtn = document.querySelector('.mobile-menu-btn');
-            
-            if (!menu.contains(event.target) && !menuBtn.contains(event.target) && !menu.classList.contains('hidden')) {
-                closeMobileMenu();
-            }
-        });
-    </script>
+        <!-- ==================== -->
+        <!--   DATA PENDAFTAR     -->
+        <!-- ==================== -->
+        <section id="pendaftar" class="mt-10">
+            <h2 class="text-2xl font-bold mb-6">Data Pendaftar</h2>
+
+            <div class="flex flex-col md:flex-row gap-4 items-center mb-4">
+
+                <input id="searchInput" placeholder="Cari siswa..."
+                    class="border p-2 rounded w-full md:w-1/2">
+
+                <select id="gelombangFilter" class="border p-2 rounded">
+                    <option value="all">Semua Gelombang</option>
+                    <option value="1">Gelombang 1</option>
+                    <option value="2">Gelombang 2</option>
+                    <option value="3">Gelombang 3</option>
+                </select>
+            </div>
+
+            <div class="overflow-x-auto bg-white shadow rounded-xl">
+                <table class="min-w-full text-sm">
+                    <thead class="bg-blue-600 text-white">
+                        <tr>
+                            <th class="px-4 py-2">No</th>
+                            <th class="px-4 py-2">Asal Sekolah</th>
+                            <th class="px-4 py-2">Nama</th>
+                            <th class="px-4 py-2">Alamat</th>
+                            <th class="px-4 py-2">Gender</th>
+                            <th class="px-4 py-2">Pondok</th>
+                            <th class="px-4 py-2">HP</th>
+                            <th class="px-4 py-2">Status</th>
+                            <th class="px-4 py-2">Kontak</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pendaftarTable" class="divide-y"></tbody>
+                </table>
+            </div>
+
+        </section>
+
+    </main>
+</div>
+
+<script>
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("-translate-x-full");
+}
+</script>
+
   <script>
 const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkWDi-X_jfYIUpR04AupM-ubJ-hBT-RO6W9HSyIN5_n15SN_AD1vDNM4CW-GV_4EpIm-9MTgW1iLvl/pub?gid=1123091940&single=true&output=csv";
 
