@@ -114,8 +114,10 @@
 </head>
 <body>
 
+ <body>
+
   <!-- Appbar -->
-  <header class="appbar" role="banner">
+  <header class="appbar">
     <div>
       <div class="title">PMB MTs Sunan Kalijaga</div>
       <div class="subtitle">Admin • Tampilan Aplikasi</div>
@@ -126,11 +128,11 @@
   </header>
 
   <!-- Main scrollable content -->
-  <main class="app-main" role="main">
+  <main class="app-main">
     <div class="container">
 
       <!-- Cards -->
-      <section class="cards" aria-label="stat-cards">
+      <section class="cards">
         <div class="card">
           <div class="label">Total Siswa Terdaftar</div>
           <div id="totalSiswa" class="value">0</div>
@@ -158,34 +160,27 @@
 
       <!-- Charts -->
       <section class="charts" id="stats">
-        <div class="chart-card" role="region" aria-label="chart-gender">
+        <div class="chart-card">
           <div class="head">
-            <div>
-              <div class="font-semibold">Jenis Kelamin</div>
-              <div class="text-xs muted">Distribusi pendaftar</div>
-            </div>
+            <div class="font-semibold">Jenis Kelamin</div>
+            <div class="text-xs muted">Distribusi pendaftar</div>
           </div>
           <canvas id="genderChart"></canvas>
         </div>
 
-        <div class="chart-card" role="region" aria-label="chart-ponpes">
+        <div class="chart-card">
           <div class="head">
-            <div>
-              <div class="font-semibold">Pilihan Pondok</div>
-              <div class="text-xs muted">Preferensi pondok pesantren</div>
-            </div>
+            <div class="font-semibold">Pilihan Pondok</div>
+            <div class="text-xs muted">Preferensi pondok pesantren</div>
           </div>
           <canvas id="ponpesChart"></canvas>
         </div>
       </section>
 
-      <!-- Controls + Table -->
-      <section id="pendaftar" class="mt-4">
-        <div class="flex items-start justify-between mb-4 gap-3 flex-wrap">
-          <div class="controls" style="flex:1;">
-            <input type="text" id="searchInput" placeholder="Cari: nama, sekolah, alamat, pondok..." />
-          </div>
-
+      <!-- Controls -->
+      <section class="controls-section">
+        <div class="flex items-start justify-between gap-3 flex-wrap mb-3">
+          <input type="text" id="searchInput" placeholder="Cari: nama, sekolah, alamat, pondok..." />
           <div style="display:flex;gap:8px;align-items:center;">
             <label class="text-xs muted">Pilih Gelombang</label>
             <select id="gelombangFilter">
@@ -196,27 +191,99 @@
             </select>
           </div>
         </div>
+      </section>
 
-       <div class="table-scroll">
-  <div class="table-wrap">
-    <table aria-describedby="Data pendaftar">
-      <thead>
-        <tr>
-          <th>Nomor</th>
-          <th>Asal Sekolah</th>
-          <th>Nama</th>
-          <th>Alamat</th>
-          <th>Jenis Kelamin</th>
-          <th>Pilihan Pondok</th>
-          <th>Nomor HP</th>
-          <th>Status Berkas</th>
-          <th>Kontak</th>
-        </tr>
-      </thead>
-      <tbody id="pendaftarTable"></tbody>
-    </table>
-  </div>
-</div>
+      <!-- Table (Desktop) -->
+      <section class="table-section desktop-only">
+        <div class="table-scroll">
+          <div class="table-wrap">
+            <table aria-describedby="Data pendaftar">
+              <thead>
+                <tr>
+                  <th>Nomor</th>
+                  <th>Asal Sekolah</th>
+                  <th>Nama</th>
+                  <th>Alamat</th>
+                  <th>Jenis Kelamin</th>
+                  <th>Pilihan Pondok</th>
+                  <th>Nomor HP</th>
+                  <th>Status Berkas</th>
+                  <th>Kontak</th>
+                </tr>
+              </thead>
+              <tbody id="pendaftarTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Card view (Mobile) -->
+      <section class="card-section mobile-only">
+        <div id="pendaftarCardContainer"></div>
+      </section>
+
+    </div>
+  </main>
+
+  <style>
+    /* --- Hybrid Table + Mobile Cards --- */
+    .desktop-only { display: block; }
+    .mobile-only { display: none; }
+
+    @media (max-width: 640px) {
+      .desktop-only { display: none; }
+      .mobile-only { display: block; }
+    }
+
+    .table-scroll {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .table-wrap { min-width: 1000px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px 12px; white-space: nowrap; }
+
+    .mobile-card {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
+      background: #fff;
+    }
+
+    .mobile-card .row { display:flex; justify-content:space-between; margin-bottom:6px; }
+    .mobile-card .label { font-weight:600; color:#333; }
+    .mobile-card .value { color:#555; }
+    .mobile-card .btn-wa { background:#10b981; color:#fff; padding:4px 8px; border-radius:6px; font-size:12px; text-decoration:none; }
+  </style>
+
+  <script>
+    function renderMobileCards(data) {
+      const container = document.getElementById("pendaftarCardContainer");
+      container.innerHTML = "";
+      data.forEach((d, i) => {
+        const card = document.createElement("div");
+        card.classList.add("mobile-card");
+        card.innerHTML = `
+          <div class="row"><div class="label">#</div><div class="value">${i+1}</div></div>
+          <div class="row"><div class="label">Nama</div><div class="value">${d.nama}</div></div>
+          <div class="row"><div class="label">Sekolah</div><div class="value">${d.sekolah}</div></div>
+          <div class="row"><div class="label">Alamat</div><div class="value">${d.alamat}</div></div>
+          <div class="row"><div class="label">Gender</div><div class="value">${d.gender}</div></div>
+          <div class="row"><div class="label">Pondok</div><div class="value">${d.pondok}</div></div>
+          <div class="row"><div class="label">HP</div><div class="value">${d.hp}</div></div>
+          <div class="row"><div class="label">Status</div><div class="value">${d.statusBerkas}</div></div>
+          <div class="row"><div class="label">Kontak</div><div class="value">
+            ${d.hp ? `<a href="${d.linkWA}" target="_blank" class="btn-wa" onclick="markContacted('${d.hp}')">WA</a>` : "-"}
+          </div></div>
+        `;
+        container.appendChild(card);
+      });
+    }
+  </script>
+
       </section>
 
     </div>
