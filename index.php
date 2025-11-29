@@ -225,7 +225,7 @@ nav.bottom-nav a.active{color:var(--accent);font-weight:700}
     </svg>
     <div>Data</div>
   </a>
-<<<<<<< HEAD
+
 
   <a href="#" id="navMore" onclick="confirmDownload();return false;">
     <!-- Download Icon -->
@@ -234,8 +234,8 @@ nav.bottom-nav a.active{color:var(--accent);font-weight:700}
     </svg>
     <div>Download</div>
   </a>
-=======
->>>>>>> a819a97b832b52f4f2f4eee5809f6fe3838eddd4
+
+
 </nav>
 
 <!-- Modal Konfirmasi Download -->
