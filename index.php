@@ -315,8 +315,7 @@
   <script>
 const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkWDi-X_jfYIUpR04AupM-ubJ-hBT-RO6W9HSyIN5_n15SN_AD1vDNM4CW-GV_4EpIm-9MTgW1iLvl/pub?gid=1123091940&single=true&output=csv";
 
-let globalData = []; // simpan data untuk search & broadcast
-
+let globalData = []; 
 let genderChartInstance = null;
 let ponpesChartInstance = null;
 
@@ -329,7 +328,6 @@ async function loadStats() {
     );
 
     const headers = rows[0].map(h => h.trim());
-    console.log("Headers:", headers);
 
     const colTanggal  = headers.findIndex(h => h.toLowerCase().includes("timestamp"));
     const colSekolah   = headers.findIndex(h => h.toLowerCase() === "asal sekolah");
@@ -338,9 +336,9 @@ async function loadStats() {
     const colGender    = headers.findIndex(h => h.toLowerCase() === "jenis kelamin");
     const colPonpes    = headers.findIndex(h => h.toLowerCase() === "pilihan pondok pesantren");
     const colHp        = headers.findIndex(h => h.toLowerCase() === "nomor hp orang tua");
-    const colKK        = headers.findIndex(h => h.toLowerCase().includes("upload berkas kartu keluarga"));
-    const colAkte      = headers.findIndex(h => h.toLowerCase().includes("upload berkas akte kelahiran"));
-    
+    const colKK        = headers.findIndex(h => h.toLowerCase().includes("kartu keluarga"));
+    const colAkte      = headers.findIndex(h => h.toLowerCase().includes("akte"));
+
     let total = 0;
     let male = 0, female = 0;
     let ponpesCounts = {};
@@ -350,6 +348,7 @@ async function loadStats() {
     globalData = [];
 
     for (let i = 1; i < rows.length; i++) {
+
         const tanggal = rows[i][colTanggal] || "";
         const sekolah = rows[i][colSekolah] || "";
         const nama    = rows[i][colNama] || "";
@@ -357,53 +356,46 @@ async function loadStats() {
         const gender  = (rows[i][colGender] || "").trim().toLowerCase();
         const pondok  = rows[i][colPonpes] || "";
         const hpRaw   = rows[i][colHp] || "";
+
+        if (!nama) continue;
+        if (!alamat) continue;
+
+        total++;
+
+        // Tentukan gelombang berdasarkan nomor urut (per 30)
+        let gelombang = Math.ceil(total / 30);
+
         let hp = hpRaw.replace(/[^0-9]/g, "");
         if (hp.startsWith("0")) hp = "62" + hp.substring(1);
 
         const kk   = rows[i][colKK] || "";
         const akte = rows[i][colAkte] || "";
 
-        if (!nama) continue;
-        if (!alamat) continue;
-        total++;
         if (gender.includes("laki")) male++;
-        else if (gender.includes("perempuan")) female++;
+        if (gender.includes("perempuan")) female++;
 
-        if (pondok) ponpesCounts[pondok] = (ponpesCounts[pondok] || 0) + 1;
+        if (pondok) {
+            ponpesCounts[pondok] = (ponpesCounts[pondok] || 0) + 1;
+        }
 
         let statusBerkas = `<span class="text-red-500 font-bold">❌ Belum Lengkap</span>`;
         if (kk && akte) statusBerkas = `<span class="text-green-600 font-bold">✅ Lengkap</span>`;
 
+        // Pesan WA
         const pesan = `
-        اَلْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ
-
-        Kami ucapkan :
-        "SELAMAT DITERIMA"
-        Atas Nama : ${nama}
-        Sebagai CALON SISWA BARU
-        TP. 2026/2027
-        ________________
-        Untuk selanjutnya ,mohon dipersiapkan berkas sebagai persyaratan daftar ulang  sbb:
-        1. Fc.KK ( 4 lb ) 
-        2. Fc. Akte Kelahiran ( 4 lb ) 
-        3. Fc. KTP Ayah ( 4lb ) 
-        4. Fc. KTP Ibu ( 4 lb ) 
-        5. Pas Photo ukuran 3X4  background  merah / biru ( 2 lb ) 
-        6. Administrasi Keuangan Seragam
-
-        ⏳ Daftar ulang dilaksanakan Bulan Maret 2026
+        Selamat ${nama}, Anda DITERIMA sebagai calon siswa baru.
         `.trim();
 
         const linkWA = hp ? `https://wa.me/${hp}?text=${encodeURIComponent(pesan)}` : "";
-        let contacted = localStorage.getItem("contacted_" + hp) ? "✔️" : "";
+        const contacted = localStorage.getItem("contacted_" + hp) ? "✔️" : "";
 
         if (tbody) {
             let tr = document.createElement("tr");
             tr.innerHTML = `
-                <td class="border px-4 py-2">${i}</td>
+                <td class="border px-4 py-2">${total}</td>
                 <td class="border px-4 py-2">${sekolah}</td>
                 <td class="border px-4 py-2">${nama}</td>
-               <td class="border px-4 py-2">${alamat}</td>
+                <td class="border px-4 py-2">${alamat}</td>
                 <td class="border px-4 py-2">${rows[i][colGender] || ""}</td>
                 <td class="border px-4 py-2">${pondok}</td>
                 <td class="border px-4 py-2">${hpRaw}</td>
@@ -415,13 +407,48 @@ async function loadStats() {
             tbody.appendChild(tr);
         }
 
-        // ✅ Tambahkan tanggal ke globalData untuk filter gelombang
-        globalData.push({tanggal, sekolah, nama, alamat, gender, pondok, hp, linkWA, statusBerkas});
+        // Simpan data lengkap + gelombang
+        globalData.push({
+            nomor: total,
+            gelombang,
+            tanggal,
+            sekolah,
+            nama,
+            alamat,
+            gender,
+            pondok,
+            hp,
+            linkWA,
+            statusBerkas
+        });
     }
 
     document.getElementById("totalSiswa").textContent = `Total Siswa Terdaftar: ${total}`;
 
-    new Chart(document.getElementById("genderChart"), {
+    drawCharts(globalData); 
+    setupFilter(globalData);
+}
+
+function markContacted(num) {
+    localStorage.setItem("contacted_" + num, true);
+}
+
+function drawCharts(data) {
+    let male = 0, female = 0;
+    let ponpesCounts = {};
+
+    data.forEach(d => {
+        const g = d.gender.toLowerCase();
+        if (g.includes("laki")) male++;
+        if (g.includes("perempuan")) female++;
+
+        ponpesCounts[d.pondok] = (ponpesCounts[d.pondok] || 0) + 1;
+    });
+
+    if (genderChartInstance) genderChartInstance.destroy();
+    if (ponpesChartInstance) ponpesChartInstance.destroy();
+
+    genderChartInstance = new Chart(document.getElementById("genderChart"), {
         type: "doughnut",
         data: {
             labels: ["Laki-Laki", "Perempuan"],
@@ -432,155 +459,60 @@ async function loadStats() {
         }
     });
 
-    const ponpesLabels = Object.keys(ponpesCounts);
-    const ponpesValues = Object.values(ponpesCounts);
-
-    new Chart(document.getElementById("ponpesChart"), {
+    ponpesChartInstance = new Chart(document.getElementById("ponpesChart"), {
         type: "doughnut",
         data: {
-            labels: ponpesLabels,
+            labels: Object.keys(ponpesCounts),
             datasets: [{
-                data: ponpesValues,
-                backgroundColor: [
-                    "#10b981", "#f59e0b", "#3b82f6", "#ef4444", "#8b5cf6",
-                    "#ec4899", "#22c55e", "#eab308", "#06b6d4", "#f97316"
-                ]
+                data: Object.values(ponpesCounts),
+                backgroundColor: ["#10b981", "#f59e0b", "#3b82f6", "#ef4444", "#8b5cf6"]
             }]
         }
     });
-
-    // ✅ Panggil filter setelah data dimuat
-    setupFilter(globalData);
 }
 
-// tandai sudah dihubungi
-function markContacted(num) {
-    localStorage.setItem("contacted_" + num, true);
-}
-function updateCharts(data) {
-    let male = 0, female = 0;
-    let ponpesCounts = {};
+function setupFilter(allData) {
+    document.getElementById("gelombangFilter").addEventListener("change", function () {
+        const val = this.value;
 
-    data.forEach(d => {
-        const g = d.gender.toLowerCase();
-        if (g.includes("laki")) male++;
-        else if (g.includes("perempuan")) female++;
+        let filtered = 
+            val === "all" 
+            ? allData 
+            : allData.filter(d => d.gelombang == val);
 
-        if (d.pondok) {
-            ponpesCounts[d.pondok] = (ponpesCounts[d.pondok] || 0) + 1;
-        }
+        renderTable(filtered);
+        drawCharts(filtered); 
     });
-
-    // Hapus chart lama
-    if (genderChartInstance) genderChartInstance.destroy();
-    if (ponpesChartInstance) ponpesChartInstance.destroy();
-
-    // Chart Gender
-    updateCharts(globalData);
-}
-
-// fitur search
-document.getElementById("searchInput").addEventListener("keyup", function() {
-    const filter = this.value.toLowerCase();
-    const rows = document.querySelectorAll("#pendaftarTable tr");
-    rows.forEach(r => {
-        const text = r.innerText.toLowerCase();
-        r.style.display = text.includes(filter) ? "" : "none";
-    });
-});
-
-// ✅ Fitur filter gelombang
-// function getGelombang(dateStr) {
-//     if (!dateStr) return null;
-//     const parts = dateStr.split(" ");
-//     const tanggalPart = parts[0]?.split("/") || [];
-//     if (tanggalPart.length !== 3) return null;
-//     const [day, month, year] = tanggalPart.map(Number);
-//     if (isNaN(month)) return null;
-//     if ([9, 10].includes(month)) return 1;  // Sep–Nov
-//     if ([11, 12, 1, 2].includes(month)) return 2;   // Des–Feb
-//     if ([3, 4, 5].includes(month)) return 3;    // Mar–Mei
-//     return null;
-// }
-function getGelombang(dateStr) {
-    if (!dateStr) return null;
-
-    // Format: DD/MM/YYYY atau DD/MM/YYYY HH:mm:ss
-    const parts = dateStr.split(" ");
-    const tanggalPart = parts[0]?.split("/") || [];
-    if (tanggalPart.length !== 3) return null;
-
-    const [day, month, year] = tanggalPart.map(Number);
-    if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
-
-    // 🔹 Gelombang 1 = sampai 30 Oktober
-    if (month === 10 && day <= 30) return 1;
-    if (month < 10) return 1; // Jan–Sep otomatis Gelombang 1
-
-    // 🔹 Gelombang 2 = 31 Oktober, November, Desember, Januari, Februari
-    if ( (month === 10 && day >= 31) || 
-         month === 11 || 
-         month === 12 || 
-         month === 1  || 
-         month === 2 ) return 2;
-
-    // 🔹 Gelombang 3 = Maret, April, Mei
-    if (month >= 3 && month <= 5) return 3;
-
-    return null;
 }
 
 function renderTable(data) {
-    const tbody = document.querySelector("#pendaftarTable");
+    const tbody = document.getElementById("pendaftarTable");
     tbody.innerHTML = "";
 
     data.forEach((d, i) => {
-        const hp = d.hp || "";
-        const linkWA = d.linkWA || "";
-        const contacted = localStorage.getItem("contacted_" + hp) ? "✔️" : "";
+        const contacted = localStorage.getItem("contacted_" + d.hp) ? "✔️" : "";
 
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td class="border px-4 py-2">${i + 1}</td>
-          <td class="border px-4 py-2">${d.sekolah}</td>
-          <td class="border px-4 py-2">${d.nama}</td>
+            <td class="border px-4 py-2">${d.nomor}</td>
+            <td class="border px-4 py-2">${d.sekolah}</td>
+            <td class="border px-4 py-2">${d.nama}</td>
             <td class="border px-4 py-2">${d.alamat}</td>
-          <td class="border px-4 py-2">${d.gender}</td>
-          <td class="border px-4 py-2">${d.pondok}</td>
-          <td class="border px-4 py-2">${hp}</td>
-          <td class="border px-4 py-2">${d.statusBerkas || "-"}</td>
-          <td class="border px-4 py-2">
-            ${hp ? `<a href="${linkWA}" target="_blank" class="bg-green-500 text-white px-3 py-1 rounded" onclick="markContacted('${hp}')">Hubungi</a>` : "-"} ${contacted}
-          </td>
+            <td class="border px-4 py-2">${d.gender}</td>
+            <td class="border px-4 py-2">${d.pondok}</td>
+            <td class="border px-4 py-2">${d.hp}</td>
+            <td class="border px-4 py-2">${d.statusBerkas}</td>
+            <td class="border px-4 py-2">
+                ${d.hp ? `<a href="${d.linkWA}" target="_blank" class="bg-green-500 text-white px-3 py-1 rounded" onclick="markContacted('${d.hp}')">Hubungi</a>` : "-"} ${contacted}
+            </td>
         `;
         tbody.appendChild(tr);
     });
 }
 
-
-function setupFilter(allData) {
-    const filter = document.getElementById("gelombangFilter");
-    if (!filter) return;
-
-    filter.addEventListener("change", () => {
-        const val = filter.value;
-
-        let filtered;
-
-        if (val === "all") {
-            filtered = allData;
-        } else {
-            filtered = allData.filter(d => getGelombang(d.tanggal) == val);
-        }
-
-        renderTable(filtered);
-        updateCharts(filtered); // ---> chart berubah sesuai gelombang
-    });
-}
-
-
 loadStats();
 </script>
+
 
 
 
