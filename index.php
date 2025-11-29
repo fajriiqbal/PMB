@@ -409,51 +409,83 @@ function scrollToSection(id){
 }
 // ===== Fungsi download CSV =====
 // ===== Fungsi download Excel =====
-function downloadExcel() {
+function downloadExcelAdvanced() {
     if (!globalData || globalData.length === 0) {
         alert("Data kosong, tidak ada yang bisa diunduh.");
         return;
     }
 
-    // Urutkan data berdasarkan gelombang
-    const sortedData = [...globalData].sort((a, b) => a.gelombang - b.gelombang || a.nomor - b.nomor);
+    const wb = XLSX.utils.book_new();
 
-    // Siapkan array untuk SheetJS
-    const wsData = [
-        ["Nomor","Asal Sekolah","Nama","Alamat","Jenis Kelamin","Pilihan Pondok","Nomor HP","Status Berkas","Gelombang"]
-    ];
+    // --- 1. Sheet per Gelombang ---
+    [1,2,3].forEach(g => {
+        const gelData = globalData.filter(d => d.gelombang === g)
+                                  .sort((a,b)=>a.nomor-b.nomor);
+        if (gelData.length === 0) return;
 
-    sortedData.forEach(d => {
-        wsData.push([
-            d.nomor,
-            d.sekolah,
-            d.nama,
-            d.alamat,
-            d.gender,
-            d.pondok,
-            d.hpRaw || d.hp,
-            d.statusBerkas.replace(/<[^>]+>/g,''), // Bersihkan HTML
-            d.gelombang
-        ]);
+        const wsData = [
+            ["Nomor","Asal Sekolah","Nama","Alamat","Jenis Kelamin","Pilihan Pondok","Nomor HP","Status Berkas","Gelombang"]
+        ];
+        gelData.forEach(d => {
+            wsData.push([
+                d.nomor,
+                d.sekolah,
+                d.nama,
+                d.alamat,
+                d.gender,
+                d.pondok,
+                d.hpRaw || d.hp,
+                d.statusBerkas.replace(/<[^>]+>/g,''), // Bersihkan HTML
+                d.gelombang
+            ]);
+        });
+        const ws = XLSX.utils.aoa_to_sheet(wsData);
+        XLSX.utils.book_append_sheet(wb, ws, `Gelombang ${g}`);
     });
 
-    // Buat workbook dan worksheet
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.aoa_to_sheet(wsData);
-    XLSX.utils.book_append_sheet(wb, ws, "Pendaftar");
+    // --- 2. Sheet per Daerah (misal kolom alamat) ---
+    const daerahMap = {};
+    globalData.forEach(d => {
+        // Ambil kata pertama di alamat sebagai daerah sederhana
+        const daerah = (d.alamat || "Unknown").split(" ")[0];
+        if (!daerahMap[daerah]) daerahMap[daerah] = [];
+        daerahMap[daerah].push(d);
+    });
 
-    // Download Excel
-    XLSX.writeFile(wb, "pendaftar_sorted_gelombang.xlsx");
+    Object.keys(daerahMap).forEach(daerah => {
+        const wsData = [
+            ["Nomor","Asal Sekolah","Nama","Alamat","Jenis Kelamin","Pilihan Pondok","Nomor HP","Status Berkas","Gelombang"]
+        ];
+        daerahMap[daerah].forEach(d => {
+            wsData.push([
+                d.nomor,
+                d.sekolah,
+                d.nama,
+                d.alamat,
+                d.gender,
+                d.pondok,
+                d.hpRaw || d.hp,
+                d.statusBerkas.replace(/<[^>]+>/g,''),
+                d.gelombang
+            ]);
+        });
+        const ws = XLSX.utils.aoa_to_sheet(wsData);
+        XLSX.utils.book_append_sheet(wb, ws, `Daerah ${daerah}`);
+    });
+
+    // --- Download workbook ---
+    XLSX.writeFile(wb, "pendaftar_multi_sheet.xlsx");
 }
 
-// Tautkan tombol "Lainnya" ke download Excel
+// Tautkan ke tombol Lainnya
 const navMore = document.getElementById("navMore");
 if (navMore) {
     navMore.addEventListener("click", function(e){
         e.preventDefault();
-        downloadExcel();
+        downloadExcelAdvanced();
     });
 }
+
 
 // initial load
 loadStats();
