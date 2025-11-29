@@ -505,7 +505,7 @@ document.getElementById("searchInput").addEventListener("keyup", function() {
 function getGelombang(dateStr) {
     if (!dateStr) return null;
 
-    // Format: "DD/MM/YYYY" atau "DD/MM/YYYY HH:mm:ss"
+    // Format: DD/MM/YYYY atau DD/MM/YYYY HH:mm:ss
     const parts = dateStr.split(" ");
     const tanggalPart = parts[0]?.split("/") || [];
     if (tanggalPart.length !== 3) return null;
@@ -513,27 +513,20 @@ function getGelombang(dateStr) {
     const [day, month, year] = tanggalPart.map(Number);
     if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
 
-    const date = new Date(year, month - 1, day);
+    // 🔹 Gelombang 1 = sampai 30 Oktober
+    if (month === 10 && day <= 30) return 1;
+    if (month < 10) return 1; // Jan–Sep otomatis Gelombang 1
 
-    // Batas Gelombang 1: 30 Oktober
-    const batasGelombang1 = new Date(year, 9, 30); // bulan 9 = Oktober (0-index)
+    // 🔹 Gelombang 2 = 31 Oktober, November, Desember, Januari, Februari
+    if ( (month === 10 && day >= 31) || 
+         month === 11 || 
+         month === 12 || 
+         month === 1  || 
+         month === 2 ) return 2;
 
-    // Gelombang 1 = Semua tanggal sebelum 30 Oktober
-    if (date <= batasGelombang1) {
-        return 1;
-    }
+    // 🔹 Gelombang 3 = Maret, April, Mei
+    if (month >= 3 && month <= 5) return 3;
 
-    // Gelombang 2 = November (11), Desember (12), Januari (1), Februari (2)
-    if (month === 11 || month === 12 || month === 1 || month === 2) {
-        return 2;
-    }
-
-    // Gelombang 3 = Maret (3), April (4), Mei (5)
-    if (month >= 3 && month <= 5) {
-        return 3;
-    }
-
-    // Selain itu, misal Juni–Agustus → belum masuk gelombang
     return null;
 }
 
