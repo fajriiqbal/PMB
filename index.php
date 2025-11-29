@@ -207,9 +207,9 @@
             <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
               Nama
             </th>
-            <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
+            <!-- <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
               Alamat
-            </th>
+            </th> -->
             <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
               Jenis Kelamin
             </th>
