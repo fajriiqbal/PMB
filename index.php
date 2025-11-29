@@ -86,39 +86,28 @@
 
 .table-scroll {
     width: 100%;
-    overflow-x: auto;
+    overflow-x: auto;            /* pastikan scroll aktif */
     overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;  /* Smooth scroll on mobile */
-    scrollbar-width: none; /* Firefox */
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
 }
 
 .table-scroll::-webkit-scrollbar {
-    display: none; /* Chrome / Safari / Android */
+    display: none;
 }
 
 .table-wrap {
-    min-width: 900px;   /* biar header & kolom tidak mepet */
+    min-width: 1000px;           /* harus cukup untuk semua 9 kolom */
 }
 
-/* table style improvement */
 .table-scroll table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 14px;
 }
 
-.table-scroll th {
-    background: #1976D2;
-    color: white;
-    padding: 12px;
-    text-align: left;
-    white-space: nowrap;
-}
-
-.table-scroll td {
-    padding: 10px;
-    border-bottom: 1px solid #e5e7eb;
-    white-space: nowrap;
+.table-scroll th, .table-scroll td {
+    padding: 10px 12px;
+    white-space: nowrap;          /* jangan pecah kata, biar horizontal scroll jalan */
 }
 
   </style>
@@ -208,26 +197,26 @@
           </div>
         </div>
 
-        <div class="table-scroll">
-          <div class="table-wrap">
-            <table aria-describedby="Data pendaftar">
-              <thead>
-                <tr>
-                  <th>Nomor</th>
-                  <th>Asal Sekolah</th>
-                  <th>Nama</th>
-                  <th>Alamat</th>
-                  <th>Jenis Kelamin</th>
-                  <th>Pilihan Pondok</th>
-                  <th>Nomor HP</th>
-                  <th>Status Berkas</th>
-                  <th>Kontak</th>
-                </tr>
-              </thead>
-              <tbody id="pendaftarTable"></tbody>
-            </table>
-          </div>
-        </div>
+       <div class="table-scroll">
+  <div class="table-wrap">
+    <table aria-describedby="Data pendaftar">
+      <thead>
+        <tr>
+          <th>Nomor</th>
+          <th>Asal Sekolah</th>
+          <th>Nama</th>
+          <th>Alamat</th>
+          <th>Jenis Kelamin</th>
+          <th>Pilihan Pondok</th>
+          <th>Nomor HP</th>
+          <th>Status Berkas</th>
+          <th>Kontak</th>
+        </tr>
+      </thead>
+      <tbody id="pendaftarTable"></tbody>
+    </table>
+  </div>
+</div>
       </section>
 
     </div>
