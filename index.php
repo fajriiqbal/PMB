@@ -405,6 +405,50 @@ function scrollToSection(id){
   if(id==='pendaftar') document.getElementById('navData').classList.add('active');
   else document.getElementById('navStats').classList.add('active');
 }
+// ===== Fungsi download CSV =====
+function downloadCSV() {
+    if (!globalData || globalData.length === 0) {
+        alert("Data kosong, tidak ada yang bisa diunduh.");
+        return;
+    }
+
+    // Urutkan data berdasarkan gelombang
+    const sortedData = [...globalData].sort((a, b) => a.gelombang - b.gelombang || a.nomor - b.nomor);
+
+    // Header CSV
+    const headers = ["Nomor", "Asal Sekolah", "Nama", "Alamat", "Jenis Kelamin", "Pilihan Pondok", "Nomor HP", "Status Berkas", "Gelombang"];
+    
+    const rows = sortedData.map(d => [
+        d.nomor,
+        d.sekolah,
+        d.nama,
+        d.alamat,
+        d.gender,
+        d.pondok,
+        d.hpRaw || d.hp,
+        d.statusBerkas.replace(/<[^>]+>/g, ""), // Hapus HTML dari status
+        d.gelombang
+    ]);
+
+    const csvContent = [headers, ...rows].map(e => e.map(f => `"${f}"`).join(",")).join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `pendaftar_sorted_gelombang.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// Tautkan tombol "Lainnya" ke download CSV
+const navMore = document.getElementById("navMore");
+if (navMore) {
+    navMore.addEventListener("click", function(e) {
+        e.preventDefault();
+        downloadCSV();
+    });
+}
 
 // initial load
 loadStats();
