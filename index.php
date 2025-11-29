@@ -1,463 +1,470 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>PMB MTs Sunan Kalijaga - Dashboard</title>
   <link rel="icon" type="image/png" href="assets/LOGOMADA.png">
 
-  <!-- Tailwind + Chart.js -->
+  <!-- Tailwind (optional, used for utility classes) + Chart.js -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-    /* --- Global --- */
-    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: #f3f6fb; }
-    .app-container { min-height: 100vh; display: flex; }
-
-    /* --- Sidebar --- */
-    .sidebar {
-      width: 260px;
-      background: linear-gradient(180deg,#ffffff 0%, #f8fbff 100%);
-      box-shadow: 0 8px 30px rgba(2,6,23,0.06);
-      border-right: 1px solid rgba(15,23,42,0.03);
+    /* Minimal custom CSS to match "Option A" layout */
+    :root{
+      --bg:#f3f6fb;
+      --card:#ffffff;
+      --muted:#64748b;
+      --accent:#2563eb;
     }
-    .sidebar .brand { padding: 20px; }
-    .sidebar .nav a { display:flex; gap:12px; align-items:center; padding:12px 18px; border-radius:10px; color:#1f2937; text-decoration:none; font-weight:600; }
-    .sidebar .nav a:hover { background:#eef2ff; color:#1e3a8a; }
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: var(--bg);
+      color:#0f172a;
+    }
 
-    /* --- Topbar --- */
-    .topbar { background: white; padding: 14px 20px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 4px 18px rgba(2,6,23,0.04); }
+    header.app-header{
+      background: var(--card);
+      padding:18px 24px;
+      box-shadow: 0 4px 20px rgba(2,6,23,0.06);
+      border-bottom: 1px solid rgba(15,23,42,0.03);
+    }
+    header.app-header .title { font-size:20px; font-weight:700; }
+    header.app-header .subtitle { color:var(--muted); font-size:13px; margin-top:4px; }
 
-    /* --- Main content --- */
-    .main { flex:1; padding:22px; }
+    main.container {
+      max-width:1200px;
+      margin:18px auto;
+      padding: 0 18px 60px 18px;
+    }
 
-    /* --- Cards grid --- */
-    .cards { display:grid; grid-template-columns: repeat(4,1fr); gap:18px; margin-bottom:18px; }
+    /* cards */
+    .cards {
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap:16px;
+      margin-top:18px;
+    }
     .card {
-      background:white; padding:18px; border-radius:12px;
-      box-shadow: 0 6px 18px rgba(2,6,23,0.06);
-      transition: transform .18s ease, box-shadow .18s ease;
+      background:var(--card);
+      padding:16px;
+      border-radius:12px;
+      box-shadow: 0 6px 20px rgba(2,6,23,0.04);
     }
-    .card:hover { transform: translateY(-6px); box-shadow: 0 10px 26px rgba(2,6,23,0.08); }
-    .card .label { color:#475569; font-weight:700; font-size:13px; }
-    .card .value { font-weight:800; font-size:26px; color:#0f172a; margin-top:8px; }
+    .card .label { color:var(--muted); font-weight:700; font-size:13px; }
+    .card .value { font-weight:800; font-size:26px; margin-top:8px; }
 
-    /* --- Chart area --- */
-    .charts { display:grid; grid-template-columns: 1fr 1fr; gap:18px; margin-bottom:18px; }
-    .chart-card { background:white; padding:18px; border-radius:12px; box-shadow: 0 6px 18px rgba(2,6,23,0.06); }
+    /* charts area */
+    .charts {
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap:18px;
+      margin-top:20px;
+    }
+    .chart-card {
+      background:var(--card);
+      padding:14px;
+      border-radius:12px;
+      box-shadow: 0 6px 20px rgba(2,6,23,0.04);
+      min-height:340px;
+      display:flex;
+      flex-direction:column;
+    }
+    .chart-card .head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+    .chart-card canvas { flex:1; max-height: 300px; }
 
-    /* --- Filter/Search --- */
-    .controls { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:14px; }
+    /* filter + table */
+    .controls { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:22px; }
     .controls input, .controls select { padding:10px 12px; border-radius:8px; border:1px solid #e6edf6; background:white; min-width:200px; }
 
-    /* --- Table --- */
-    .table-wrap { background:transparent; border-radius:12px; overflow:hidden; box-shadow: 0 8px 24px rgba(2,6,23,0.04); }
+    .table-wrap { margin-top:16px; background:transparent; border-radius:12px; overflow:hidden; box-shadow: 0 8px 24px rgba(2,6,23,0.04); }
     .table-scroll { overflow-x:auto; }
-    table { width:100%; border-collapse:collapse; min-width:980px; }
-    thead th { background: linear-gradient(90deg,#2563eb,#7c3aed); color:white; padding:12px 14px; text-align:left; font-size:13px; }
-    tbody td { padding:12px 14px; background:white; border-bottom:1px solid #f1f5f9; color:#0f172a; font-size:14px; }
+    table { width:100%; border-collapse:collapse; min-width:980px; background:var(--card); }
+    thead th { background: linear-gradient(90deg,var(--accent),#7c3aed); color:white; padding:12px 14px; text-align:left; font-size:13px; }
+    tbody td { padding:12px 14px; border-bottom:1px solid #f1f5f9; color:#0f172a; font-size:14px; }
     tbody tr:hover td { background:#f8fbff; }
 
-    /* --- Mobile responsive --- */
-    @media (max-width: 1024px) {
-      .cards { grid-template-columns: repeat(2,1fr); }
-      .charts { grid-template-columns: 1fr; }
-    }
+    /* responsive tweaks */
     @media (max-width: 640px) {
-      .sidebar { position:fixed; left:-100%; top:0; bottom:0; z-index:40; transition: left .22s ease; }
-      .sidebar.open { left:0; }
       .cards { grid-template-columns: 1fr; }
-      .topbar { padding:10px; }
-      .main { padding:12px; }
-      table { min-width: 800px; }
-      .controls input, .controls select { min-width: 100%; }
-    }
-
-    /* floating action */
-    .floating-button {
-      position: fixed; bottom:24px; right:24px; z-index:60;
-      width:56px; height:56px; border-radius:12px; background:#2563eb; color:white;
-      display:flex; align-items:center; justify-content:center; box-shadow: 0 8px 24px rgba(37,99,235,0.18);
+      .chart-card { min-height:260px; }
+      .controls input, .controls select { min-width:100%; }
+      table { min-width:760px; }
     }
 
   </style>
 </head>
 
 <body>
-  <div class="app-container">
-    <!-- SIDEBAR -->
-    <aside id="sidebar" class="sidebar hidden md:block">
-      <div class="brand border-b">
-        <div class="px-6 py-5">
-          <div class="flex items-center gap-3">
-            <img src="assets/LOGOMADA.png" alt="logo" class="h-10 w-10 rounded-full object-cover" />
-            <div>
-              <div class="text-lg font-bold text-blue-700">PMB MTs Sunan Kalijaga</div>
-              <div class="text-xs text-slate-400">Admin Dashboard</div>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <nav class="nav p-4 space-y-2">
-        <a href="#stats" class="block">📊 Statistik</a>
-        <a href="#pendaftar" class="block">🧾 Data Pendaftar</a>
-        <a href="#" class="block">⚙️ Pengaturan</a>
-      </nav>
-
-      <div class="px-6 py-4 border-t mt-6 text-sm text-slate-500">
-        <div>Kontak: 082241509229</div>
-        <div class="mt-2">Email: mtssunankalijaga01@gmail.com</div>
-      </div>
-    </aside>
-
-    <!-- MAIN -->
-    <div class="flex-1 md:ml-64">
-      <!-- TOPBAR -->
-      <header class="topbar">
-        <div class="flex items-center gap-3">
-          <button id="menuBtn" class="md:hidden p-2 rounded bg-white shadow" aria-label="menu">
-            ☰
-          </button>
-          <div>
-            <div class="text-sm text-slate-500">Selamat datang, Admin</div>
-            <div class="text-lg font-bold text-slate-800">Dashboard Penerimaan Siswa</div>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-3">
-          <div class="hidden sm:block text-sm text-slate-600">Pengelolaan Penerimaan</div>
-        </div>
-      </header>
-
-      <main class="main">
-
-        <!-- CARDS -->
-        <section class="cards">
-          <div class="card">
-            <div class="label">Total Siswa Terdaftar</div>
-            <div id="totalSiswa" class="value">0</div>
-            <div class="text-xs text-slate-400 mt-2">Jumlah pendaftar saat ini</div>
-          </div>
-
-          <div class="card">
-            <div class="label">Kuota per Gelombang</div>
-            <div class="value">30</div>
-            <div class="text-xs text-slate-400 mt-2">Setiap gelombang 30 siswa</div>
-          </div>
-
-          <div class="card">
-            <div class="label">Terhubung via WA</div>
-            <div id="waCount" class="value">0</div>
-            <div class="text-xs text-slate-400 mt-2">Jumlah kontak yang ditandai</div>
-          </div>
-
-          <div class="card">
-            <div class="label">Pilihan Pondok Teratas</div>
-            <div id="topPonpes" class="value">-</div>
-            <div class="text-xs text-slate-400 mt-2">Pondok dengan pendaftar terbanyak</div>
-          </div>
-        </section>
-
-        <!-- CHARTS -->
-        <section id="stats" class="charts">
-          <div class="chart-card">
-            <div class="flex items-center justify-between mb-3">
-              <div>
-                <div class="font-semibold text-slate-700">Jenis Kelamin</div>
-                <div class="text-sm text-slate-400">Distribusi pendaftar</div>
-              </div>
-            </div>
-            <canvas id="genderChart"></canvas>
-          </div>
-
-          <div class="chart-card">
-            <div class="flex items-center justify-between mb-3">
-              <div>
-                <div class="font-semibold text-slate-700">Pilihan Pondok</div>
-                <div class="text-sm text-slate-400">Preferensi pondok pesantren</div>
-              </div>
-            </div>
-            <canvas id="ponpesChart"></canvas>
-          </div>
-        </section>
-
-        <!-- FILTER + SEARCH -->
-        <section id="pendaftar" class="mt-6">
-          <div class="flex items-start justify-between mb-4 gap-4 flex-wrap">
-            <div class="controls">
-              <input type="text" id="searchInput" placeholder="Cari siswa..." class="border p-2 rounded-md shadow-sm" />
-            </div>
-
-            <div class="flex gap-3 items-center">
-              <label class="text-sm text-slate-600">Pilih Gelombang</label>
-              <select id="gelombangFilter" class="border p-2 rounded-md">
-                <option value="all">Semua Gelombang</option>
-                <option value="1">Gelombang 1 (1–30)</option>
-                <option value="2">Gelombang 2 (31–60)</option>
-                <option value="3">Gelombang 3 (61–90)</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- TABLE -->
-          <div class="table-scroll">
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Nomor</th>
-                    <th>Asal Sekolah</th>
-                    <th>Nama</th>
-                    <th>Alamat</th>
-                    <th>Jenis Kelamin</th>
-                    <th>Pilihan Pondok</th>
-                    <th>Nomor HP</th>
-                    <th>Status Berkas</th>
-                    <th>Kontak</th>
-                  </tr>
-                </thead>
-                <tbody id="pendaftarTable">
-                  <!-- Data diisi oleh JS -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-        </section>
-
-      </main>
+  <!-- HEADER -->
+  <header class="app-header">
+    <div class="max-w-7xl mx-auto">
+      <div class="title">PMB MTs Sunan Kalijaga - Dashboard</div>
+      <div class="subtitle">Panel admin untuk monitoring pendaftar — fitur: filter, pencarian, WA, status berkas.</div>
     </div>
-  </div>
+  </header>
 
-  <!-- Floating button (contoh: cepat ke form pendaftaran) -->
+  <!-- MAIN -->
+  <main class="container">
+
+    <!-- CARDS -->
+    <section class="cards" aria-label="stat-cards">
+      <div class="card">
+        <div class="label">Total Siswa Terdaftar</div>
+        <div id="totalSiswa" class="value">0</div>
+        <div class="text-sm text-gray-400 mt-2">Jumlah pendaftar saat ini</div>
+      </div>
+
+      <div class="card">
+        <div class="label">Kuota per Gelombang</div>
+        <div class="value">30</div>
+        <div class="text-sm text-gray-400 mt-2">Setiap gelombang 30 siswa</div>
+      </div>
+
+      <div class="card">
+        <div class="label">Terhubung via WA</div>
+        <div id="waCount" class="value">0</div>
+        <div class="text-sm text-gray-400 mt-2">Jumlah kontak yang ditandai</div>
+      </div>
+
+      <div class="card">
+        <div class="label">Pilihan Pondok Teratas</div>
+        <div id="topPonpes" class="value">-</div>
+        <div class="text-sm text-gray-400 mt-2">Pondok dengan pendaftar terbanyak</div>
+      </div>
+    </section>
+
+    <!-- CHARTS -->
+    <section class="charts" id="stats">
+      <div class="chart-card" role="region" aria-label="chart-gender">
+        <div class="head">
+          <div>
+            <div class="font-semibold">Jenis Kelamin</div>
+            <div class="text-sm text-gray-400">Distribusi pendaftar</div>
+          </div>
+        </div>
+        <canvas id="genderChart"></canvas>
+      </div>
+
+      <div class="chart-card" role="region" aria-label="chart-ponpes">
+        <div class="head">
+          <div>
+            <div class="font-semibold">Pilihan Pondok</div>
+            <div class="text-sm text-gray-400">Preferensi pondok pesantren</div>
+          </div>
+        </div>
+        <canvas id="ponpesChart"></canvas>
+      </div>
+    </section>
+
+    <!-- FILTER + SEARCH -->
+    <section id="pendaftar" class="mt-6">
+      <div class="flex items-start justify-between mb-4 gap-4 flex-wrap">
+        <div class="controls">
+          <input type="text" id="searchInput" placeholder="Cari siswa, asal sekolah, alamat, pondok..." class="shadow-sm" />
+        </div>
+
+        <div class="flex gap-3 items-center">
+          <label class="text-sm text-gray-600">Pilih Gelombang</label>
+          <select id="gelombangFilter" class="shadow-sm">
+            <option value="all">Semua Gelombang</option>
+            <option value="1">Gelombang 1 (1–30)</option>
+            <option value="2">Gelombang 2 (31–60)</option>
+            <option value="3">Gelombang 3 (61–90)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- TABLE -->
+      <div class="table-scroll">
+        <div class="table-wrap">
+          <table aria-describedby="Data pendaftar">
+            <thead>
+              <tr>
+                <th>Nomor</th>
+                <th>Asal Sekolah</th>
+                <th>Nama</th>
+                <th>Alamat</th>
+                <th>Jenis Kelamin</th>
+                <th>Pilihan Pondok</th>
+                <th>Nomor HP</th>
+                <th>Status Berkas</th>
+                <th>Kontak</th>
+              </tr>
+            </thead>
+            <tbody id="pendaftarTable">
+              <!-- Data diisi oleh JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Floating register button (ke form) -->
   <a href="https://docs.google.com/forms" target="_blank" class="floating-button hidden md:flex" title="Form Pendaftaran">
     ✚
   </a>
 
-  <!-- Mobile menu overlay / script -->
+  <!-- ===== SCRIPT: data + charts (mengikuti fungsi & fitur Anda, hanya tampilkan bar chart bukan doughnut) ===== -->
   <script>
-    const sidebar = document.getElementById('sidebar');
-    const menuBtn = document.getElementById('menuBtn');
-    if (menuBtn) {
-      menuBtn.addEventListener('click', () => {
-        sidebar.classList.toggle('open');
-      });
-      // close when clicking outside on mobile
-      document.addEventListener('click', (e) => {
-        if (window.innerWidth <= 640) {
-          if (!sidebar.contains(e.target) && !menuBtn.contains(e.target) && sidebar.classList.contains('open')) {
-            sidebar.classList.remove('open');
+  // CSV publik yang Anda pakai
+  const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkWDi-X_jfYIUpR04AupM-ubJ-hBT-RO6W9HSyIN5_n15SN_AD1vDNM4CW-GV_4EpIm-9MTgW1iLvl/pub?gid=1123091940&single=true&output=csv";
+
+  let globalData = []; 
+  let genderChartInstance = null;
+  let ponpesChartInstance = null;
+
+  // Utility: escape text to avoid accidental HTML injection
+  function escapeHtml(text) {
+      if (!text && text !== 0) return "";
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+  }
+
+  // Load CSV (simple parse)
+  async function loadStats() {
+      try {
+          const response = await fetch(sheetURL);
+          const csvText = await response.text();
+
+          // quick CSV -> rows (assumes no embedded newlines/commas in fields)
+          const rows = csvText.split("\n").map(r =>
+              r.split(",").map(c => c.replace(/^"|"$/g, '').trim())
+          );
+
+          if (!rows || rows.length < 2) {
+              console.warn("CSV kosong atau tidak valid");
+              return;
           }
-        }
+
+          // headers lowercased
+          const headers = rows[0].map(h => h.trim().toLowerCase());
+
+          const colTanggal  = headers.findIndex(h => h.includes("timestamp"));
+          const colSekolah   = headers.findIndex(h => h === "asal sekolah");
+          const colNama      = headers.findIndex(h => h === "nama siswa");
+          const colAlamat    = headers.findIndex(h => h === "alamat");
+          const colGender    = headers.findIndex(h => h === "jenis kelamin");
+          const colPonpes    = headers.findIndex(h => h === "pilihan pondok pesantren");
+          const colHp        = headers.findIndex(h => h === "nomor hp orang tua");
+          const colKK        = headers.findIndex(h => h.includes("kartu keluarga"));
+          const colAkte      = headers.findIndex(h => h.includes("akte"));
+
+          globalData = [];
+          let total = 0;
+
+          // iterate rows
+          for (let i = 1; i < rows.length; i++) {
+              const row = rows[i];
+              if (!row || row.length === 0) continue;
+
+              const tanggal = row[colTanggal] || "";
+              const sekolah = row[colSekolah] || "";
+              const nama    = row[colNama] || "";
+              const alamat  = row[colAlamat] || "";
+              const gender  = (row[colGender] || "").trim();
+              const pondok  = row[colPonpes] || "";
+              const hpRaw   = row[colHp] || "";
+
+              if (!nama) continue;
+              if (!alamat) continue;
+
+              total++;
+
+              let gelombang = Math.ceil(total / 30);
+
+              let hp = hpRaw.replace(/[^0-9]/g, "");
+              if (hp.startsWith("0")) hp = "62" + hp.substring(1);
+
+              const kk   = row[colKK] || "";
+              const akte = row[colAkte] || "";
+
+              let statusBerkas = `<span style="color:#ef4444;font-weight:700">❌ Belum Lengkap</span>`;
+              if (kk && akte) statusBerkas = `<span style="color:#16a34a;font-weight:700">✅ Lengkap</span>`;
+
+              const pesan = `Selamat ${nama}, Anda DITERIMA sebagai calon siswa baru.`;
+
+              const linkWA = hp ? `https://wa.me/${hp}?text=${encodeURIComponent(pesan)}` : "";
+
+              globalData.push({
+                  nomor: total,
+                  gelombang,
+                  tanggal,
+                  sekolah,
+                  nama,
+                  alamat,
+                  gender: (gender || ""),
+                  pondok: (pondok || ""),
+                  hp,
+                  hpRaw,
+                  linkWA,
+                  statusBerkas
+              });
+          }
+
+          // update card counts
+          document.getElementById("totalSiswa").textContent = globalData.length;
+
+          // compute WA count (marked)
+          const waCount = globalData.reduce((acc,d)=> acc + (localStorage.getItem("contacted_"+d.hp) ? 1 : 0), 0);
+          document.getElementById("waCount").textContent = waCount || 0;
+
+          // top pondok
+          const ponpesCounts = {};
+          globalData.forEach(d => {
+              if (d.pondok) ponpesCounts[d.pondok] = (ponpesCounts[d.pondok] || 0) + 1;
+          });
+          const topPonpes = Object.entries(ponpesCounts).sort((a,b)=>b[1]-a[1])[0];
+          document.getElementById("topPonpes").textContent = topPonpes ? `${topPonpes[0]} (${topPonpes[1]})` : "-";
+
+          // initial render
+          renderTable(globalData);
+          drawCharts(globalData);
+          setupFilter(globalData);
+          setupSearch(globalData);
+
+      } catch (err) {
+          console.error("Gagal muat data:", err);
+      }
+  }
+
+  function markContacted(num) {
+      localStorage.setItem("contacted_" + num, true);
+      // update WA count in card
+      const waCount = globalData.reduce((acc,d) => acc + (localStorage.getItem("contacted_"+d.hp) ? 1 : 0), 0);
+      document.getElementById("waCount").textContent = waCount;
+  }
+
+  // DRAW BAR CHARTS (gender + pondok)
+  function drawCharts(data) {
+      let male = 0, female = 0;
+      let ponpesCounts = {};
+
+      data.forEach(d => {
+          const g = (d.gender || "").toLowerCase();
+          if (g.includes("laki")) male++;
+          else if (g.includes("perempuan")) female++;
+
+          const key = d.pondok && d.pondok.trim() ? d.pondok : "Non Pondok";
+          ponpesCounts[key] = (ponpesCounts[key] || 0) + 1;
       });
-    }
+
+      // destroy previous instances to avoid duplicates
+      if (genderChartInstance) genderChartInstance.destroy();
+      if (ponpesChartInstance) ponpesChartInstance.destroy();
+
+      // gender bar
+      const ctxG = document.getElementById("genderChart").getContext("2d");
+      genderChartInstance = new Chart(ctxG, {
+          type: "bar",
+          data: {
+              labels: ["Laki-Laki", "Perempuan"],
+              datasets: [{
+                  label: "Jumlah",
+                  data: [male, female],
+                  backgroundColor: ["#2563eb", "#ec4899"],
+                  borderRadius: 8
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: { y: { beginAtZero: true } },
+              plugins: { legend: { display: false } }
+          }
+      });
+
+      // pondok bar
+      const ctxP = document.getElementById("ponpesChart").getContext("2d");
+      ponpesChartInstance = new Chart(ctxP, {
+          type: "bar",
+          data: {
+              labels: Object.keys(ponpesCounts),
+              datasets: [{
+                  label: "Pendaftar",
+                  data: Object.values(ponpesCounts),
+                  backgroundColor: Object.keys(ponpesCounts).map((_,i)=> {
+                    // pick palette based on index
+                    const palette = ["#10b981","#f59e0b","#3b82f6","#ef4444","#8b5cf6","#06b6d4","#f97316"];
+                    return palette[i % palette.length];
+                  }),
+                  borderRadius: 6
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: { y: { beginAtZero: true } },
+              plugins: { legend: { display: false } }
+          }
+      });
+  }
+
+  // render table — nomor reset to 1..n for current view
+  function renderTable(data) {
+      const tbody = document.getElementById("pendaftarTable");
+      tbody.innerHTML = "";
+
+      data.forEach((d, i) => {
+          const contacted = localStorage.getItem("contacted_" + d.hp) ? "✔️" : "";
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+              <td>${i + 1}</td>
+              <td>${escapeHtml(d.sekolah)}</td>
+              <td>${escapeHtml(d.nama)}</td>
+              <td>${escapeHtml(d.alamat)}</td>
+              <td>${escapeHtml(d.gender)}</td>
+              <td>${escapeHtml(d.pondok)}</td>
+              <td>${escapeHtml(d.hpRaw || d.hp)}</td>
+              <td>${d.statusBerkas}</td>
+              <td>${d.hp ? `<a href="${d.linkWA}" target="_blank" class="inline-block px-3 py-1 rounded bg-green-500 text-white text-xs" onclick="markContacted('${d.hp}')">Hubungi</a>` : "-"} ${contacted}</td>
+          `;
+          tbody.appendChild(tr);
+      });
+  }
+
+  // Filter per gelombang dropdown
+  function setupFilter(allData) {
+      const filter = document.getElementById("gelombangFilter");
+      if (!filter) return;
+      filter.addEventListener("change", () => {
+          const val = filter.value;
+          const filtered = val === "all" ? allData : allData.filter(d => String(d.gelombang) === String(val));
+          renderTable(filtered);
+          drawCharts(filtered);
+      });
+  }
+
+  // Search input (live)
+  function setupSearch(allData) {
+      const search = document.getElementById("searchInput");
+      if (!search) return;
+      search.addEventListener("input", () => {
+          const q = search.value.trim().toLowerCase();
+          const rows = allData.filter(d => {
+              return (d.nama || "").toLowerCase().includes(q)
+                  || (d.sekolah || "").toLowerCase().includes(q)
+                  || (d.alamat || "").toLowerCase().includes(q)
+                  || (d.pondok || "").toLowerCase().includes(q);
+          });
+          renderTable(rows);
+          drawCharts(rows);
+      });
+  }
+
+  // initial load
+  loadStats();
   </script>
-  <script>
-const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkWDi-X_jfYIUpR04AupM-ubJ-hBT-RO6W9HSyIN5_n15SN_AD1vDNM4CW-GV_4EpIm-9MTgW1iLvl/pub?gid=1123091940&single=true&output=csv";
-
-let globalData = []; 
-let genderChartInstance = null;
-let ponpesChartInstance = null;
-
-async function loadStats() {
-    const response = await fetch(sheetURL);
-    const csvText = await response.text();
-
-    const rows = csvText.split("\n").map(r =>
-        r.split(",").map(c => c.replace(/^"|"$/g, '').trim())
-    );
-
-    const headers = rows[0].map(h => h.trim());
-
-    const colTanggal  = headers.findIndex(h => h.toLowerCase().includes("timestamp"));
-    const colSekolah   = headers.findIndex(h => h.toLowerCase() === "asal sekolah");
-    const colNama      = headers.findIndex(h => h.toLowerCase() === "nama siswa");
-    const colAlamat    = headers.findIndex(h => h.toLowerCase() === "alamat");
-    const colGender    = headers.findIndex(h => h.toLowerCase() === "jenis kelamin");
-    const colPonpes    = headers.findIndex(h => h.toLowerCase() === "pilihan pondok pesantren");
-    const colHp        = headers.findIndex(h => h.toLowerCase() === "nomor hp orang tua");
-    const colKK        = headers.findIndex(h => h.toLowerCase().includes("kartu keluarga"));
-    const colAkte      = headers.findIndex(h => h.toLowerCase().includes("akte"));
-
-    let total = 0;
-    let male = 0, female = 0;
-    let ponpesCounts = {};
-
-    const tbody = document.getElementById("pendaftarTable");
-    if (tbody) tbody.innerHTML = "";
-    globalData = [];
-
-    for (let i = 1; i < rows.length; i++) {
-
-        const tanggal = rows[i][colTanggal] || "";
-        const sekolah = rows[i][colSekolah] || "";
-        const nama    = rows[i][colNama] || "";
-        const alamat  = rows[i][colAlamat] || "";
-        const gender  = (rows[i][colGender] || "").trim().toLowerCase();
-        const pondok  = rows[i][colPonpes] || "";
-        const hpRaw   = rows[i][colHp] || "";
-
-        if (!nama) continue;
-        if (!alamat) continue;
-
-        total++;
-
-        // Tentukan gelombang berdasarkan nomor urut (per 30)
-        let gelombang = Math.ceil(total / 30);
-
-        let hp = hpRaw.replace(/[^0-9]/g, "");
-        if (hp.startsWith("0")) hp = "62" + hp.substring(1);
-
-        const kk   = rows[i][colKK] || "";
-        const akte = rows[i][colAkte] || "";
-
-        if (gender.includes("laki")) male++;
-        if (gender.includes("perempuan")) female++;
-
-        if (pondok) {
-            ponpesCounts[pondok] = (ponpesCounts[pondok] || 0) + 1;
-        }
-
-        let statusBerkas = `<span class="text-red-500 font-bold">❌ Belum Lengkap</span>`;
-        if (kk && akte) statusBerkas = `<span class="text-green-600 font-bold">✅ Lengkap</span>`;
-
-        // Pesan WA
-        const pesan = `
-        Selamat ${nama}, Anda DITERIMA sebagai calon siswa baru.
-        `.trim();
-
-        const linkWA = hp ? `https://wa.me/${hp}?text=${encodeURIComponent(pesan)}` : "";
-        const contacted = localStorage.getItem("contacted_" + hp) ? "✔️" : "";
-
-        if (tbody) {
-            let tr = document.createElement("tr");
-            tr.innerHTML = `
-                <td class="border px-4 py-2">${total}</td>
-                <td class="border px-4 py-2">${sekolah}</td>
-                <td class="border px-4 py-2">${nama}</td>
-                <td class="border px-4 py-2">${alamat}</td>
-                <td class="border px-4 py-2">${rows[i][colGender] || ""}</td>
-                <td class="border px-4 py-2">${pondok}</td>
-                <td class="border px-4 py-2">${hpRaw}</td>
-                <td class="border px-4 py-2">${statusBerkas}</td>
-                <td class="border px-4 py-2">
-                    ${hp ? `<a href="${linkWA}" target="_blank" class="bg-green-500 text-white px-3 py-1 rounded" onclick="markContacted('${hp}')">Hubungi</a>` : "-"} ${contacted}
-                </td>
-            `;
-            tbody.appendChild(tr);
-        }
-
-        // Simpan data lengkap + gelombang
-        globalData.push({
-            nomor: total,
-            gelombang,
-            tanggal,
-            sekolah,
-            nama,
-            alamat,
-            gender,
-            pondok,
-            hp,
-            linkWA,
-            statusBerkas
-        });
-    }
-
-    document.getElementById("totalSiswa").textContent = `Total Siswa Terdaftar: ${total}`;
-
-    drawCharts(globalData); 
-    setupFilter(globalData);
-}
-
-function markContacted(num) {
-    localStorage.setItem("contacted_" + num, true);
-}
-
-function drawCharts(data) {
-    let male = 0, female = 0;
-    let ponpesCounts = {};
-
-    data.forEach(d => {
-        const g = d.gender.toLowerCase();
-        if (g.includes("laki")) male++;
-        if (g.includes("perempuan")) female++;
-
-        ponpesCounts[d.pondok] = (ponpesCounts[d.pondok] || 0) + 1;
-    });
-
-    if (genderChartInstance) genderChartInstance.destroy();
-    if (ponpesChartInstance) ponpesChartInstance.destroy();
-
-    genderChartInstance = new Chart(document.getElementById("genderChart"), {
-        type: "doughnut",
-        data: {
-            labels: ["Laki-Laki", "Perempuan"],
-            datasets: [{
-                data: [male, female],
-                backgroundColor: ["#3b82f6", "#ec4899"]
-            }]
-        }
-    });
-
-    ponpesChartInstance = new Chart(document.getElementById("ponpesChart"), {
-        type: "doughnut",
-        data: {
-            labels: Object.keys(ponpesCounts),
-            datasets: [{
-                data: Object.values(ponpesCounts),
-                backgroundColor: ["#10b981", "#f59e0b", "#3b82f6", "#ef4444", "#8b5cf6"]
-            }]
-        }
-    });
-}
-
-function setupFilter(allData) {
-    document.getElementById("gelombangFilter").addEventListener("change", function () {
-        const val = this.value;
-
-        let filtered = 
-            val === "all" 
-            ? allData 
-            : allData.filter(d => d.gelombang == val);
-
-        renderTable(filtered);
-        drawCharts(filtered); 
-    });
-}
-
-function renderTable(data) {
-    const tbody = document.getElementById("pendaftarTable");
-    tbody.innerHTML = "";
-
-    data.forEach((d, i) => {
-        const contacted = localStorage.getItem("contacted_" + d.hp) ? "✔️" : "";
-
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td class="border px-4 py-2">${i + 1}</td>
-            <td class="border px-4 py-2">${d.sekolah}</td>
-            <td class="border px-4 py-2">${d.nama}</td>
-            <td class="border px-4 py-2">${d.alamat}</td>
-            <td class="border px-4 py-2">${d.gender}</td>
-            <td class="border px-4 py-2">${d.pondok}</td>
-            <td class="border px-4 py-2">${d.hp}</td>
-            <td class="border px-4 py-2">${d.statusBerkas}</td>
-            <td class="border px-4 py-2">
-                ${d.hp ? `<a href="${d.linkWA}" target="_blank" class="bg-green-500 text-white px-3 py-1 rounded" onclick="markContacted('${d.hp}')">Hubungi</a>` : "-"} ${contacted}
-            </td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
-
-loadStats();
-</script>
-
-
-
-
 
 </body>
 </html>
