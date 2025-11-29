@@ -317,6 +317,9 @@ const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkWDi-X_jfYIU
 
 let globalData = []; // simpan data untuk search & broadcast
 
+let genderChartInstance = null;
+let ponpesChartInstance = null;
+
 async function loadStats() {
     const response = await fetch(sheetURL);
     const csvText = await response.text();
@@ -454,6 +457,27 @@ async function loadStats() {
 function markContacted(num) {
     localStorage.setItem("contacted_" + num, true);
 }
+function updateCharts(data) {
+    let male = 0, female = 0;
+    let ponpesCounts = {};
+
+    data.forEach(d => {
+        const g = d.gender.toLowerCase();
+        if (g.includes("laki")) male++;
+        else if (g.includes("perempuan")) female++;
+
+        if (d.pondok) {
+            ponpesCounts[d.pondok] = (ponpesCounts[d.pondok] || 0) + 1;
+        }
+    });
+
+    // Hapus chart lama
+    if (genderChartInstance) genderChartInstance.destroy();
+    if (ponpesChartInstance) ponpesChartInstance.destroy();
+
+    // Chart Gender
+    updateCharts(globalData);
+}
 
 // fitur search
 document.getElementById("searchInput").addEventListener("keyup", function() {
@@ -537,16 +561,24 @@ function renderTable(data) {
 
 function setupFilter(allData) {
     const filter = document.getElementById("gelombangFilter");
-    if (!filter) return; // pastikan elemen ada
+    if (!filter) return;
+
     filter.addEventListener("change", () => {
         const val = filter.value;
-        if (val === "all") renderTable(allData);
-        else {
-            const filtered = allData.filter(d => getGelombang(d.tanggal) == val);
-            renderTable(filtered);
+
+        let filtered;
+
+        if (val === "all") {
+            filtered = allData;
+        } else {
+            filtered = allData.filter(d => getGelombang(d.tanggal) == val);
         }
+
+        renderTable(filtered);
+        updateCharts(filtered); // ---> chart berubah sesuai gelombang
     });
 }
+
 
 loadStats();
 </script>
