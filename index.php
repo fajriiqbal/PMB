@@ -1,129 +1,259 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>PMB MTs Sunan Kalijaga – Dashboard</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/png" href="assets/LOGOMADA.png">
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PMB MTs Sunan Kalijaga - Dashboard</title>
+  <link rel="icon" type="image/png" href="assets/LOGOMADA.png">
 
-<style>
-    /* sidebar animation */
+  <!-- Tailwind + Chart.js -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    /* --- Global --- */
+    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: #f3f6fb; }
+    .app-container { min-height: 100vh; display: flex; }
+
+    /* --- Sidebar --- */
     .sidebar {
-        transition: all 0.3s ease-in-out;
+      width: 260px;
+      background: linear-gradient(180deg,#ffffff 0%, #f8fbff 100%);
+      box-shadow: 0 8px 30px rgba(2,6,23,0.06);
+      border-right: 1px solid rgba(15,23,42,0.03);
     }
-</style>
+    .sidebar .brand { padding: 20px; }
+    .sidebar .nav a { display:flex; gap:12px; align-items:center; padding:12px 18px; border-radius:10px; color:#1f2937; text-decoration:none; font-weight:600; }
+    .sidebar .nav a:hover { background:#eef2ff; color:#1e3a8a; }
+
+    /* --- Topbar --- */
+    .topbar { background: white; padding: 14px 20px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 4px 18px rgba(2,6,23,0.04); }
+
+    /* --- Main content --- */
+    .main { flex:1; padding:22px; }
+
+    /* --- Cards grid --- */
+    .cards { display:grid; grid-template-columns: repeat(4,1fr); gap:18px; margin-bottom:18px; }
+    .card {
+      background:white; padding:18px; border-radius:12px;
+      box-shadow: 0 6px 18px rgba(2,6,23,0.06);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .card:hover { transform: translateY(-6px); box-shadow: 0 10px 26px rgba(2,6,23,0.08); }
+    .card .label { color:#475569; font-weight:700; font-size:13px; }
+    .card .value { font-weight:800; font-size:26px; color:#0f172a; margin-top:8px; }
+
+    /* --- Chart area --- */
+    .charts { display:grid; grid-template-columns: 1fr 1fr; gap:18px; margin-bottom:18px; }
+    .chart-card { background:white; padding:18px; border-radius:12px; box-shadow: 0 6px 18px rgba(2,6,23,0.06); }
+
+    /* --- Filter/Search --- */
+    .controls { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:14px; }
+    .controls input, .controls select { padding:10px 12px; border-radius:8px; border:1px solid #e6edf6; background:white; min-width:200px; }
+
+    /* --- Table --- */
+    .table-wrap { background:transparent; border-radius:12px; overflow:hidden; box-shadow: 0 8px 24px rgba(2,6,23,0.04); }
+    .table-scroll { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; min-width:980px; }
+    thead th { background: linear-gradient(90deg,#2563eb,#7c3aed); color:white; padding:12px 14px; text-align:left; font-size:13px; }
+    tbody td { padding:12px 14px; background:white; border-bottom:1px solid #f1f5f9; color:#0f172a; font-size:14px; }
+    tbody tr:hover td { background:#f8fbff; }
+
+    /* --- Mobile responsive --- */
+    @media (max-width: 1024px) {
+      .cards { grid-template-columns: repeat(2,1fr); }
+      .charts { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .sidebar { position:fixed; left:-100%; top:0; bottom:0; z-index:40; transition: left .22s ease; }
+      .sidebar.open { left:0; }
+      .cards { grid-template-columns: 1fr; }
+      .topbar { padding:10px; }
+      .main { padding:12px; }
+      table { min-width: 800px; }
+      .controls input, .controls select { min-width: 100%; }
+    }
+
+    /* floating action */
+    .floating-button {
+      position: fixed; bottom:24px; right:24px; z-index:60;
+      width:56px; height:56px; border-radius:12px; background:#2563eb; color:white;
+      display:flex; align-items:center; justify-content:center; box-shadow: 0 8px 24px rgba(37,99,235,0.18);
+    }
+
+  </style>
 </head>
-<body class="bg-gray-100 flex">
 
-<!-- SIDEBAR -->
-<aside id="sidebar" class="sidebar w-64 bg-white shadow-xl h-screen fixed md:relative transform -translate-x-full md:translate-x-0">
-    <div class="p-6 border-b">
-        <h1 class="font-bold text-xl text-blue-700">PMB Dashboard</h1>
-        <p class="text-sm text-gray-500">MTs Sunan Kalijaga</p>
+<body>
+  <div class="app-container">
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="sidebar hidden md:block">
+      <div class="brand border-b">
+        <div class="px-6 py-5">
+          <div class="flex items-center gap-3">
+            <img src="assets/LOGOMADA.png" alt="logo" class="h-10 w-10 rounded-full object-cover" />
+            <div>
+              <div class="text-lg font-bold text-blue-700">PMB MTs Sunan Kalijaga</div>
+              <div class="text-xs text-slate-400">Admin Dashboard</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="nav p-4 space-y-2">
+        <a href="#stats" class="block">📊 Statistik</a>
+        <a href="#pendaftar" class="block">🧾 Data Pendaftar</a>
+        <a href="#" class="block">⚙️ Pengaturan</a>
+      </nav>
+
+      <div class="px-6 py-4 border-t mt-6 text-sm text-slate-500">
+        <div>Kontak: 082241509229</div>
+        <div class="mt-2">Email: mtssunankalijaga01@gmail.com</div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="flex-1 md:ml-64">
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <div class="flex items-center gap-3">
+          <button id="menuBtn" class="md:hidden p-2 rounded bg-white shadow" aria-label="menu">
+            ☰
+          </button>
+          <div>
+            <div class="text-sm text-slate-500">Selamat datang, Admin</div>
+            <div class="text-lg font-bold text-slate-800">Dashboard Penerimaan Siswa</div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div class="hidden sm:block text-sm text-slate-600">Pengelolaan Penerimaan</div>
+        </div>
+      </header>
+
+      <main class="main">
+
+        <!-- CARDS -->
+        <section class="cards">
+          <div class="card">
+            <div class="label">Total Siswa Terdaftar</div>
+            <div id="totalSiswa" class="value">0</div>
+            <div class="text-xs text-slate-400 mt-2">Jumlah pendaftar saat ini</div>
+          </div>
+
+          <div class="card">
+            <div class="label">Kuota per Gelombang</div>
+            <div class="value">30</div>
+            <div class="text-xs text-slate-400 mt-2">Setiap gelombang 30 siswa</div>
+          </div>
+
+          <div class="card">
+            <div class="label">Terhubung via WA</div>
+            <div id="waCount" class="value">0</div>
+            <div class="text-xs text-slate-400 mt-2">Jumlah kontak yang ditandai</div>
+          </div>
+
+          <div class="card">
+            <div class="label">Pilihan Pondok Teratas</div>
+            <div id="topPonpes" class="value">-</div>
+            <div class="text-xs text-slate-400 mt-2">Pondok dengan pendaftar terbanyak</div>
+          </div>
+        </section>
+
+        <!-- CHARTS -->
+        <section id="stats" class="charts">
+          <div class="chart-card">
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <div class="font-semibold text-slate-700">Jenis Kelamin</div>
+                <div class="text-sm text-slate-400">Distribusi pendaftar</div>
+              </div>
+            </div>
+            <canvas id="genderChart"></canvas>
+          </div>
+
+          <div class="chart-card">
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <div class="font-semibold text-slate-700">Pilihan Pondok</div>
+                <div class="text-sm text-slate-400">Preferensi pondok pesantren</div>
+              </div>
+            </div>
+            <canvas id="ponpesChart"></canvas>
+          </div>
+        </section>
+
+        <!-- FILTER + SEARCH -->
+        <section id="pendaftar" class="mt-6">
+          <div class="flex items-start justify-between mb-4 gap-4 flex-wrap">
+            <div class="controls">
+              <input type="text" id="searchInput" placeholder="Cari siswa..." class="border p-2 rounded-md shadow-sm" />
+            </div>
+
+            <div class="flex gap-3 items-center">
+              <label class="text-sm text-slate-600">Pilih Gelombang</label>
+              <select id="gelombangFilter" class="border p-2 rounded-md">
+                <option value="all">Semua Gelombang</option>
+                <option value="1">Gelombang 1 (1–30)</option>
+                <option value="2">Gelombang 2 (31–60)</option>
+                <option value="3">Gelombang 3 (61–90)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- TABLE -->
+          <div class="table-scroll">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Nomor</th>
+                    <th>Asal Sekolah</th>
+                    <th>Nama</th>
+                    <th>Alamat</th>
+                    <th>Jenis Kelamin</th>
+                    <th>Pilihan Pondok</th>
+                    <th>Nomor HP</th>
+                    <th>Status Berkas</th>
+                    <th>Kontak</th>
+                  </tr>
+                </thead>
+                <tbody id="pendaftarTable">
+                  <!-- Data diisi oleh JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </section>
+
+      </main>
     </div>
+  </div>
 
-    <nav class="p-4 space-y-3">
-        <a href="#" class="block px-4 py-2 rounded-lg bg-blue-600 text-white font-medium">Dashboard</a>
-        <a href="#stats" class="block px-4 py-2 rounded-lg hover:bg-blue-100">Statistik</a>
-        <a href="#pendaftar" class="block px-4 py-2 rounded-lg hover:bg-blue-100">Data Pendaftar</a>
-    </nav>
-</aside>
+  <!-- Floating button (contoh: cepat ke form pendaftaran) -->
+  <a href="https://docs.google.com/forms" target="_blank" class="floating-button hidden md:flex" title="Form Pendaftaran">
+    ✚
+  </a>
 
-<!-- MAIN CONTENT -->
-<div class="flex-1 ml-0 md:ml-64">
-
-    <!-- TOP NAVBAR -->
-    <header class="bg-white shadow p-4 flex items-center justify-between">
-        <button onclick="toggleSidebar()" class="md:hidden bg-blue-600 text-white px-3 py-2 rounded">
-            Menu
-        </button>
-        <h2 class="text-xl font-semibold">Dashboard Penerimaan</h2>
-    </header>
-
-    <!-- MAIN CONTENT -->
-    <main class="p-6 space-y-10">
-
-        <!-- ==================== -->
-        <!--  STATISTIK SECTION   -->
-        <!-- ==================== -->
-        <section id="stats" class="mt-6">
-            <h2 class="text-2xl font-bold mb-6">Statistik Pendaftar</h2>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                <!-- Card Gender -->
-                <div class="bg-white p-6 shadow rounded-xl">
-                    <h3 class="font-semibold mb-4 text-gray-700">Jenis Kelamin</h3>
-                    <canvas id="genderChart"></canvas>
-                </div>
-
-                <!-- Card Ponpes -->
-                <div class="bg-white p-6 shadow rounded-xl">
-                    <h3 class="font-semibold mb-4 text-gray-700">Pilihan Pondok</h3>
-                    <canvas id="ponpesChart"></canvas>
-                </div>
-
-            </div>
-
-            <div class="mt-6 text-center">
-                <span id="totalSiswa"
-                    class="bg-blue-600 text-white px-6 py-3 rounded-full font-semibold shadow">
-                    Total Siswa Terdaftar: 0
-                </span>
-            </div>
-        </section>
-
-        <!-- ==================== -->
-        <!--   DATA PENDAFTAR     -->
-        <!-- ==================== -->
-        <section id="pendaftar" class="mt-10">
-            <h2 class="text-2xl font-bold mb-6">Data Pendaftar</h2>
-
-            <div class="flex flex-col md:flex-row gap-4 items-center mb-4">
-
-                <input id="searchInput" placeholder="Cari siswa..."
-                    class="border p-2 rounded w-full md:w-1/2">
-
-                <select id="gelombangFilter" class="border p-2 rounded">
-                    <option value="all">Semua Gelombang</option>
-                    <option value="1">Gelombang 1</option>
-                    <option value="2">Gelombang 2</option>
-                    <option value="3">Gelombang 3</option>
-                </select>
-            </div>
-
-            <div class="overflow-x-auto bg-white shadow rounded-xl">
-                <table class="min-w-full text-sm">
-                    <thead class="bg-blue-600 text-white">
-                        <tr>
-                            <th class="px-4 py-2">No</th>
-                            <th class="px-4 py-2">Asal Sekolah</th>
-                            <th class="px-4 py-2">Nama</th>
-                            <th class="px-4 py-2">Alamat</th>
-                            <th class="px-4 py-2">Gender</th>
-                            <th class="px-4 py-2">Pondok</th>
-                            <th class="px-4 py-2">HP</th>
-                            <th class="px-4 py-2">Status</th>
-                            <th class="px-4 py-2">Kontak</th>
-                        </tr>
-                    </thead>
-                    <tbody id="pendaftarTable" class="divide-y"></tbody>
-                </table>
-            </div>
-
-        </section>
-
-    </main>
-</div>
-
-<script>
-function toggleSidebar() {
-    document.getElementById("sidebar").classList.toggle("-translate-x-full");
-}
-</script>
-
+  <!-- Mobile menu overlay / script -->
+  <script>
+    const sidebar = document.getElementById('sidebar');
+    const menuBtn = document.getElementById('menuBtn');
+    if (menuBtn) {
+      menuBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+      });
+      // close when clicking outside on mobile
+      document.addEventListener('click', (e) => {
+        if (window.innerWidth <= 640) {
+          if (!sidebar.contains(e.target) && !menuBtn.contains(e.target) && sidebar.classList.contains('open')) {
+            sidebar.classList.remove('open');
+          }
+        }
+      });
+    }
+  </script>
   <script>
 const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkWDi-X_jfYIUpR04AupM-ubJ-hBT-RO6W9HSyIN5_n15SN_AD1vDNM4CW-GV_4EpIm-9MTgW1iLvl/pub?gid=1123091940&single=true&output=csv";
 
