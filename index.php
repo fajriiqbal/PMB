@@ -203,22 +203,39 @@ nav.bottom-nav a.active{color:var(--accent);font-weight:700}
 <!-- Bottom nav -->
 <nav class="bottom-nav" aria-label="navigation">
   <a href="#" id="navHome" class="active" onclick="scrollToSection('stats');return false;">
-    <div>🏠</div><div>Home</div>
-  </a>
-  <a href="#" id="navStats" onclick="scrollToSection('stats');return false;">
-    <div>📊</div><div>Statistik</div>
-  </a>
-  <a href="#" id="navData" onclick="scrollToSection('pendaftar');return false;">
-    <div>🧾</div><div>Data</div>
-  </a>
-  <a href="#" id="navMore" onclick="return false;">
-  <div>
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 12v8m0 0l-4-4m4 4l4-4M12 4v8" />
+    <!-- Home Icon -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7m-9 5v6m0-6h6m-6 0H3"/>
     </svg>
-  </div>
-  <div>Download</div>
-</a>
+    <div>Home</div>
+  </a>
+
+  <a href="#" id="navStats" onclick="scrollToSection('stats');return false;">
+    <!-- Chart Icon -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 11V3m4 8V7m4 8v-2m-8 6h8M5 21h14"/>
+    </svg>
+    <div>Statistik</div>
+  </a>
+
+  <a href="#" id="navData" onclick="scrollToSection('pendaftar');return false;">
+    <!-- Data Table Icon -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+    </svg>
+    <div>Data</div>
+  </a>
+<<<<<<< HEAD
+
+  <a href="#" id="navMore" onclick="confirmDownload();return false;">
+    <!-- Download Icon -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2m-6-6v6m0 0l-3-3m3 3l3-3"/>
+    </svg>
+    <div>Download</div>
+  </a>
+=======
+>>>>>>> a819a97b832b52f4f2f4eee5809f6fe3838eddd4
 </nav>
 
 <!-- Modal Konfirmasi Download -->
