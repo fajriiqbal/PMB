@@ -82,6 +82,128 @@
     /* small helpers */
     .muted{color:var(--muted);font-size:13px}
     .text-xs{font-size:12px}
+
+/* --- GLOBAL APK LOOK --- */
+body {
+    background: #F4F7FA;
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+}
+
+header {
+    background: #1976D2;
+    padding: 18px;
+    text-align: center;
+    color: white;
+    font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+}
+
+/* CONTAINER */
+.container {
+    padding: 16px;
+}
+
+/* --- SUMMARY CARDS --- */
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+}
+
+.card {
+    background: white;
+    padding: 16px;
+    border-radius: 14px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.09);
+    text-align: center;
+    font-weight: bold;
+    color: #1976D2;
+    font-size: 18px;
+}
+
+.card span {
+    display: block;
+    font-size: 26px;
+    color: #222;
+}
+
+/* --- CHART BOX --- */
+.chart-box {
+    margin-top: 20px;
+    background: white;
+    padding: 16px;
+    border-radius: 14px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.09);
+}
+
+/* --- HYBRID TABLE --- */
+
+/* Tabel desktop */
+.table-container {
+    overflow-x: auto;
+    border-radius: 12px;
+    background: white;
+    margin-top: 20px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+table th {
+    background: #1976D2;
+    color: white;
+    padding: 12px;
+    text-align: left;
+}
+
+table td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* -------- MOBILE CARD MODE -------- */
+.card-list {
+    display: none;
+    margin-top: 20px;
+}
+
+.student-card {
+    background: white;
+    margin-bottom: 12px;
+    padding: 14px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+
+.student-card h4 {
+    margin: 0 0 6px 0;
+    font-size: 16px;
+    color: #222;
+}
+
+.student-card p {
+    margin: 3px 0;
+    font-size: 14px;
+}
+
+/* RESPONSIVE SWITCH */
+@media (max-width: 768px) {
+    .table-container {
+        display: none;
+    }
+    .card-list {
+        display: block;
+    }
+}
+
+
   </style>
 </head>
 <body>
@@ -170,25 +292,26 @@
         </div>
 
         <div class="table-scroll">
-          <div class="table-wrap">
-            <table aria-describedby="Data pendaftar">
-              <thead>
-                <tr>
-                  <th>Nomor</th>
-                  <th>Asal Sekolah</th>
-                  <th>Nama</th>
-                  <th>Alamat</th>
-                  <th>Jenis Kelamin</th>
-                  <th>Pilihan Pondok</th>
-                  <th>Nomor HP</th>
-                  <th>Status Berkas</th>
-                  <th>Kontak</th>
-                </tr>
-              </thead>
-              <tbody id="pendaftarTable"></tbody>
-            </table>
-          </div>
-        </div>
+  <div class="table-wrap">
+    <table aria-describedby="Data pendaftar">
+      <thead>
+        <tr>
+          <th>Nomor</th>
+          <th>Asal Sekolah</th>
+          <th>Nama</th>
+          <th>Alamat</th>
+          <th>Jenis Kelamin</th>
+          <th>Pilihan Pondok</th>
+          <th>Nomor HP</th>
+          <th>Status Berkas</th>
+          <th>Kontak</th>
+        </tr>
+      </thead>
+      <tbody id="pendaftarTable"></tbody>
+    </table>
+  </div>
+</div>
+
       </section>
 
     </div>
