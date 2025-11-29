@@ -413,7 +413,7 @@ async function loadStats() {
         }
 
         // ✅ Tambahkan tanggal ke globalData untuk filter gelombang
-        globalData.push({tanggal, sekolah, nama, alamat, gender, pondok, hp, linkWA, statusBerkas});
+        globalData.push({tanggal, sekolah, nama, gender, pondok, hp, linkWA, statusBerkas});
     }
 
     document.getElementById("totalSiswa").textContent = `Total Siswa Terdaftar: ${total}`;
