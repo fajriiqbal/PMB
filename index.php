@@ -211,10 +211,22 @@ nav.bottom-nav a.active{color:var(--accent);font-weight:700}
   <a href="#" id="navData" onclick="scrollToSection('pendaftar');return false;">
     <div>🧾</div><div>Data</div>
   </a>
-  <a href="#" id="navMore" onclick="alert('Menu tambahan');return false;">
-    <div>⚙️</div><div>Lainnya</div>
+  <a href="#" id="navMore" onclick="return false;">
+    <div>⚙️</div><div>Download</div>
   </a>
 </nav>
+
+<!-- Modal Konfirmasi Download -->
+<div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center hidden z-50">
+  <div class="bg-white rounded-xl p-6 w-80 shadow-lg flex flex-col gap-4">
+    <div class="text-lg font-semibold text-gray-800">Konfirmasi Download</div>
+    <div class="text-sm text-gray-600">Yakin mau download data pendaftar?</div>
+    <div class="flex justify-end gap-3 mt-4">
+      <button id="cancelDownload" class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300">Batal</button>
+      <button id="confirmDownload" class="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700">Download</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // --- Data + Charts (sama seperti sebelumnya) ---
@@ -479,18 +491,32 @@ function downloadExcelAdvanced() {
 
 // Tautkan ke tombol Lainnya
 const navMore = document.getElementById("navMore");
-if (navMore) {
-    navMore.addEventListener("click", function(e){
-        e.preventDefault();
-        const yakin = confirm("Yakin mau download data pendaftar?");
-        if (yakin) {
-            downloadExcelAdvanced(); // panggil fungsi download
-        } else {
-            alert("Download dibatalkan.");
-        }
-    });
+const modal = document.getElementById("confirmModal");
+const cancelBtn = document.getElementById("cancelDownload");
+const confirmBtn = document.getElementById("confirmDownload");
 
-}
+// Klik tombol Download → tampilkan modal
+navMore.addEventListener("click", function(e){
+    e.preventDefault();
+    modal.classList.remove("hidden");
+});
+
+// Klik Batal → tutup modal
+cancelBtn.addEventListener("click", function(){
+    modal.classList.add("hidden");
+});
+
+// Klik Download → tutup modal & panggil fungsi download
+confirmBtn.addEventListener("click", function(){
+    modal.classList.add("hidden");
+    downloadExcelAdvanced(); // pastikan ini adalah fungsi download Excel yang sudah dibuat
+});
+
+// Opsional: klik di luar modal untuk menutupnya
+modal.addEventListener("click", function(e){
+    if(e.target === modal) modal.classList.add("hidden");
+});
+
 
 
 // initial load
