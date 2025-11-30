@@ -299,7 +299,26 @@ async function loadStats(){
       const akte=row[colAkte]||"";
       let statusBerkas=`<span style="color:#ef4444;font-weight:700">❌ Belum Lengkap</span>`;
       if(kk && akte) statusBerkas=`<span style="color:#16a34a;font-weight:700">✅ Lengkap</span>`;
-      const pesan=`Selamat ${nama}, Anda DITERIMA sebagai calon siswa baru.`;
+      const pesan=`
+      اَلْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ
+Kami ucapkan : 
+" SELAMAT DITERIMA "
+Atas Nama : ${nama}
+Sebagai 
+CALON SISWA BARU 
+TP. 2026/2027
+
+________________
+Untuk selanjutnya ,mohon dipersiapkan berkas sebagai persyaratan daftar ulang  sbb:
+1. Fc.KK ( 4 lb ) 
+2. Fc. Akte Kelahiran ( 4 lb ) 
+3. Fc. KTP Ayah ( 4lb ) 
+4. Fc. KTP Ibu ( 4 lb ) 
+5. Pas Photo ukuran 3X4  background  merah / biru ( 2 lb ) 
+6. Administrasi Keuangan Seragam
+
+⏳ Daftar ulang dilaksanakan Bulan Desember 2025.
+      `;
       const linkWA=hp?`https://wa.me/${hp}?text=${encodeURIComponent(pesan)}`:"";
 
       globalData.push({nomor:total,gelombang,tanggal,sekolah,nama,alamat,gender,pondok,hp,hpRaw,linkWA,statusBerkas});
