@@ -317,7 +317,7 @@ Untuk selanjutnya ,mohon dipersiapkan berkas sebagai persyaratan daftar ulang  s
 5. Pas Photo ukuran 3X4  background  merah / biru ( 2 lb ) 
 6. Administrasi Keuangan Seragam
 
-⏳ Daftar ulang dilaksanakan Bulan Desember 2025.
+⏳ Daftar ulang dilaksanakan Bulan Maret 2025.
       `;
       const linkWA=hp?`https://wa.me/${hp}?text=${encodeURIComponent(pesan)}`:"";
 
