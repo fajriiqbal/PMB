@@ -143,14 +143,63 @@ async function deleteRow(id){
 // ------------------------------------------------------------
 // SINKRON DU_GELOMBANG1
 // ------------------------------------------------------------
-async function syncData(){
-    if(!confirm("Sinkron DU_gelombang1?")) return;
+function syncGelombangServer(gelombang) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
 
-    const res = await fetch(API_URL+"?action=sync&gel=1");
-    const data = await res.json();
+  // Sumber data induk
+  const src = ss.getSheetByName("Form Responses 1");
+  if (!src) return { status: "error", message: "Sheet 'Form Responses 1' tidak ditemukan" };
 
-    alert("Sinkronisasi selesai.\nDitambahkan: "+data.inserted+"\nDilewati: "+data.skipped);
-    loadData();
+  // Sheet tujuan
+  const target = ss.getSheetByName("DU_gelombang1");
+  if (!target) return { status: "error", message: "Sheet 'DU_gelombang1' tidak ditemukan" };
+
+  const srcRows = src.getDataRange().getValues();
+  const srcHeaders = srcRows[0];
+
+  // Cari kolom Nama
+  const idxNama = srcHeaders.indexOf("Nama Siswa");
+  if (idxNama === -1) return { status: "error", message: "Kolom 'Nama Siswa' tidak ditemukan!" };
+
+  // Buat nomor urut berdasarkan jumlah data yang sudah ada
+  const targetRows = target.getDataRange().getValues();
+  const existing = targetRows.length - 1; // Kurangi header
+  let nextNumber = existing + 1;
+
+  let inserted = 0;
+
+  for (let i = 1; i < srcRows.length; i++) {
+    const nama = String(srcRows[i][idxNama] || "").trim();
+
+    if (!nama) continue; // Data kosong, skip
+
+    // Generate NomorPendaftar otomatis
+    const nomorPendaftar = "P" + String(nextNumber).padStart(4, "0");
+
+    // Tambah data ke sheet DU
+    const today = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd");
+
+    const newRow = [
+      "ID" + Date.now() + "_" + i, // id unik
+      nomorPendaftar,              // NomorPendaftar
+      nama,                        // Nama
+      today,                       // Tanggal
+      "Daftar Ulang",              // Jenis
+      "",                          // Nominal
+      "Belum",                     // Status
+      "Gelombang " + gelombang     // DUGelombang
+    ];
+
+    target.appendRow(newRow);
+    nextNumber++;
+    inserted++;
+  }
+
+  return {
+    status: "ok",
+    inserted: inserted,
+    message: inserted + " data berhasil disinkron."
+  };
 }
 
 </script>
