@@ -233,7 +233,7 @@ nav.bottom-nav a.active{color:var(--accent);font-weight:700}
     </svg>
     <div>Download</div>
   </a>
-  <a href="pembayaran.html" id="navMore">
+  <a href="pembayaran.php" id="navMore">
     <!-- Wallet Icon -->
     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
          viewBox="0 0 24 24" stroke="currentColor">
