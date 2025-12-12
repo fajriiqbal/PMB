@@ -20,7 +20,7 @@
         </div>
 
         <h1 class="text-3xl font-bold mb-4 text-gray-800">Sedang Dalam Perawatan</h1>
-        <p class="text-gray-600 mb-6">Fitur pembayaran sedang diperbaiki oleh tim teknisi kami. Mohon kembali lagi nanti.</p>
+        <p class="text-gray-600 mb-6">Fitur pembayaran sedang diperbaiki oleh Tim PMB Madsuka. Mohon kembali lagi nanti.</p>
         
         <a href="index.php" class="inline-block bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg hover:bg-red-600 transition duration-300 ease-in-out">
             Kembali ke Beranda
