@@ -233,6 +233,13 @@ nav.bottom-nav a.active{color:var(--accent);font-weight:700}
     </svg>
     <div>Download</div>
   </a>
+  <a href="pembayaran.html" id="navMore">
+    <!-- Download Icon -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2m-6-6v6m0 0l-3-3m3 3l3-3"/>
+    </svg>
+    <div>Pembayaran</div>
+</a>
 </nav>
 
 <!-- Modal Konfirmasi Download -->
