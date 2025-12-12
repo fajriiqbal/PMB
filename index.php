@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>PMB MTs Sunan Kalijaga - App</title>
+<title>PMB MTs Sunan Kalijaga - App (dengan Pembayaran)</title>
 <link rel="icon" type="image/png" href="assets/LOGOMADA.png">
 <meta name="theme-color" content="#2563eb">
 
-<!-- Tailwind + Chart.js -->
+<!-- Tailwind + Chart.js + SheetJS -->
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
@@ -194,6 +194,79 @@ nav.bottom-nav a.active{color:var(--accent);font-weight:700}
     </div>
   </section>
 
+  <!-- Pembayaran Section -->
+  <section id="pembayaran" class="mt-6">
+    <div class="flex items-center justify-between mb-3">
+      <div>
+        <h2 class="text-lg font-semibold">Pembayaran Daftar Ulang</h2>
+        <div class="text-xs muted">Kelola pembayaran siswa (CRUD) dan unduh laporan.</div>
+      </div>
+      <div class="flex gap-2 items-center">
+        <button onclick="openAddPaymentModal()" class="px-3 py-2 bg-blue-600 text-white rounded">Tambah Pembayaran</button>
+        <button onclick="downloadPaymentsExcel()" class="px-3 py-2 bg-green-600 text-white rounded">Download Laporan</button>
+      </div>
+    </div>
+
+    <div class="cards mb-4">
+      <div class="card">
+        <div class="label">Total Pembayaran</div>
+        <div id="totalPayments" class="value">0</div>
+        <div class="text-xs muted mt-2">Semua record pembayaran</div>
+      </div>
+      <div class="card">
+        <div class="label">Sudah Lunas</div>
+        <div id="paidCount" class="value">0</div>
+        <div class="text-xs muted mt-2">Jumlah pembayaran bertatus Lunas</div>
+      </div>
+      <div class="card">
+        <div class="label">Belum Lunas</div>
+        <div id="unpaidCount" class="value">0</div>
+        <div class="text-xs muted mt-2">Jumlah pembayaran bertatus Belum</div>
+      </div>
+      <div class="card">
+        <div class="label">Total Nominal</div>
+        <div id="totalNominal" class="value">0</div>
+        <div class="text-xs muted mt-2">Total semua nominal</div>
+      </div>
+    </div>
+
+    <!-- Filter + Search Pembayaran -->
+    <div class="flex items-center justify-between gap-3 mb-3 flex-wrap">
+      <div style="flex:1;" class="controls">
+        <input id="searchPayment" placeholder="Cari pembayaran: nama, nomor, jenis..." />
+        <select id="filterStatus">
+          <option value="all">Semua Status</option>
+          <option value="Lunas">Lunas</option>
+          <option value="Belum">Belum</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Mobile Cards for payments -->
+    <div id="paymentsMobileContainer"></div>
+
+    <!-- Desktop Table -->
+    <div class="desktop-only table-scroll mt-2">
+      <div class="table-wrap">
+        <table aria-describedby="Data pembayaran">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nomor</th>
+              <th>Nama</th>
+              <th>Tanggal</th>
+              <th>Jenis</th>
+              <th>Nominal</th>
+              <th>Status</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="paymentsTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
 </div>
 </main>
 
@@ -203,7 +276,6 @@ nav.bottom-nav a.active{color:var(--accent);font-weight:700}
 <!-- Bottom nav -->
 <nav class="bottom-nav" aria-label="navigation">
   <a href="#" id="navHome" class="active" onclick="scrollToSection('stats');return false;">
-    <!-- Home Icon -->
     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7m-9 5v6m0-6h6m-6 0H3"/>
     </svg>
@@ -211,7 +283,6 @@ nav.bottom-nav a.active{color:var(--accent);font-weight:700}
   </a>
 
   <a href="#" id="navStats" onclick="scrollToSection('stats');return false;">
-    <!-- Chart Icon -->
     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 11V3m4 8V7m4 8v-2m-8 6h8M5 21h14"/>
     </svg>
@@ -219,15 +290,20 @@ nav.bottom-nav a.active{color:var(--accent);font-weight:700}
   </a>
 
   <a href="#" id="navData" onclick="scrollToSection('pendaftar');return false;">
-    <!-- Table Icon -->
     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
     </svg>
     <div>Data</div>
   </a>
 
+  <a href="#" id="navPay" onclick="scrollToSection('pembayaran');return false;">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 1.343-3 3v3h6v-3c0-1.657-1.343-3-3-3zM12 2v2m0 16v2m8-10h2M2 12H0M19.778 4.222l1.414-1.414M3.808 20.192l1.414-1.414"/>
+    </svg>
+    <div>Pembayaran</div>
+  </a>
+
   <a href="#" id="navMore" onclick="confirmDownload();return false;">
-    <!-- Download Icon -->
     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2m-6-6v6m0 0l-3-3m3 3l3-3"/>
     </svg>
@@ -247,24 +323,57 @@ nav.bottom-nav a.active{color:var(--accent);font-weight:700}
   </div>
 </div>
 
+<!-- Modal Add/Edit Payment -->
+<div id="paymentModal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center hidden z-60">
+  <div class="bg-white rounded-xl p-6 w-96 shadow-lg">
+    <h3 id="paymentModalTitle" class="text-lg font-semibold mb-2">Tambah Pembayaran</h3>
+    <div class="grid grid-cols-1 gap-2">
+      <input id="pay_nomor" placeholder="Nomor Pendaftar" class="border p-2 rounded" />
+      <input id="pay_nama" placeholder="Nama" class="border p-2 rounded" />
+      <input id="pay_tanggal" type="date" class="border p-2 rounded" />
+      <select id="pay_jenis" class="border p-2 rounded">
+        <option>Seragam</option>
+        <option>Administrasi</option>
+        <option>Pangkal</option>
+      </select>
+      <input id="pay_nominal" placeholder="Nominal" class="border p-2 rounded" />
+      <select id="pay_status" class="border p-2 rounded">
+        <option value="Lunas">Lunas</option>
+        <option value="Belum">Belum</option>
+      </select>
+      <input id="pay_bukti" placeholder="Link Bukti (opsional)" class="border p-2 rounded" />
+    </div>
+    <div class="flex justify-end gap-2 mt-4">
+      <button onclick="closePaymentModal()" class="px-3 py-1 rounded bg-gray-200">Batal</button>
+      <button id="paymentSaveBtn" onclick="savePayment()" class="px-3 py-1 rounded bg-blue-600 text-white">Simpan</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // --- Data + Charts (sama seperti sebelumnya) ---
 const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkWDi-X_jfYIUpR04AupM-ubJ-hBT-RO6W9HSyIN5_n15SN_AD1vDNM4CW-GV_4EpIm-9MTgW1iLvl/pub?gid=1123091940&single=true&output=csv";
+// public CSV from your Payment sheet (you provided earlier)
+const pembayaranCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRK5S9U1_NFAXW44TO-FtuITk6BGdrH1RPG67iEs3HSER9bBuY15KZGn4KRjSHtQszjNpdz67ibBeAr/pub?gid=0&single=true&output=csv";
+// Apps Script Web App URL for CRUD - GANTI dengan URL hasil deploy Anda
+const PAY_API_URL = "https://daftar.mtssunankalijagatulung.sch.id/";
 
 let globalData = [];
+let paymentsData = [];
 let genderChartInstance = null;
 let ponpesChartInstance = null;
 
 function escapeHtml(text){
   if(!text && text!==0) return "";
-  return String(text).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+  return String(text).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;").replace(/'/g,"&#039;");
 }
 
 async function loadStats(){
   try{
     const response = await fetch(sheetURL);
     const csvText = await response.text();
-    const rows = csvText.split("\n").map(r=>r.split(",").map(c=>c.replace(/^"|"$/g,'').trim()));
+    const rows = csvText.split("
+").map(r=>r.split(",").map(c=>c.replace(/^\"|\"$/g,'').trim()));
     if(!rows || rows.length<2) return;
 
     const headers = rows[0].map(h=>h.trim().toLowerCase());
@@ -338,115 +447,252 @@ Untuk selanjutnya ,mohon dipersiapkan berkas sebagai persyaratan daftar ulang  s
     drawCharts(globalData);
     setupFilter(globalData);
     setupSearch(globalData);
-  }catch(err){console.error("Gagal load:",err);}
+  }catch(err){console.error("Gagal load:",err);} 
 }
 
-function markContacted(num){
-  localStorage.setItem("contacted_"+num,true);
-  const waCount=globalData.reduce((acc,d)=>acc+(localStorage.getItem("contacted_"+d.hp)?1:0),0);
-  document.getElementById("waCount").textContent=waCount;
+// Payment functions
+async function loadPayments(){
+  try{
+    const res = await fetch(pembayaranCSV);
+    const csvText = await res.text();
+    const rows = csvText.split('
+').map(r=>r.split(',').map(c=>c.replace(/^\"|\"$/g,'').trim()));
+    if(!rows || rows.length<2){ paymentsData=[]; renderPayments(); return; }
+
+    const headers = rows[0].map(h=>h.trim().toLowerCase());
+    const idxId = headers.findIndex(h=>h.includes('id'));
+    const idxNomor = headers.findIndex(h=>h.includes('nomorpendaftar')||h.includes('nomor'));
+    const idxNama = headers.findIndex(h=>h.includes('nama'));
+    const idxTanggal = headers.findIndex(h=>h.includes('tanggal'));
+    const idxJenis = headers.findIndex(h=>h.includes('jenis'));
+    const idxNominal = headers.findIndex(h=>h.includes('nominal'));
+    const idxStatus = headers.findIndex(h=>h.includes('status'));
+    const idxBukti = headers.findIndex(h=>h.includes('bukti'));
+
+    paymentsData = [];
+    for(let i=1;i<rows.length;i++){
+      const r = rows[i];
+      if(!r || r.length < 2) continue;
+      paymentsData.push({
+        id: r[idxId]||('',i),
+        nomor: r[idxNomor]||'',
+        nama: r[idxNama]||'',
+        tanggal: r[idxTanggal]||'',
+        jenis: r[idxJenis]||'',
+        nominal: r[idxNominal]||'',
+        status: r[idxStatus]||'',
+        bukti: r[idxBukti]||''
+      });
+    }
+
+    renderPayments();
+  }catch(err){console.error('Gagal load payments',err); paymentsData=[]; renderPayments();}
 }
 
-function drawCharts(data){
-  let male=0,female=0;
-  let ponpesCounts={};
-  data.forEach(d=>{
-    const g=(d.gender||"").toLowerCase();
-    if(g.includes("laki")) male++;
-    else if(g.includes("perempuan")) female++;
-    const key=d.pondok&&d.pondok.trim()?d.pondok:"Non Pondok";
-    ponpesCounts[key]=(ponpesCounts[key]||0)+1;
+function renderPayments(){
+  // stats
+  document.getElementById('totalPayments').textContent = paymentsData.length;
+  document.getElementById('paidCount').textContent = paymentsData.filter(p=>String(p.status).toLowerCase()==='lunas').length;
+  document.getElementById('unpaidCount').textContent = paymentsData.filter(p=>String(p.status).toLowerCase()!=='lunas').length;
+  const totalNom = paymentsData.reduce((s,p)=>s + (Number(String(p.nominal).replace(/[^0-9]/g,''))||0),0);
+  document.getElementById('totalNominal').textContent = totalNom.toLocaleString('id-ID');
+
+  // desktop table
+  const tbody = document.getElementById('paymentsTable');
+  if(tbody) tbody.innerHTML = '';
+  paymentsData.forEach(p=>{
+    if(tbody){
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${escapeHtml(p.id||'')}</td>
+        <td>${escapeHtml(p.nomor||'')}</td>
+        <td>${escapeHtml(p.nama||'')}</td>
+        <td>${escapeHtml(p.tanggal||'')}</td>
+        <td>${escapeHtml(p.jenis||'')}</td>
+        <td>${escapeHtml(p.nominal||'')}</td>
+        <td>${escapeHtml(p.status||'')}</td>
+        <td>
+          <button onclick="openEditPayment('${p.id}')" class="px-2 py-1 rounded bg-yellow-500 text-white text-xs">Edit</button>
+          <button onclick="deletePayment('${p.id}')" class="px-2 py-1 rounded bg-red-500 text-white text-xs">Hapus</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    }
   });
 
-  if(genderChartInstance) genderChartInstance.destroy();
-  if(ponpesChartInstance) ponpesChartInstance.destroy();
-
-  const ctxG=document.getElementById("genderChart").getContext("2d");
-  genderChartInstance=new Chart(ctxG,{
-    type:"bar",
-    data:{labels:["Laki-Laki","Perempuan"],datasets:[{label:"Jumlah",data:[male,female],backgroundColor:["#2563eb","#ec4899"],borderRadius:8}]},
-    options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,ticks:{precision:0}}},plugins:{legend:{display:false}}}
-  });
-
-  const ctxP=document.getElementById("ponpesChart").getContext("2d");
-  ponpesChartInstance=new Chart(ctxP,{
-    type:"bar",
-    data:{labels:Object.keys(ponpesCounts),datasets:[{label:"Pendaftar",data:Object.values(ponpesCounts),backgroundColor:Object.keys(ponpesCounts).map((_,i)=>{const p=["#10b981","#f59e0b","#3b82f6","#ef4444","#8b5cf6","#06b6d4","#f97316"];return p[i%p.length];}),borderRadius:6}]},
-    options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,ticks:{precision:0}}},plugins:{legend:{display:false}}}
-  });
-}
-
-function renderTable(data){
-  const tbody=document.getElementById("pendaftarTable");
-  tbody.innerHTML="";
-  data.forEach((d,i)=>{
-    const contacted=localStorage.getItem("contacted_"+d.hp)?"✔️":"";
-    const tr=document.createElement("tr");
-    tr.innerHTML=`
-      <td>${i+1}</td>
-      <td>${escapeHtml(d.sekolah)}</td>
-      <td>${escapeHtml(d.nama)}</td>
-      <td>${escapeHtml(d.alamat)}</td>
-      <td>${escapeHtml(d.gender)}</td>
-      <td>${escapeHtml(d.pondok)}</td>
-      <td>${escapeHtml(d.hpRaw||d.hp)}</td>
-      <td>${d.statusBerkas}</td>
-      <td>${d.hp?`<a href="${d.linkWA}" target="_blank" class="inline-block px-3 py-1 rounded bg-green-500 text-white text-xs" onclick="markContacted('${d.hp}')">Hubungi</a>`:"-"} ${contacted}</td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-function renderMobileCards(data){
-  const container=document.getElementById("pendaftarCardContainer");
-  container.innerHTML="";
-  data.forEach((d,i)=>{
-    const contacted=localStorage.getItem("contacted_"+d.hp)?"✔️":"";
-    const card=document.createElement("div");
-    card.classList.add("mobile-card");
-    card.innerHTML=`
-      <div class="flex justify-between mb-2"><div class="font-semibold text-sm">#${i+1}</div><div class="text-xs text-gray-500">Gel: ${d.gelombang}</div></div>
-      <div class="mb-1"><span class="font-semibold text-xs">Nama:</span> ${d.nama}</div>
-      <div class="mb-1"><span class="font-semibold text-xs">Sekolah:</span> ${d.sekolah}</div>
-      <div class="mb-1"><span class="font-semibold text-xs">Alamat:</span> ${d.alamat}</div>
-      <div class="mb-1"><span class="font-semibold text-xs">Gender:</span> ${d.gender}</div>
-      <div class="mb-1"><span class="font-semibold text-xs">Pondok:</span> ${d.pondok}</div>
-      <div class="mb-1"><span class="font-semibold text-xs">HP:</span> ${d.hpRaw||d.hp}</div>
-      <div class="mb-1"><span class="font-semibold text-xs">Status Berkas:</span> ${d.statusBerkas}</div>
-      <div class="flex justify-between items-center mt-2">
-        ${d.hp?`<a href="${d.linkWA}" target="_blank" class="px-3 py-1 bg-green-500 text-white rounded text-xs" onclick="markContacted('${d.hp}')">WA</a>`:"-"}
-        <span>${contacted}</span>
+  // mobile
+  const mcont = document.getElementById('paymentsMobileContainer');
+  if(mcont) mcont.innerHTML='';
+  paymentsData.forEach((p,i)=>{
+    const card = document.createElement('div');
+    card.classList.add('mobile-card');
+    card.innerHTML = `
+      <div class="flex justify-between mb-2"><div class="font-semibold text-sm">#${i+1}</div><div class="text-xs text-gray-500">${escapeHtml(p.tanggal||'')}</div></div>
+      <div class="mb-1"><span class="font-semibold text-xs">Nama:</span> ${escapeHtml(p.nama||'')}</div>
+      <div class="mb-1"><span class="font-semibold text-xs">Nomor:</span> ${escapeHtml(p.nomor||'')}</div>
+      <div class="mb-1"><span class="font-semibold text-xs">Jenis:</span> ${escapeHtml(p.jenis||'')}</div>
+      <div class="mb-1"><span class="font-semibold text-xs">Nominal:</span> ${escapeHtml(p.nominal||'')}</div>
+      <div class="mb-1"><span class="font-semibold text-xs">Status:</span> ${escapeHtml(p.status||'')}</div>
+      <div class="flex justify-end items-center mt-2 gap-2">
+        <button onclick="openEditPayment('${p.id}')" class="px-3 py-1 bg-yellow-500 text-white rounded text-xs">Edit</button>
+        <button onclick="deletePayment('${p.id}')" class="px-3 py-1 bg-red-500 text-white rounded text-xs">Hapus</button>
       </div>
     `;
-    container.appendChild(card);
+    mcont.appendChild(card);
   });
 }
 
-function setupFilter(allData){
-  const filter=document.getElementById("gelombangFilter");
-  filter?.addEventListener("change",()=>{
-    const val=filter.value;
-    const filtered=val==="all"?allData:allData.filter(d=>String(d.gelombang)===String(val));
-    renderTable(filtered);
-    renderMobileCards(filtered);
-    drawCharts(filtered);
-    document.getElementById('pendaftar').scrollIntoView({behavior:'smooth',block:'start'});
-  });
+function openAddPaymentModal(){
+  document.getElementById('paymentModalTitle').textContent = 'Tambah Pembayaran';
+  document.getElementById('pay_nomor').value = '';
+  document.getElementById('pay_nama').value = '';
+  document.getElementById('pay_tanggal').value = '';
+  document.getElementById('pay_jenis').value = 'Seragam';
+  document.getElementById('pay_nominal').value = '';
+  document.getElementById('pay_status').value = 'Lunas';
+  document.getElementById('pay_bukti').value = '';
+  document.getElementById('paymentSaveBtn').dataset.action = 'add';
+  document.getElementById('paymentSaveBtn').dataset.id = '';
+  document.getElementById('paymentModal').classList.remove('hidden');
 }
 
-function setupSearch(allData){
-  const search=document.getElementById("searchInput");
-  search?.addEventListener("input",()=>{
-    const q=search.value.trim().toLowerCase();
-    const rows=allData.filter(d=>{
-      return (d.nama||"").toLowerCase().includes(q)||
-             (d.sekolah||"").toLowerCase().includes(q)||
-             (d.alamat||"").toLowerCase().includes(q)||
-             (d.pondok||"").toLowerCase().includes(q);
+function closePaymentModal(){ document.getElementById('paymentModal').classList.add('hidden'); }
+
+function openEditPayment(id){
+  const p = paymentsData.find(x=>String(x.id)===String(id));
+  if(!p) return alert('Data tidak ditemukan');
+  document.getElementById('paymentModalTitle').textContent = 'Edit Pembayaran';
+  document.getElementById('pay_nomor').value = p.nomor||'';
+  document.getElementById('pay_nama').value = p.nama||'';
+  document.getElementById('pay_tanggal').value = p.tanggal||'';
+  document.getElementById('pay_jenis').value = p.jenis||'Seragam';
+  document.getElementById('pay_nominal').value = p.nominal||'';
+  document.getElementById('pay_status').value = p.status||'Lunas';
+  document.getElementById('pay_bukti').value = p.bukti||'';
+  document.getElementById('paymentSaveBtn').dataset.action = 'update';
+  document.getElementById('paymentSaveBtn').dataset.id = p.id||'';
+  document.getElementById('paymentModal').classList.remove('hidden');
+}
+
+async function savePayment(){
+  const action = document.getElementById('paymentSaveBtn').dataset.action || 'add';
+  const id = document.getElementById('paymentSaveBtn').dataset.id || '';
+  const payload = {
+    action: action,
+    id: id,
+    nomor: document.getElementById('pay_nomor').value,
+    nama: document.getElementById('pay_nama').value,
+    tanggal: document.getElementById('pay_tanggal').value,
+    jenis: document.getElementById('pay_jenis').value,
+    nominal: document.getElementById('pay_nominal').value,
+    status: document.getElementById('pay_status').value,
+    bukti: document.getElementById('pay_bukti').value
+  };
+
+  if(!PAY_API_URL || PAY_API_URL.includes('PASTE')) return alert('Belum ada API URL Apps Script. Silakan deploy Web App lalu masukkan URL di variabel PAY_API_URL.');
+
+  try{
+    const res = await fetch(PAY_API_URL,{
+      method:'POST',
+      body: JSON.stringify(payload)
     });
-    renderTable(rows);
-    renderMobileCards(rows);
-    drawCharts(rows);
+    const j = await res.json();
+    if(j.status==='success' || j.status==='updated' || j.status==='deleted'){
+      closePaymentModal();
+      setTimeout(loadPayments,500);
+      alert('Sukses: '+j.status);
+    } else {
+      alert('Gagal: '+JSON.stringify(j));
+    }
+  }catch(err){console.error(err); alert('Error saat menghubungi API');}
+}
+
+async function deletePayment(id){
+  if(!confirm('Yakin ingin menghapus pembayaran ini?')) return;
+  if(!PAY_API_URL || PAY_API_URL.includes('PASTE')) return alert('Belum ada API URL Apps Script. Silakan deploy Web App lalu masukkan URL di variabel PAY_API_URL.');
+  try{
+    const res = await fetch(PAY_API_URL,{method:'POST',body:JSON.stringify({action:'delete',id})});
+    const j = await res.json();
+    if(j.status==='deleted'){
+      setTimeout(loadPayments,300);
+      alert('Data dihapus');
+    } else alert('Gagal: '+JSON.stringify(j));
+  } catch(err){console.error(err); alert('Error saat menghapus');}
+}
+
+// Download payments as Excel
+function downloadPaymentsExcel(){
+  if(!paymentsData || paymentsData.length===0){ alert('Data pembayaran kosong'); return; }
+  const wb = XLSX.utils.book_new();
+  const wsData = [["ID","NomorPendaftar","Nama","Tanggal","Jenis","Nominal","Status","Bukti"]];
+  paymentsData.forEach(p=>{
+    wsData.push([p.id||'',p.nomor||'',p.nama||'',p.tanggal||'',p.jenis||'',p.nominal||'',p.status||'',p.bukti||'']);
+  });
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+  XLSX.utils.book_append_sheet(wb,ws,'Pembayaran');
+  XLSX.writeFile(wb,'laporan_pembayaran.xlsx');
+}
+
+// filters search
+function setupPaymentSearch(){
+  const s = document.getElementById('searchPayment');
+  const f = document.getElementById('filterStatus');
+  if(s) s.addEventListener('input',()=>{
+    const q = s.value.trim().toLowerCase();
+    const rows = paymentsData.filter(p=>{
+      return (p.nama||'').toLowerCase().includes(q) || (p.nomor||'').toLowerCase().includes(q) || (p.jenis||'').toLowerCase().includes(q);
+    });
+    renderPaymentsFiltered(rows);
+  });
+  if(f) f.addEventListener('change',()=>{
+    const v = f.value;
+    const rows = v==='all'? paymentsData : paymentsData.filter(p=>String(p.status)===v);
+    renderPaymentsFiltered(rows);
+  });
+}
+
+function renderPaymentsFiltered(rows){
+  // reuse rendering logic but with provided rows
+  const tbody = document.getElementById('paymentsTable');
+  if(tbody) tbody.innerHTML = '';
+  rows.forEach(p=>{
+    if(tbody){
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${escapeHtml(p.id||'')}</td>
+        <td>${escapeHtml(p.nomor||'')}</td>
+        <td>${escapeHtml(p.nama||'')}</td>
+        <td>${escapeHtml(p.tanggal||'')}</td>
+        <td>${escapeHtml(p.jenis||'')}</td>
+        <td>${escapeHtml(p.nominal||'')}</td>
+        <td>${escapeHtml(p.status||'')}</td>
+        <td>
+          <button onclick="openEditPayment('${p.id}')" class="px-2 py-1 rounded bg-yellow-500 text-white text-xs">Edit</button>
+          <button onclick="deletePayment('${p.id}')" class="px-2 py-1 rounded bg-red-500 text-white text-xs">Hapus</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    }
+  });
+
+  const mcont = document.getElementById('paymentsMobileContainer');
+  if(mcont) mcont.innerHTML='';
+  rows.forEach((p,i)=>{
+    const card = document.createElement('div');
+    card.classList.add('mobile-card');
+    card.innerHTML = `
+      <div class="flex justify-between mb-2"><div class="font-semibold text-sm">#${i+1}</div><div class="text-xs text-gray-500">${escapeHtml(p.tanggal||'')}</div></div>
+      <div class="mb-1"><span class="font-semibold text-xs">Nama:</span> ${escapeHtml(p.nama||'')}</div>
+      <div class="mb-1"><span class="font-semibold text-xs">Nomor:</span> ${escapeHtml(p.nomor||'')}</div>
+      <div class="mb-1"><span class="font-semibold text-xs">Jenis:</span> ${escapeHtml(p.jenis||'')}</div>
+      <div class="mb-1"><span class="font-semibold text-xs">Nominal:</span> ${escapeHtml(p.nominal||'')}</div>
+      <div class="mb-1"><span class="font-semibold text-xs">Status:</span> ${escapeHtml(p.status||'')}</div>
+      <div class="flex justify-end items-center mt-2 gap-2">
+        <button onclick="openEditPayment('${p.id}')" class="px-3 py-1 bg-yellow-500 text-white rounded text-xs">Edit</button>
+        <button onclick="deletePayment('${p.id}')" class="px-3 py-1 bg-red-500 text-white rounded text-xs">Hapus</button>
+      </div>
+    `;
+    mcont.appendChild(card);
   });
 }
 
@@ -455,10 +701,11 @@ function scrollToSection(id){
   if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
   document.querySelectorAll('nav.bottom-nav a').forEach(a=>a.classList.remove('active'));
   if(id==='pendaftar') document.getElementById('navData').classList.add('active');
+  else if(id==='pembayaran') document.getElementById('navPay').classList.add('active');
   else document.getElementById('navStats').classList.add('active');
 }
-// ===== Fungsi download CSV =====
-// ===== Fungsi download Excel =====
+
+// ===== Fungsi download Excel pendaftar (tetap ada) =====
 function downloadExcelAdvanced() {
     if (!globalData || globalData.length === 0) {
         alert("Data kosong, tidak ada yang bisa diunduh.");
@@ -555,10 +802,12 @@ modal.addEventListener("click", function(e){
     if(e.target === modal) modal.classList.add("hidden");
 });
 
-
+// Payment search/filter setup
+setupPaymentSearch();
 
 // initial load
 loadStats();
+loadPayments();
 </script>
 </body>
 </html>
