@@ -6,165 +6,207 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-    body { font-family: Arial, sans-serif; padding: 15px; background: #f4f4f4; }
-    h1 { text-align: center; margin-bottom: 20px; }
-    table { width: 100%; border-collapse: collapse; background: white; }
-    th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
-    th { background: #007bff; color: white; }
-    tr:nth-child(even) { background: #f9f9f9; }
-    button { padding: 8px 12px; margin: 5px; cursor: pointer; border: none; border-radius: 5px; }
-    .add-btn { background: #28a745; color: white; }
-    .edit-btn { background: #ffc107; color: black; }
-    .delete-btn { background: #dc3545; color: white; }
-    .sync-btn { background: #17a2b8; color: white; }
-    .download-btn { background: #6f42c1; color: white; }
-    #formBox { background: white; padding: 20px; margin-top: 20px; border-radius: 10px; display: none; }
-    label { font-weight: bold; }
-    input, select { width: 100%; padding: 8px; margin: 5px 0 15px; }
+    body { font-family: Arial; background:#f4f4f4; padding:20px; }
+    h1 { text-align:center; margin-bottom:20px; }
+    table { width:100%; border-collapse:collapse; background:white; }
+    th, td { padding:10px; border:1px solid #ddd; }
+    th { background:#007bff; color:white; }
+    tr:nth-child(even){ background:#f9f9f9; }
+
+    button { padding:8px 12px; border:none; border-radius:5px; cursor:pointer; }
+    .add-btn { background:#28a745; color:white; }
+    .edit-btn { background:#ffc107; }
+    .delete-btn { background:#dc3545; color:white; }
+    .sync-btn { background:#17a2b8; color:white; }
+    .download-btn { background:#6f42c1; color:white; }
+
+    #formBox { display:none; background:white; padding:20px; margin-top:20px;
+               border-radius:10px; }
+    label { font-weight:bold; display:block; margin-top:10px; }
+    input, select { width:100%; padding:8px; margin-top:5px; }
 </style>
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbzr1ElBgZGXk5VcAWV7PHifa3gYozlB7iUAZso0Q82vNkxdOI9Im1hjRYZi_MN2XMQFkQ/exec";
 
+let editing = false;
 let editingId = "";
 
-// -------------------------------
-// LOAD DATA PEMBAYARAN
-// -------------------------------
-async function loadData() {
-    const res = await fetch(API_URL + "?action=read");
+// ------------------------------------------------------------
+// LOAD DATA
+// ------------------------------------------------------------
+async function loadData(){
+    const res = await fetch(API_URL);
     const data = await res.json();
 
     let html = "";
-    data.forEach((row, i) => {
+    data.forEach((r,i)=>{
         html += `
         <tr>
             <td>${i+1}</td>
-            <td>${row.nama}</td>
-            <td>${row.kelas}</td>
-            <td>${row.jumlah}</td>
-            <td>${row.tanggal}</td>
+            <td>${r.ID}</td>
+            <td>${r.NomorPendaftar}</td>
+            <td>${r.Nama}</td>
+            <td>${r.Tanggal}</td>
+            <td>${r.Jenis}</td>
+            <td>${r.Nominal}</td>
+            <td>${r.Status}</td>
+            <td>${r.Bukti}</td>
             <td>
-                <button class="edit-btn" onclick='edit("${row.id}", "${row.nama}", "${row.kelas}", "${row.jumlah}")'>Edit</button>
-                <button class="delete-btn" onclick='hapus("${row.id}")'>Hapus</button>
+                <button class="edit-btn" onclick='editRow(${JSON.stringify(r)})'>Edit</button>
+                <button class="delete-btn" onclick='deleteRow("${r.ID}")'>Hapus</button>
             </td>
         </tr>`;
     });
 
-    document.getElementById("dataTable").innerHTML = html;
+    document.getElementById("tbody").innerHTML = html;
 }
 window.onload = loadData;
 
-// -------------------------------
-// FORM TAMBAH PEMBAYARAN
-// -------------------------------
-function showForm() {
+// ------------------------------------------------------------
+// SHOW FORM
+// ------------------------------------------------------------
+function showForm(){
+    editing = false;
     editingId = "";
     document.getElementById("formBox").style.display = "block";
-    document.getElementById("judulForm").innerHTML = "Tambah Pembayaran";
+    document.getElementById("formTitle").innerText = "Tambah Pembayaran";
 
+    document.getElementById("nomor").value = "";
     document.getElementById("nama").value = "";
-    document.getElementById("kelas").value = "";
-    document.getElementById("jumlah").value = "";
+    document.getElementById("tanggal").value = "";
+    document.getElementById("jenis").value = "";
+    document.getElementById("nominal").value = "";
+    document.getElementById("status").value = "Belum";
+    document.getElementById("bukti").value = "";
 }
 
-// -------------------------------
-// EDIT PEMBAYARAN
-// -------------------------------
-function edit(id, nama, kelas, jumlah) {
-    editingId = id;
+// ------------------------------------------------------------
+// EDIT
+// ------------------------------------------------------------
+function editRow(r){
+    editing = true;
+    editingId = r.ID;
+
     document.getElementById("formBox").style.display = "block";
-    document.getElementById("judulForm").innerHTML = "Edit Pembayaran";
+    document.getElementById("formTitle").innerText = "Edit Pembayaran";
 
-    document.getElementById("nama").value = nama;
-    document.getElementById("kelas").value = kelas;
-    document.getElementById("jumlah").value = jumlah;
+    document.getElementById("nomor").value = r.NomorPendaftar;
+    document.getElementById("nama").value = r.Nama;
+    document.getElementById("tanggal").value = r.Tanggal;
+    document.getElementById("jenis").value = r.Jenis;
+    document.getElementById("nominal").value = r.Nominal;
+    document.getElementById("status").value = r.Status;
+    document.getElementById("bukti").value = r.Bukti;
 }
 
-// -------------------------------
-// SIMPAN PEMBAYARAN
-// -------------------------------
-async function saveData() {
-    const formData = new FormData();
-    formData.append("id", editingId);
-    formData.append("nama", document.getElementById("nama").value);
-    formData.append("kelas", document.getElementById("kelas").value);
-    formData.append("jumlah", document.getElementById("jumlah").value);
+// ------------------------------------------------------------
+// SAVE (ADD + UPDATE)
+// ------------------------------------------------------------
+async function saveData(){
+    const body = {
+        action: editing ? "update" : "add",
+        id: editingId,
+        nomor: document.getElementById("nomor").value,
+        nama: document.getElementById("nama").value,
+        tanggal: document.getElementById("tanggal").value,
+        jenis: document.getElementById("jenis").value,
+        nominal: document.getElementById("nominal").value,
+        status: document.getElementById("status").value,
+        bukti: document.getElementById("bukti").value
+    };
 
-    await fetch(API_URL + "?action=save", { method: "POST", body: formData });
+    await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify(body)
+    });
 
-    alert("Data berhasil disimpan!");
+    alert("Data disimpan!");
     location.reload();
 }
 
-// -------------------------------
-// HAPUS PEMBAYARAN
-// -------------------------------
-async function hapus(id) {
-    if (!confirm("Hapus data ini?")) return;
+// ------------------------------------------------------------
+// DELETE
+// ------------------------------------------------------------
+async function deleteRow(id){
+    if(!confirm("Hapus data ini?")) return;
 
-    await fetch(API_URL + "?action=delete&id=" + id);
-    alert("Data dihapus.");
+    await fetch(API_URL, {
+        method:"POST",
+        body: JSON.stringify({ action:"delete", id:id })
+    });
+
+    alert("Dihapus!");
     loadData();
 }
 
-// -------------------------------
-// SINKRONISASI DATA DU_gelombang1
-// -------------------------------
-async function syncData() {
-    if (!confirm("Sinkron data DU_gelombang1 ke pembayaran?")) return;
+// ------------------------------------------------------------
+// SINKRON DU_GELOMBANG1
+// ------------------------------------------------------------
+async function syncData(){
+    if(!confirm("Sinkron DU_gelombang1?")) return;
 
-    const res = await fetch(API_URL + "?action=sync&gel=1");
-    const data = await res.text();
+    const res = await fetch(API_URL+"?action=sync&gel=1");
+    const data = await res.json();
 
-    alert("Sinkronisasi selesai:\n" + data);
+    alert("Sinkronisasi selesai.\nDitambahkan: "+data.inserted+"\nDilewati: "+data.skipped);
     loadData();
 }
 
-// -------------------------------
-// DOWNLOAD LAPORAN EXCEL
-// -------------------------------
-function downloadExcel() {
-    window.open(API_URL + "?action=download");
-}
 </script>
-
 </head>
+
 <body>
 
 <h1>Manajemen Pembayaran</h1>
 
 <button class="add-btn" onclick="showForm()">+ Tambah Pembayaran</button>
-<button class="sync-btn" onclick="syncData()">Sinkron Gelombang 1</button>
-<button class="download-btn" onclick="downloadExcel()">Download Excel</button>
-
-<br><br>
+<button class="sync-btn" onclick="syncData()">Sync Gelombang 1</button>
 
 <table>
     <thead>
         <tr>
             <th>No</th>
+            <th>ID</th>
+            <th>Nomor</th>
             <th>Nama</th>
-            <th>Kelas</th>
-            <th>Jumlah</th>
             <th>Tanggal</th>
+            <th>Jenis</th>
+            <th>Nominal</th>
+            <th>Status</th>
+            <th>Bukti</th>
             <th>Aksi</th>
         </tr>
     </thead>
-    <tbody id="dataTable"></tbody>
+    <tbody id="tbody"></tbody>
 </table>
 
 <div id="formBox">
-    <h2 id="judulForm">Tambah Pembayaran</h2>
+    <h2 id="formTitle">Tambah Pembayaran</h2>
 
-    <label>Nama Siswa</label>
-    <input type="text" id="nama" required>
+    <label>Nomor Pendaftar</label>
+    <input id="nomor">
 
-    <label>Kelas</label>
-    <input type="text" id="kelas" required>
+    <label>Nama</label>
+    <input id="nama">
 
-    <label>Jumlah</label>
-    <input type="number" id="jumlah" required>
+    <label>Tanggal</label>
+    <input type="date" id="tanggal">
+
+    <label>Jenis Pembayaran</label>
+    <input id="jenis">
+
+    <label>Nominal</label>
+    <input type="number" id="nominal">
+
+    <label>Status</label>
+    <select id="status">
+        <option>Belum</option>
+        <option>Sudah</option>
+    </select>
+
+    <label>Bukti Bayar (opsional: link gambar)</label>
+    <input id="bukti">
 
     <button class="add-btn" onclick="saveData()">Simpan</button>
 </div>
