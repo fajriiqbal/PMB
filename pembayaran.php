@@ -4,289 +4,492 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>Manajemen Pembayaran - PMB MTs Sunan Kalijaga</title>
-
 <link rel="icon" type="image/png" href="assets/LOGOMADA.png">
 
-<!-- Tailwind CSS -->
+<!-- Tailwind + Chart.js -->
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-:root{
-  --accent:#2563eb;
-  --bg:#f3f6fb;
-  --card:#ffffff;
-  --muted:#64748b;
-}
-html,body{
-    height:100%;margin:0;
-    font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto;
-    background:var(--bg);
-}
+:root{--accent:#2563eb;--bg:#f3f6fb;--card:#ffffff;--muted:#64748b}
+html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto;background:var(--bg);color:#0f172a;-webkit-font-smoothing:antialiased;}
+.appbar{position:fixed;left:0;right:0;top:0;height:64px;padding:12px 16px;background:linear-gradient(90deg,#fff,#f8fbff);display:flex;align-items:center;justify-content:space-between;z-index:40;border-bottom:1px solid rgba(15,23,42,0.03);box-shadow:0 4px 16px rgba(2,6,23,0.06)}
+.container{padding-top:80px;max-width:1100px;margin:0 auto;padding-left:14px;padding-right:14px}
+.card{background:var(--card);border-radius:12px;padding:12px;box-shadow:0 6px 18px rgba(2,6,23,0.05);margin-bottom:12px}
+.table-scroll{overflow-x:auto}
+.table{width:100%;border-collapse:collapse;min-width:760px;background:var(--card)}
+thead th{background:var(--accent);color:white;padding:10px 12px;text-align:left;font-size:12px}
+tbody td{padding:10px 12px;background:var(--card);border-bottom:1px solid #f1f5f9;font-size:13px}
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.btn{padding:8px 12px;border-radius:8px;background:var(--accent);color:white;border:none;cursor:pointer}
+.btn.ghost{background:white;color:var(--accent);border:1px solid rgba(37,99,235,0.12)}
+.hidden{display:none}
+.bottom-fixed{position:fixed;left:12px;right:12px;bottom:12px;height:64px;background:linear-gradient(180deg,#ffffff,#fbfdff);border-radius:16px;display:flex;align-items:center;justify-content:space-around;box-shadow:0 12px 30px rgba(2,6,23,0.12);z-index:50;border:1px solid rgba(15,23,42,0.03)}
+.mobile-card{background:var(--card);border-radius:12px;padding:12px;margin-bottom:12px}
+.label-xs{font-size:12px;color:var(--muted)}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:767px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
-
 </head>
 <body>
 
-<!-- ===================================== -->
-<!-- APP BAR -->
-<!-- ===================================== -->
-<header class="appbar fixed left-0 right-0 top-0 h-16 px-4 bg-white shadow flex items-center justify-between z-40">
-    <div>
-        <div class="font-bold">Manajemen Pembayaran</div>
-        <div class="text-xs text-gray-500">PMB MTs Sunan Kalijaga</div>
-    </div>
-    <img src="assets/LOGOMADA.png" class="w-10 h-10 rounded-lg">
+<header class="appbar" role="banner">
+  <div>
+    <div class="title font-bold">PMB MTs Sunan Kalijaga</div>
+    <div class="subtitle text-xs" style="color:var(--muted)">Manajemen Pembayaran & Laporan</div>
+  </div>
+  <div><img src="assets/LOGOMADA.png" alt="logo" style="width:40px;height:40px;border-radius:8px;object-fit:cover"></div>
 </header>
 
-<main class="pt-20 pb-28 max-w-5xl mx-auto px-4">
+<main class="container" role="main">
 
+  <!-- Top controls: search + filters + cek siswa -->
+  <div class="card">
+    <div class="flex items-center justify-between gap-4 flex-wrap">
+      <div style="flex:1">
+        <div class="controls">
+          <input id="globalSearch" type="text" placeholder="Cari nama / nomor / jenis..." style="padding:10px;border-radius:8px;border:1px solid #e6edf6;min-width:220px" />
+          <select id="filterStatus" style="padding:10px;border-radius:8px;border:1px solid #e6edf6">
+            <option value="all">Semua Status</option>
+            <option value="Belum">Belum</option>
+            <option value="Sudah">Sudah</option>
+          </select>
+          <select id="filterJenis" style="padding:10px;border-radius:8px;border:1px solid #e6edf6">
+            <option value="all">Semua Jenis</option>
+            <option value="Seragam">Seragam</option>
+            <option value="Administrasi">Administrasi</option>
+            <option value="Pangkal">Pangkal</option>
+            <option value="Daftar Ulang">Daftar Ulang</option>
+          </select>
+          <input id="dateFrom" type="date" style="padding:10px;border-radius:8px;border:1px solid #e6edf6" />
+          <input id="dateTo" type="date" style="padding:10px;border-radius:8px;border:1px solid #e6edf6" />
+          <button class="btn" onclick="applyFilters()">Terapkan</button>
+          <button class="btn ghost" onclick="resetFilters()">Reset</button>
+        </div>
+      </div>
 
-<!-- ===================================== -->
-<!-- BUTTON TAMBAH + SYNC -->
-<!-- ===================================== -->
-<div class="flex justify-between mb-4">
-    <button onclick="showForm()" class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow">
-        + Tambah Pembayaran
-    </button>
+      <!-- cek pembayaran siswa -->
+      <div style="min-width:260px">
+        <div class="label-xs">Cek Pembayaran Siswa</div>
+        <div class="flex gap-2">
+          <input id="cekNomor" placeholder="Masukkan Nomor Pendaftar (contoh: P0001)" style="padding:10px;border-radius:8px;border:1px solid #e6edf6;flex:1" />
+          <button class="btn" onclick="cekSiswa()">Cek</button>
+        </div>
+        <div id="cekResult" class="mt-2 label-xs" style="min-height:20px;color:var(--muted)"></div>
+      </div>
+    </div>
+  </div>
 
-    <button onclick="syncGelombang1()" class="px-4 py-2 bg-emerald-600 text-white rounded-lg shadow">
-        🔄 Sync Gelombang 1
-    </button>
-</div>
+  <!-- Stats -->
+  <section class="card">
+    <div class="stats-grid">
+      <div>
+        <div class="label-xs">Total Transaksi</div>
+        <div id="statTotal" class="text-2xl font-bold">0</div>
+      </div>
+      <div>
+        <div class="label-xs">Total Nominal (Rp)</div>
+        <div id="statAmount" class="text-2xl font-bold">0</div>
+      </div>
+      <div>
+        <div class="label-xs">Sudah Bayar</div>
+        <div id="statPaid" class="text-2xl font-bold">0</div>
+      </div>
+      <div>
+        <div class="label-xs">Belum Bayar</div>
+        <div id="statUnpaid" class="text-2xl font-bold">0</div>
+      </div>
+    </div>
+    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <canvas id="chartStatus" style="min-height:220px"></canvas>
+      <canvas id="chartJenis" style="min-height:220px"></canvas>
+    </div>
+  </section>
 
+  <!-- Table -->
+  <section class="card mt-4">
+    <div class="table-scroll">
+      <table class="table" aria-describedby="Data pembayaran">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>ID</th>
+            <th>Nomor</th>
+            <th>Nama</th>
+            <th>Tanggal</th>
+            <th>Jenis</th>
+            <th>Nominal</th>
+            <th>Status</th>
+            <th>Bukti</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="paymentsTable"></tbody>
+      </table>
+    </div>
+  </section>
 
-<!-- ===================================== -->
-<!-- TABLE PEMBAYARAN -->
-<!-- ===================================== -->
-<div class="bg-white shadow rounded-lg overflow-hidden">
-<table class="w-full text-sm">
-    <thead class="bg-blue-600 text-white">
-        <tr>
-            <th class="p-2">No</th>
-            <th class="p-2">ID</th>
-            <th class="p-2">Nomor</th>
-            <th class="p-2">Nama</th>
-            <th class="p-2">Tanggal</th>
-            <th class="p-2">Jenis</th>
-            <th class="p-2">Nominal</th>
-            <th class="p-2">Status</th>
-            <th class="p-2">Aksi</th>
-        </tr>
-    </thead>
-    <tbody id="tbody"></tbody>
-</table>
-</div>
-
-
-
-<!-- ===================================== -->
-<!-- FORM INPUT PEMBAYARAN -->
-<!-- ===================================== -->
-<div id="formBox" class="hidden mt-4 bg-white p-4 rounded-lg shadow">
-    <h2 id="formTitle" class="font-bold mb-3">Tambah Pembayaran</h2>
-
-    <label class="text-sm font-semibold">Nomor Pendaftar</label>
-    <input id="nomor" class="w-full p-2 border rounded mb-2">
-
-    <label class="text-sm font-semibold">Nama</label>
-    <input id="nama" class="w-full p-2 border rounded mb-2">
-
-    <label class="text-sm font-semibold">Tanggal</label>
-    <input type="date" id="tanggal" class="w-full p-2 border rounded mb-2">
-
-    <label class="text-sm font-semibold">Jenis Pembayaran</label>
-    <input id="jenis" class="w-full p-2 border rounded mb-2">
-
-    <label class="text-sm font-semibold">Nominal</label>
-    <input type="number" id="nominal" class="w-full p-2 border rounded mb-2">
-
-    <label class="text-sm font-semibold">Status</label>
-    <select id="status" class="w-full p-2 border rounded mb-2">
-        <option>Belum</option>
-        <option>Sudah</option>
-    </select>
-
-    <label class="text-sm font-semibold">Bukti (URL Gambar)</label>
-    <input id="bukti" class="w-full p-2 border rounded mb-3">
-
-    <button onclick="saveData()" class="px-4 py-2 bg-blue-600 text-white rounded-lg">Simpan</button>
-</div>
+  <!-- Form modal (inline card) -->
+  <section id="formSection" class="card hidden">
+    <h3 class="font-semibold mb-2" id="formHeading">Tambah Pembayaran</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <input id="f_nomor" placeholder="Nomor Pendaftar" class="p-2 border rounded" />
+      <input id="f_nama" placeholder="Nama" class="p-2 border rounded" />
+      <input id="f_tanggal" type="date" class="p-2 border rounded" />
+      <input id="f_jenis" placeholder="Jenis (Seragam/Administrasi...)" class="p-2 border rounded" />
+      <input id="f_nominal" type="number" placeholder="Nominal" class="p-2 border rounded" />
+      <select id="f_status" class="p-2 border rounded">
+        <option>Belum</option><option>Sudah</option>
+      </select>
+      <input id="f_bukti" placeholder="Link bukti (opsional)" class="p-2 border rounded col-span-2" />
+    </div>
+    <div class="mt-3 flex gap-2">
+      <button class="btn" onclick="saveForm()">Simpan</button>
+      <button class="btn ghost" onclick="closeForm()">Batal</button>
+    </div>
+  </section>
 
 </main>
 
-
-
-<!-- ===================================== -->
-<!-- BOTTOM NAVIGATION -->
-<!-- ===================================== -->
-<nav class="bottom-nav fixed left-3 right-3 bottom-3 bg-white rounded-xl shadow-lg h-20 flex justify-around items-center">
-
-  <a href="index.php" class="flex flex-col items-center text-gray-600">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M3 12l2-2m0 0l7-7 7 7m-9 5v6m0-6h6m-6 0H3"/>
-      </svg>
-      <div class="text-xs">Kembali</div>
+<!-- bottom nav -->
+<nav class="bottom-fixed" aria-label="navigation">
+  <a href="index.html" class="text-center text-xs">
+    <div>Home</div>
   </a>
-
-  <a href="pembayaran.php" class="flex flex-col items-center text-blue-600 font-bold">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
-           stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2m0-4h4m0 0l-2-2m2 2l-2 2"/>
-      </svg>
-      <div class="text-xs">Pembayaran</div>
+  <a href="#" class="text-center text-xs active">
+    <div>Pembayaran</div>
   </a>
-
+  <a href="pendaftar.html" class="text-center text-xs">
+    <div>Data</div>
+  </a>
+  <a href="#" onclick="openPrintAll()" class="text-center text-xs">
+    <div>Print All</div>
+  </a>
 </nav>
 
+<!-- helper modal for receipt preview -->
+<div id="receiptPreview" class="hidden"></div>
 
-
-
-
-<!-- ===================================== -->
-<!-- JAVASCRIPT API CONNECTION -->
-<!-- ===================================== -->
+<!-- SCRIPTS -->
 <script>
-
+/* CONFIG - ganti API_URL kalau perlu */
 const API_URL = "https://script.google.com/macros/s/AKfycbzr1ElBgZGXk5VcAWV7PHifa3gYozlB7iUAZso0Q82vNkxdOI9Im1hjRYZi_MN2XMQFkQ/exec";
 
-let editing = false;
+/* State */
+let payments = [];        // raw from API
+let filtered = [];        // current view
+let statusChart = null;
+let jenisChart = null;
 let editingId = "";
 
+/* Utilities */
+function fmtRp(n){ return Number(n||0).toLocaleString('id-ID'); }
+function parseDate(v){ return v ? new Date(v) : null; }
+function isBetween(dateStr, fromStr, toStr){
+  if(!dateStr) return false;
+  const d = new Date(dateStr);
+  if(fromStr){ const f = new Date(fromStr); if(d < f) return false; }
+  if(toStr){ const t = new Date(toStr); t.setHours(23,59,59); if(d > t) return false; }
+  return true;
+}
 
-// =========================
-// LOAD DATA
-// =========================
-async function loadData(){
+/* Load all payments from API (GET) */
+async function loadPayments(){
+  try{
     const res = await fetch(API_URL);
-    const data = await res.json();
-
-    let html = "";
-    data.forEach((r,i)=>{
-        html += `
-        <tr class="border-b">
-            <td class="p-2">${i+1}</td>
-            <td class="p-2">${r.ID}</td>
-            <td class="p-2">${r.NomorPendaftar}</td>
-            <td class="p-2">${r.Nama}</td>
-            <td class="p-2">${r.Tanggal}</td>
-            <td class="p-2">${r.Jenis}</td>
-            <td class="p-2">${r.Nominal}</td>
-            <td class="p-2">${r.Status}</td>
-            <td class="p-2 flex gap-2">
-                <button onclick='editRow(${JSON.stringify(r)})'
-                    class="px-2 py-1 bg-yellow-400 text-black rounded">Edit</button>
-                <button onclick='deleteRow("${r.ID}")'
-                    class="px-2 py-1 bg-red-600 text-white rounded">Hapus</button>
-            </td>
-        </tr>`;
+    payments = await res.json();
+    // Normalize possible header keys to expected ones
+    payments = payments.map(r=>{
+      // some sheets may have lowercase headers; try to map robustly
+      const mapKey = key => {
+        if(r[key] !== undefined) return r[key];
+        const lower = Object.keys(r).find(k=>k.toLowerCase()===key.toLowerCase());
+        return lower? r[lower] : "";
+      };
+      return {
+        ID: mapKey("ID") || mapKey("id") || mapKey("Id"),
+        NomorPendaftar: mapKey("NomorPendaftar") || mapKey("nomorpendaftar") || mapKey("nomor") || "",
+        Nama: mapKey("Nama") || mapKey("nama") || "",
+        Tanggal: mapKey("Tanggal") || mapKey("tanggal") || "",
+        Jenis: mapKey("Jenis") || mapKey("jenis") || "",
+        Nominal: mapKey("Nominal") || mapKey("nominal") || "",
+        Status: mapKey("Status") || mapKey("status") || "",
+        Bukti: mapKey("Bukti") || mapKey("bukti") || ""
+      };
     });
 
-    document.getElementById("tbody").innerHTML = html;
-}
-window.onload = loadData;
-
-
-
-// =========================
-// SHOW FORM
-// =========================
-function showForm(){
-    editing = false;
-    editingId = "";
-    document.getElementById("formBox").classList.remove("hidden");
-
-    nomor.value = "";
-    nama.value = "";
-    tanggal.value = "";
-    jenis.value = "";
-    nominal.value = "";
-    status.value = "Belum";
-    bukti.value = "";
+    filtered = payments.slice();
+    renderTable(filtered);
+    renderStats(filtered);
+    drawCharts(filtered);
+  }catch(err){
+    console.error("LoadPayments error",err);
+    alert("Gagal memuat data. Cek API_URL & deploy Apps Script.");
+  }
 }
 
-
-
-// =========================
-// EDIT DATA
-// =========================
-function editRow(r){
-    editing = true;
-    editingId = r.ID;
-    document.getElementById("formBox").classList.remove("hidden");
-
-    nomor.value = r.NomorPendaftar;
-    nama.value = r.Nama;
-    tanggal.value = r.Tanggal;
-    jenis.value = r.Jenis;
-    nominal.value = r.Nominal;
-    status.value = r.Status;
-    bukti.value = r.Bukti;
+/* Render Table */
+function renderTable(arr){
+  const tbody = document.getElementById("paymentsTable");
+  tbody.innerHTML = "";
+  if(!arr || arr.length===0){
+    tbody.innerHTML = `<tr><td colspan="10" style="padding:14px;text-align:center;color:var(--muted)">Tidak ada data</td></tr>`;
+    return;
+  }
+  arr.forEach((p,i)=>{
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${i+1}</td>
+      <td>${escapeHtml(p.ID)}</td>
+      <td>${escapeHtml(p.NomorPendaftar)}</td>
+      <td>${escapeHtml(p.Nama)}</td>
+      <td>${escapeHtml(p.Tanggal)}</td>
+      <td>${escapeHtml(p.Jenis)}</td>
+      <td>Rp ${fmtRp(p.Nominal)}</td>
+      <td>${escapeHtml(p.Status)}</td>
+      <td>${p.Bukti?`<a href="${escapeHtml(p.Bukti)}" target="_blank" class="label-xs">Lihat</a>`:"-"}</td>
+      <td>
+        <button class="btn ghost" onclick='openEdit("${escapeJS(p.ID)}")'>Edit</button>
+        <button class="btn" onclick='deletePayment("${escapeJS(p.ID)}")'>Hapus</button>
+        <button class="btn ghost" onclick='printReceipt("${escapeJS(p.ID)}")'>Kwitansi</button>
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
 }
 
-
-
-// =========================
-– SIMPAN DATA (ADD / UPDATE)
-// =========================
-async function saveData(){
-    const body = {
-        action: editing ? "update" : "add",
-        id: editingId,
-
-        nomor: nomor.value,
-        nama: nama.value,
-        tanggal: tanggal.value,
-        jenis: jenis.value,
-        nominal: nominal.value,
-        status: status.value,
-        bukti: bukti.value
-    };
-
-    await fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify(body)
-    });
-
-    alert("Data disimpan!");
-    location.reload();
+/* Stats */
+function renderStats(arr){
+  const total = arr.length;
+  const totalNom = arr.reduce((s,p)=> s + (Number(String(p.Nominal).replace(/[^0-9]/g,''))||0),0);
+  const paid = arr.filter(p=>String(p.Status).toLowerCase()==="sudah").length;
+  const unpaid = total - paid;
+  document.getElementById("statTotal").textContent = total;
+  document.getElementById("statAmount").textContent = fmtRp(totalNom);
+  document.getElementById("statPaid").textContent = paid;
+  document.getElementById("statUnpaid").textContent = unpaid;
 }
 
+/* Charts (status + jenis) */
+function drawCharts(arr){
+  const ctxS = document.getElementById("chartStatus").getContext("2d");
+  const ctxJ = document.getElementById("chartJenis").getContext("2d");
 
+  // status counts
+  const statusCounts = arr.reduce((m,p)=>{
+    const k = p.Status || "Belum";
+    m[k] = (m[k]||0)+1; return m;
+  },{});
+  const sLabels = Object.keys(statusCounts);
+  const sData = Object.values(statusCounts);
 
-// =========================
-// HAPUS DATA
-// =========================
-async function deleteRow(id){
-    if(!confirm("Hapus data ini?")) return;
+  // jenis counts
+  const jenisCounts = arr.reduce((m,p)=>{
+    const k = p.Jenis || "Lainnya";
+    m[k] = (m[k]||0)+1; return m;
+  },{});
+  const jLabels = Object.keys(jenisCounts);
+  const jData = Object.values(jenisCounts);
 
-    await fetch(API_URL, {
-        method:"POST",
-        body: JSON.stringify({ action:"delete", id:id })
-    });
+  if(statusChart) statusChart.destroy();
+  if(jenisChart) jenisChart.destroy();
 
-    alert("Dihapus!");
-    loadData();
+  statusChart = new Chart(ctxS, {
+    type: 'doughnut',
+    data: { labels: sLabels, datasets: [{ data: sData }] },
+    options: { responsive:true, plugins:{legend:{position:'bottom'}}}
+  });
+
+  jenisChart = new Chart(ctxJ, {
+    type: 'bar',
+    data: { labels: jLabels, datasets: [{ label:'Jumlah', data: jData, borderRadius:6 }] },
+    options: { responsive:true, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}}}
+  });
 }
 
+/* Filter & Search */
+function applyFilters(){
+  const q = (document.getElementById("globalSearch").value||"").trim().toLowerCase();
+  const status = document.getElementById("filterStatus").value;
+  const jenis = document.getElementById("filterJenis").value;
+  const from = document.getElementById("dateFrom").value;
+  const to = document.getElementById("dateTo").value;
 
+  filtered = payments.filter(p=>{
+    if(q){
+      const inq = (p.Nama||"").toLowerCase().includes(q) || (p.NomorPendaftar||"").toLowerCase().includes(q) || (p.Jenis||"").toLowerCase().includes(q);
+      if(!inq) return false;
+    }
+    if(status!=="all" && (p.Status||"")!==status) return false;
+    if(jenis!=="all" && (p.Jenis||"")!==jenis) return false;
+    if(from && !isBetween(p.Tanggal, from, to)) return false;
+    if(from && !to && !isBetween(p.Tanggal, from, from)) return false;
+    return true;
+  });
 
-// =========================
-// SYNC GELOMBANG 1
-// =========================
+  renderTable(filtered);
+  renderStats(filtered);
+  drawCharts(filtered);
+}
+
+function resetFilters(){
+  document.getElementById("globalSearch").value = "";
+  document.getElementById("filterStatus").value = "all";
+  document.getElementById("filterJenis").value = "all";
+  document.getElementById("dateFrom").value = "";
+  document.getElementById("dateTo").value = "";
+  filtered = payments.slice();
+  renderTable(filtered);
+  renderStats(filtered);
+  drawCharts(filtered);
+}
+
+/* Open edit form */
+function openEdit(id){
+  const row = payments.find(p=>String(p.ID)===String(id));
+  if(!row){ alert("Data tidak ditemukan"); return; }
+  editingId = id;
+  document.getElementById("formSection").classList.remove("hidden");
+  document.getElementById("formHeading").textContent = "Edit Pembayaran";
+  document.getElementById("f_nomor").value = row.NomorPendaftar;
+  document.getElementById("f_nama").value = row.Nama;
+  document.getElementById("f_tanggal").value = row.Tanggal;
+  document.getElementById("f_jenis").value = row.Jenis;
+  document.getElementById("f_nominal").value = row.Nominal;
+  document.getElementById("f_status").value = row.Status;
+  document.getElementById("f_bukti").value = row.Bukti;
+}
+
+/* Close form */
+function closeForm(){
+  editingId = "";
+  document.getElementById("formSection").classList.add("hidden");
+  document.getElementById("formHeading").textContent = "Tambah Pembayaran";
+}
+
+/* Save (add/update) */
+async function saveForm(){
+  const body = {
+    action: editingId? "update":"add",
+    id: editingId,
+    nomor: document.getElementById("f_nomor").value,
+    nama: document.getElementById("f_nama").value,
+    tanggal: document.getElementById("f_tanggal").value || new Date().toISOString().slice(0,10),
+    jenis: document.getElementById("f_jenis").value,
+    nominal: document.getElementById("f_nominal").value,
+    status: document.getElementById("f_status").value,
+    bukti: document.getElementById("f_bukti").value
+  };
+
+  try{
+    const res = await fetch(API_URL, { method:"POST", body: JSON.stringify(body) });
+    const j = await res.json();
+    // success assumed
+    await loadPayments();
+    closeForm();
+    alert("Simpan berhasil");
+  }catch(err){ console.error(err); alert("Gagal simpan"); }
+}
+
+/* Delete payment */
+async function deletePayment(id){
+  if(!confirm("Yakin hapus?")) return;
+  try{
+    const res = await fetch(API_URL, { method:"POST", body: JSON.stringify({ action:"delete", id })});
+    const j = await res.json();
+    await loadPayments();
+    alert("Terhapus");
+  }catch(err){ console.error(err); alert("Gagal hapus"); }
+}
+
+/* Sync Gelombang 1 (client triggers server-side sync) */
 async function syncGelombang1(){
-    const res = await fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "syncGel1" })
-    });
-
-    const result = await res.json();
-    alert(result.message || "Sync selesai!");
+  if(!confirm("Sinkron semua data dari Form Responses 1 ke DU_gelombang1?")) return;
+  try{
+    const res = await fetch(API_URL, { method:"POST", body: JSON.stringify({ action: "sync", gel: 1 })});
+    const j = await res.json();
+    await loadPayments();
+    alert(j.message || ("Insert: "+(j.inserted||0)));
+  }catch(err){ console.error(err); alert("Gagal sinkron"); }
 }
+
+/* Print/kwitansi for a single ID */
+function printReceipt(id){
+  const p = payments.find(x=>String(x.ID)===String(id));
+  if(!p){ alert("Data tidak ditemukan"); return; }
+
+  const qrText = `ID:${p.ID}|Nomor:${p.NomorPendaftar}|Nama:${p.Nama}|Nominal:${p.Nominal}|Tanggal:${p.Tanggal}`;
+  const qrUrl = `https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=${encodeURIComponent(qrText)}`;
+
+  const win = window.open("","_blank","width=600,height=700");
+  const html = `
+    <html><head><title>Kwitansi - ${escapeHtml(p.NomorPendaftar)}</title>
+    <style>body{font-family:Arial;padding:20px} .box{border:1px solid #ddd;padding:16px;border-radius:8px} .h{font-weight:700;font-size:18px;margin-bottom:6px}</style>
+    </head><body>
+    <div class="box">
+      <div class="h">KWITANSI PEMBAYARAN</div>
+      <div>No: ${escapeHtml(p.ID)}</div>
+      <div>Nomor Pendaftar: <b>${escapeHtml(p.NomorPendaftar)}</b></div>
+      <div>Nama: <b>${escapeHtml(p.Nama)}</b></div>
+      <div>Tanggal: ${escapeHtml(p.Tanggal)}</div>
+      <div>Jenis: ${escapeHtml(p.Jenis)}</div>
+      <div>Nominal: Rp ${fmtRp(p.Nominal)}</div>
+      <div>Status: ${escapeHtml(p.Status)}</div>
+      <div style="margin-top:12px"><img src="${qrUrl}" alt="QR" /></div>
+      <div style="margin-top:12px;font-size:12px;color:#666">Dicetak: ${new Date().toLocaleString()}</div>
+    </div>
+    <script>window.onload=function(){window.print();}</script>
+    </body></html>
+  `;
+  win.document.open();
+  win.document.write(html);
+  win.document.close();
+}
+
+/* Print All (simple report) */
+function openPrintAll(){
+  let rows = payments.map((p,i)=>`<tr><td>${i+1}</td><td>${escapeHtml(p.NomorPendaftar)}</td><td>${escapeHtml(p.Nama)}</td><td>${escapeHtml(p.Tanggal)}</td><td>Rp ${fmtRp(p.Nominal)}</td><td>${escapeHtml(p.Status)}</td></tr>`).join("");
+  const win = window.open("","_blank","width=900,height=700");
+  const doc = `
+    <html><head><title>Laporan Pembayaran</title><style>table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:6px}</style></head><body>
+    <h3>Laporan Pembayaran - ${new Date().toLocaleDateString()}</h3>
+    <table><thead><tr><th>No</th><th>Nomor</th><th>Nama</th><th>Tanggal</th><th>Nominal</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>
+    <script>window.onload=function(){window.print();}</script>
+    </body></html>
+  `;
+  win.document.open(); win.document.write(doc); win.document.close();
+}
+
+/* Check student payments by NomorPendaftar (I) */
+function cekSiswa(){
+  const nomor = (document.getElementById("cekNomor").value||"").trim();
+  const elem = document.getElementById("cekResult");
+  if(!nomor){ elem.textContent = "Masukkan nomor pendaftar."; return; }
+  const list = payments.filter(p => String(p.NomorPendaftar).toLowerCase()===nomor.toLowerCase());
+  if(list.length===0){ elem.textContent = "Tidak ditemukan pembayaran untuk nomor ini."; return; }
+  elem.innerHTML = `Ditemukan ${list.length} transaksi — total: Rp ${fmtRp(list.reduce((s,p)=>s+(Number(String(p.Nominal).replace(/[^0-9]/g,''))||0),0))}. <button class="btn ghost" onclick="showStudentDetails('${escapeJS(nomor)}')">Lihat</button>`;
+}
+
+/* show student details in modal-like section */
+function showStudentDetails(nomor){
+  const list = payments.filter(p => String(p.NomorPendaftar).toLowerCase()===nomor.toLowerCase());
+  if(list.length===0){ alert("Tidak ditemukan"); return; }
+  // reuse formSection for simplicity - show summary at top and allow printing first unpaid
+  let html = `Transaksi untuk <b>${nomor}</b>:<br/><ul>`;
+  list.forEach(p => html += `<li>${escapeHtml(p.Tanggal)} — ${escapeHtml(p.Jenis)} — Rp ${fmtRp(p.Nominal)} — ${escapeHtml(p.Status)} <button onclick="printReceipt('${escapeJS(p.ID)}')">Kwitansi</button></li>`);
+  html += "</ul>";
+  const w = window.open("","_blank","width=600,height=500");
+  w.document.write(`<html><body style="font-family:Arial;padding:20px"><h3>Riwayat Pembayaran ${nomor}</h3>${html}</body></html>`);
+  w.document.close();
+}
+
+/* Helpers to escape */
+function escapeHtml(s){ if(s===null||s===undefined) return ""; return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;"); }
+function escapeJS(s){ return (s+"").replace(/'/g,"\\'").replace(/"/g,'\\"'); }
+
+/* Init */
+loadPayments();
 
 </script>
-
-
 </body>
 </html>
