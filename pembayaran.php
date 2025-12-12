@@ -31,7 +31,7 @@ header .title{font-weight:700;font-size:16px}
 header .subtitle{font-size:12px;color:var(--muted)}
 
 /* Main */
-main.app-main{padding-top:80px;padding-bottom:110px;max-width:1100px;margin:0 auto}
+main.app-main{padding-top:80px;padding-bottom:96px;max-width:1100px;margin:0 auto}
 .container{padding-left:14px;padding-right:14px}
 
 /* Cards */
@@ -83,13 +83,10 @@ nav.bottom-nav a.active{color:var(--accent);font-weight:700}
   .desktop-only{display:none}
   .cards{grid-template-columns:repeat(2,1fr)}
   .charts{grid-template-columns:1fr}
-  /* stack controls vertically on mobile */
   .controls{flex-direction:column}
   .controls input,.controls select{min-width:100%}
-  /* mobile table hidden; use cards */
   .table-scroll{display:none}
   #pendaftarCardContainer{display:block}
-  /* bottom-nav smaller */
   nav.bottom-nav{left:8px;right:8px;bottom:8px;height:68px;border-radius:12px}
   .fab{right:18px;bottom:96px}
 }
@@ -97,6 +94,9 @@ nav.bottom-nav a.active{color:var(--accent);font-weight:700}
 /* Helpers */
 .muted{color:var(--muted);font-size:13px}
 .text-xs{font-size:12px}
+
+/* small fixes for touch targets */
+nav.bottom-nav a, nav.bottom-nav button { padding-top:6px; padding-bottom:6px; }
 </style>
 </head>
 
@@ -211,24 +211,21 @@ nav.bottom-nav a.active{color:var(--accent);font-weight:700}
 <!-- Bottom nav -->
 <nav class="bottom-nav" aria-label="navigation">
   <a href="#" id="navHome" class="active" onclick="scrollToSection('stats');return false;">
-    <!-- Home Icon -->
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7m-9 5v6m0-6h6m-6 0H3"/>
     </svg>
     <div>Home</div>
   </a>
 
   <a href="#" id="navStats" onclick="scrollToSection('stats');return false;">
-    <!-- Chart Icon -->
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 11V3m4 8V7m4 8v-2m-8 6h8M5 21h14"/>
     </svg>
     <div>Statistik</div>
   </a>
 
   <a href="#" id="navData" onclick="scrollToSection('pendaftar');return false;">
-    <!-- Table Icon -->
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
     </svg>
     <div>Data</div>
@@ -236,17 +233,16 @@ nav.bottom-nav a.active{color:var(--accent);font-weight:700}
 
   <!-- Download (unique id for JS) -->
   <button id="navDownload" aria-label="Download">
-    <!-- Download Icon -->
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2m-6-6v6m0 0l-3-3m3 3l3-3"/>
     </svg>
     <div>Download</div>
   </button>
 
-  <a href="pembayaran.php" id="navPay">
-    <!-- Wallet Icon -->
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
-         viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+  <!-- Payment -->
+  <a href="pembyaran.php" id="navPay">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" class="h-6 w-6" fill="none"
+         viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2m0-4h4m0 0l-2-2m2 2l-2 2"/>
     </svg>
@@ -267,25 +263,25 @@ nav.bottom-nav a.active{color:var(--accent);font-weight:700}
 </div>
 
 <script>
-// --- Data + Charts (sama seperti sebelumnya) ---
-const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkWDi-X_jfYIUpR04AupM-ubJ-hBT-RO6W9HSyIN5_n15SN_AD1vDNM4CW-GV_4EpIm-9MTgW1iLvl/pub?gid=1123091940&single=true&output=csv";
+// --- Config: sheet CSV URL (pastikan ini sesuai milik Anda) ---
+const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRK5S9U1_NFAXW44TO-FtuITk6BGdrH1RPG67iEs3HSER9bBuY15KZGn4KRjSHtQszjNpdz67ibBeAr/pub?gid=0&single=true&output=csv";
 
+// state
 let globalData = [];
 let genderChartInstance = null;
 let ponpesChartInstance = null;
 
-/* Utility: escape HTML */
+/* small safe HTML escape */
 function escapeHtml(text){
   if(!text && text!==0) return "";
   return String(text).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
 }
 
-/* Load CSV -> render */
+/* load CSV - simple parser (good for well-formed CSV from Google Sheets) */
 async function loadStats(){
   try{
     const response = await fetch(sheetURL);
     const csvText = await response.text();
-    // robust CSV parse for simple CSV (line by line)
     const rows = csvText.split("\n").map(r=>r.split(",").map(c=>c.replace(/^"|"$/g,'').trim()));
     if(!rows || rows.length<2) return;
 
@@ -321,7 +317,7 @@ async function loadStats(){
       const akte=row[colAkte]||"";
       let statusBerkas=`<span style="color:#ef4444;font-weight:700">❌ Belum Lengkap</span>`;
       if(kk && akte) statusBerkas=`<span style="color:#16a34a;font-weight:700">✅ Lengkap</span>`;
-      const pesan=`Kami ucapkan : SELAMAT DITERIMA Atas Nama : ${nama} ...`;
+      const pesan=`Kami ucapkan : SELAMAT DITERIMA Atas Nama : ${nama}`;
       const linkWA=hp?`https://wa.me/${hp}?text=${encodeURIComponent(pesan)}`:"";
 
       globalData.push({nomor:total,gelombang,tanggal,sekolah,nama,alamat,gender,pondok,hp,hpRaw,linkWA,statusBerkas});
@@ -341,16 +337,17 @@ async function loadStats(){
     drawCharts(globalData);
     setupFilter(globalData);
     setupSearch(globalData);
-  }catch(err){console.error("Gagal load:",err);}
+  }catch(err){console.error("Gagal load:",err); alert("Gagal memuat data. Periksa sheetURL.");}
 }
 
+/* mark as contacted (localStorage) */
 function markContacted(num){
   localStorage.setItem("contacted_"+num,true);
   const waCount=globalData.reduce((acc,d)=>acc+(localStorage.getItem("contacted_"+d.hp)?1:0),0);
   document.getElementById("waCount").textContent=waCount;
 }
 
-/* Charts drawing */
+/* draw charts */
 function drawCharts(data){
   let male=0,female=0;
   let ponpesCounts={};
@@ -380,7 +377,7 @@ function drawCharts(data){
   });
 }
 
-/* Desktop table render */
+/* render desktop table */
 function renderTable(data){
   const tbody=document.getElementById("pendaftarTable");
   tbody.innerHTML="";
@@ -402,7 +399,7 @@ function renderTable(data){
   });
 }
 
-/* Mobile cards render */
+/* render mobile cards */
 function renderMobileCards(data){
   const container=document.getElementById("pendaftarCardContainer");
   container.innerHTML="";
@@ -412,12 +409,12 @@ function renderMobileCards(data){
     card.classList.add("mobile-card");
     card.innerHTML=`
       <div class="flex justify-between mb-2"><div class="font-semibold text-sm">#${i+1}</div><div class="text-xs text-gray-500">Gel: ${d.gelombang}</div></div>
-      <div class="mb-1"><span class="font-semibold text-xs">Nama:</span> ${d.nama}</div>
-      <div class="mb-1"><span class="font-semibold text-xs">Sekolah:</span> ${d.sekolah}</div>
-      <div class="mb-1"><span class="font-semibold text-xs">Alamat:</span> ${d.alamat}</div>
-      <div class="mb-1"><span class="font-semibold text-xs">Gender:</span> ${d.gender}</div>
-      <div class="mb-1"><span class="font-semibold text-xs">Pondok:</span> ${d.pondok}</div>
-      <div class="mb-1"><span class="font-semibold text-xs">HP:</span> ${d.hpRaw||d.hp}</div>
+      <div class="mb-1"><span class="font-semibold text-xs">Nama:</span> ${escapeHtml(d.nama)}</div>
+      <div class="mb-1"><span class="font-semibold text-xs">Sekolah:</span> ${escapeHtml(d.sekolah)}</div>
+      <div class="mb-1"><span class="font-semibold text-xs">Alamat:</span> ${escapeHtml(d.alamat)}</div>
+      <div class="mb-1"><span class="font-semibold text-xs">Gender:</span> ${escapeHtml(d.gender)}</div>
+      <div class="mb-1"><span class="font-semibold text-xs">Pondok:</span> ${escapeHtml(d.pondok)}</div>
+      <div class="mb-1"><span class="font-semibold text-xs">HP:</span> ${escapeHtml(d.hpRaw||d.hp)}</div>
       <div class="mb-1"><span class="font-semibold text-xs">Status Berkas:</span> ${d.statusBerkas}</div>
       <div class="flex justify-between items-center mt-2">
         ${d.hp?`<a href="${d.linkWA}" target="_blank" class="px-3 py-1 bg-green-500 text-white rounded text-xs" onclick="markContacted('${d.hp}')">WA</a>`:"-"}
@@ -428,7 +425,7 @@ function renderMobileCards(data){
   });
 }
 
-/* Filter by gelombang */
+/* filter by gelombang */
 function setupFilter(allData){
   const filter=document.getElementById("gelombangFilter");
   filter?.addEventListener("change",()=>{
@@ -441,7 +438,7 @@ function setupFilter(allData){
   });
 }
 
-/* Search input */
+/* setup search */
 function setupSearch(allData){
   const search=document.getElementById("searchInput");
   search?.addEventListener("input",()=>{
@@ -458,7 +455,7 @@ function setupSearch(allData){
   });
 }
 
-/* Scroll to section */
+/* scroll helper */
 function scrollToSection(id){
   const el=document.getElementById(id);
   if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
@@ -467,7 +464,7 @@ function scrollToSection(id){
   else document.getElementById('navStats').classList.add('active');
 }
 
-/* Excel export */
+/* Excel export (SheetJS) */
 function downloadExcelAdvanced() {
     if (!globalData || globalData.length === 0) {
         alert("Data kosong, tidak ada yang bisa diunduh.");
@@ -476,7 +473,6 @@ function downloadExcelAdvanced() {
 
     const wb = XLSX.utils.book_new();
 
-    // --- 1. Sheet per Gelombang ---
     [1,2,3].forEach(g => {
         const gelData = globalData.filter(d => d.gelombang === g)
                                   .sort((a,b)=>a.nomor-b.nomor);
@@ -494,7 +490,7 @@ function downloadExcelAdvanced() {
                 d.gender,
                 d.pondok,
                 d.hpRaw || d.hp,
-                d.statusBerkas.replace(/<[^>]+>/g,''), // Bersihkan HTML
+                d.statusBerkas.replace(/<[^>]+>/g,''),
                 d.gelombang
             ]);
         });
@@ -502,7 +498,6 @@ function downloadExcelAdvanced() {
         XLSX.utils.book_append_sheet(wb, ws, `Gelombang ${g}`);
     });
 
-    // --- 2. Sheet per Daerah (misal kolom alamat) ---
     const daerahMap = {};
     globalData.forEach(d => {
         const daerah = (d.alamat || "Unknown").split(" ")[0];
@@ -531,11 +526,10 @@ function downloadExcelAdvanced() {
         XLSX.utils.book_append_sheet(wb, ws, `Daerah ${daerah}`);
     });
 
-    // --- Download workbook ---
     XLSX.writeFile(wb, "pendaftar_multi_sheet.xlsx");
 }
 
-/* Hook download button -> modal */
+/* modal & download hook */
 const navDownload = document.getElementById("navDownload");
 const modal = document.getElementById("confirmModal");
 const cancelBtn = document.getElementById("cancelDownload");
