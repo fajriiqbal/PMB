@@ -16,7 +16,7 @@
     <div class="text-center p-8 bg-white rounded-xl shadow-xl max-w-lg relative overflow-hidden">
         <!-- Ilustrasi -->
         <div class="mb-6">
-            <img src="06e6f721-9517-49c1-97b4-33a15264c2dd.png" alt="Maintenance Illustration" class="mx-auto w-full max-w-md" />
+            <img src="assets/image.png" alt="Maintenance Illustration" class="mx-auto w-full max-w-md" />
         </div>
 
         <h1 class="text-3xl font-bold mb-4 text-gray-800">Sedang Dalam Perawatan</h1>
