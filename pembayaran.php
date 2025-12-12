@@ -121,12 +121,12 @@ html,body{
 <!-- ===================================== -->
 <nav class="bottom-nav fixed left-3 right-3 bottom-3 bg-white rounded-xl shadow-lg h-20 flex justify-around items-center">
 
-  <a href="index.html" class="flex flex-col items-center text-gray-600">
+  <a href="index.php" class="flex flex-col items-center text-gray-600">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M3 12l2-2m0 0l7-7 7 7m-9 5v6m0-6h6m-6 0H3"/>
       </svg>
-      <div class="text-xs">Home</div>
+      <div class="text-xs">Kembali</div>
   </a>
 
   <a href="pembayaran.php" class="flex flex-col items-center text-blue-600 font-bold">
